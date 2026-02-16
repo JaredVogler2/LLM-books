@@ -1,0 +1,53 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 255 255 255;
+    --foreground: 15 23 42;
+  }
+
+  body {
+    color: rgb(var(--foreground));
+    background: rgb(var(--background));
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply inline-flex items-center justify-center rounded-full bg-primary-600 px-6 py-3 text-sm font-semibold text-white shadow-sm hover:bg-primary-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600 transition-colors;
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center rounded-full bg-white px-6 py-3 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 transition-colors;
+  }
+
+  .btn-accent {
+    @apply inline-flex items-center justify-center rounded-full bg-accent-500 px-6 py-3 text-sm font-semibold text-white shadow-sm hover:bg-accent-600 transition-colors;
+  }
+
+  .card {
+    @apply rounded-2xl bg-white p-6 shadow-lg ring-1 ring-gray-100;
+  }
+
+  .input {
+    @apply block w-full rounded-xl border-0 px-4 py-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm sm:leading-6;
+  }
+
+  .wizard-step {
+    @apply flex items-center justify-center w-10 h-10 rounded-full text-sm font-semibold;
+  }
+
+  .wizard-step-active {
+    @apply wizard-step bg-primary-600 text-white;
+  }
+
+  .wizard-step-complete {
+    @apply wizard-step bg-primary-100 text-primary-700;
+  }
+
+  .wizard-step-pending {
+    @apply wizard-step bg-gray-100 text-gray-500;
+  }
+}

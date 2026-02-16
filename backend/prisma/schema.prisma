@@ -1,0 +1,494 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── ENUMS ──────────────────────────────────────────────────────────────────
+
+enum UserRole {
+  CUSTOMER
+  ADMIN
+  SUPER_ADMIN
+}
+
+enum StoryType {
+  BEDTIME
+  RHYMING
+  ADVENTURE
+  CHOOSE_YOUR_OWN
+  EDUCATIONAL_STEM
+}
+
+enum IllustrationStyle {
+  FULL_COLOR
+  BLACK_WHITE_COLORING
+}
+
+enum BindingType {
+  SOFTCOVER
+  HARDCOVER
+  SPIRAL_BOUND
+  SADDLE_STITCH
+}
+
+enum PaperType {
+  STANDARD
+  PREMIUM_MATTE
+  GLOSSY
+}
+
+enum BookSize {
+  SQUARE_8X8
+  PORTRAIT_8_5X11
+  LANDSCAPE_11X8_5
+}
+
+enum BookStatus {
+  DRAFT
+  GENERATING_STORY
+  GENERATING_ILLUSTRATIONS
+  ASSEMBLING_PDF
+  REVIEW_READY
+  APPROVED
+  SENT_TO_PRINT
+  PRINTING
+  SHIPPED
+  DELIVERED
+  FAILED
+  CANCELLED
+}
+
+enum OrderStatus {
+  PENDING
+  PAID
+  PROCESSING
+  FULFILLED
+  SHIPPED
+  DELIVERED
+  REFUNDED
+  CANCELLED
+  FAILED
+}
+
+enum SubscriptionType {
+  BIRTHDAY_YEARLY
+  HOLIDAY_SEASONAL
+  QUARTERLY_ADVENTURE
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  PAUSED
+  CANCELLED
+  PAST_DUE
+  TRIALING
+}
+
+enum FulfillmentProvider {
+  PRINTFUL
+  LULU
+  BLURB
+}
+
+enum FulfillmentStatus {
+  PENDING
+  SUBMITTED
+  ACCEPTED
+  IN_PRODUCTION
+  SHIPPED
+  DELIVERED
+  FAILED
+  CANCELLED
+}
+
+enum PaymentStatus {
+  PENDING
+  SUCCEEDED
+  FAILED
+  REFUNDED
+  PARTIALLY_REFUNDED
+}
+
+enum JobStatus {
+  QUEUED
+  PROCESSING
+  COMPLETED
+  FAILED
+  RETRYING
+}
+
+enum LayoutType {
+  FULL_PAGE_ILLUSTRATION
+  TEXT_LEFT_IMAGE_RIGHT
+  TEXT_RIGHT_IMAGE_LEFT
+  TEXT_OVER_IMAGE
+  TEXT_BELOW_IMAGE
+  SPREAD
+  TITLE_PAGE
+  DEDICATION_PAGE
+}
+
+// ─── MODELS ─────────────────────────────────────────────────────────────────
+
+model User {
+  id                String    @id @default(uuid())
+  email             String    @unique
+  passwordHash      String
+  firstName         String?
+  lastName          String?
+  role              UserRole  @default(CUSTOMER)
+  emailVerified     Boolean   @default(false)
+  emailVerifiedAt   DateTime?
+  stripeCustomerId  String?   @unique
+  avatarUrl         String?
+  lastLoginAt       DateTime?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  children       ChildProfile[]
+  books          Book[]
+  orders         Order[]
+  subscriptions  Subscription[]
+  referralsSent  Referral[]       @relation("ReferralSender")
+  referralsUsed  Referral[]       @relation("ReferralRecipient")
+
+  @@index([email])
+  @@index([stripeCustomerId])
+  @@map("users")
+}
+
+model ChildProfile {
+  id              String   @id @default(uuid())
+  userId          String
+  name            String
+  age             Int
+  gender          String?
+  interests       String[]
+  favoriteColors  String[]
+  personalityTraits String[]
+  favoriteAnimals String[]
+  themes          String[]
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  user              User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  characterProfiles CharacterProfile[]
+  books             Book[]
+
+  @@index([userId])
+  @@map("child_profiles")
+}
+
+model CharacterProfile {
+  id                 String   @id @default(uuid())
+  childProfileId     String
+  referenceImageUrl  String?
+  faceShape          String?
+  hairColor          String?
+  hairStyle          String?
+  eyeColor           String?
+  skinTone           String?
+  clothingStyle      String?
+  distinguishingFeatures String[]
+  stylePrompt        String   @db.Text
+  embeddingReference String?
+  seed               Int?
+  isActive           Boolean  @default(true)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  childProfile ChildProfile @relation(fields: [childProfileId], references: [id], onDelete: Cascade)
+  books        Book[]
+
+  @@index([childProfileId])
+  @@map("character_profiles")
+}
+
+model Book {
+  id                  String            @id @default(uuid())
+  userId              String
+  childProfileId      String
+  characterProfileId  String?
+  title               String?
+  storyType           StoryType
+  illustrationStyle   IllustrationStyle @default(FULL_COLOR)
+  bindingType         BindingType       @default(SOFTCOVER)
+  paperType           PaperType         @default(STANDARD)
+  bookSize            BookSize          @default(SQUARE_8X8)
+  pageCount           Int               @default(24)
+  moralLesson         String?
+  dedicationText      String?
+  includeAudiobook    Boolean           @default(false)
+  includeDigitalPdf   Boolean           @default(false)
+  giftWrap            Boolean           @default(false)
+  status              BookStatus        @default(DRAFT)
+  storyOutline        Json?
+  coverImageUrl       String?
+  printPdfUrl         String?
+  digitalPdfUrl       String?
+  audiobookUrl        String?
+  generationMetadata  Json?
+  errorMessage        String?
+  estimatedPrice      Int?
+  createdAt           DateTime          @default(now())
+  updatedAt           DateTime          @updatedAt
+
+  user             User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  childProfile     ChildProfile      @relation(fields: [childProfileId], references: [id])
+  characterProfile CharacterProfile? @relation(fields: [characterProfileId], references: [id])
+  pages            BookPage[]
+  orderItems       OrderItem[]
+  generationJobs   GenerationJob[]
+
+  @@index([userId])
+  @@index([childProfileId])
+  @@index([status])
+  @@map("books")
+}
+
+model BookPage {
+  id                  String     @id @default(uuid())
+  bookId              String
+  pageNumber          Int
+  text                String     @db.Text
+  illustrationPrompt  String     @db.Text
+  layoutType          LayoutType
+  imageUrl            String?
+  imageStorageKey     String?
+  imageWidth          Int?
+  imageHeight         Int?
+  imageDpi            Int?
+  generationSeed      Int?
+  generationMetadata  Json?
+  isGenerated         Boolean    @default(false)
+  createdAt           DateTime   @default(now())
+  updatedAt           DateTime   @updatedAt
+
+  book Book @relation(fields: [bookId], references: [id], onDelete: Cascade)
+
+  @@unique([bookId, pageNumber])
+  @@index([bookId])
+  @@map("book_pages")
+}
+
+model Order {
+  id               String      @id @default(uuid())
+  userId           String
+  status           OrderStatus @default(PENDING)
+  subtotalCents    Int
+  discountCents    Int         @default(0)
+  taxCents         Int         @default(0)
+  shippingCents    Int         @default(0)
+  totalCents       Int
+  currency         String      @default("usd")
+  couponId         String?
+  shippingAddress  Json?
+  billingAddress   Json?
+  notes            String?
+  subscriptionId   String?
+  createdAt        DateTime    @default(now())
+  updatedAt        DateTime    @updatedAt
+
+  user              User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  coupon            Coupon?           @relation(fields: [couponId], references: [id])
+  subscription      Subscription?     @relation(fields: [subscriptionId], references: [id])
+  items             OrderItem[]
+  payments          Payment[]
+  fulfillmentOrders FulfillmentOrder[]
+  emailEvents       EmailEvent[]
+
+  @@index([userId])
+  @@index([status])
+  @@index([createdAt])
+  @@map("orders")
+}
+
+model OrderItem {
+  id          String @id @default(uuid())
+  orderId     String
+  bookId      String
+  quantity    Int    @default(1)
+  unitPrice   Int
+  totalPrice  Int
+  description String?
+
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  book  Book  @relation(fields: [bookId], references: [id])
+
+  @@index([orderId])
+  @@map("order_items")
+}
+
+model Payment {
+  id                  String        @id @default(uuid())
+  orderId             String
+  stripePaymentIntentId String?     @unique
+  stripeChargeId      String?
+  amount              Int
+  currency            String        @default("usd")
+  status              PaymentStatus @default(PENDING)
+  refundedAmount      Int           @default(0)
+  failureMessage      String?
+  metadata            Json?
+  createdAt           DateTime      @default(now())
+  updatedAt           DateTime      @updatedAt
+
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@index([orderId])
+  @@index([stripePaymentIntentId])
+  @@map("payments")
+}
+
+model Subscription {
+  id                     String             @id @default(uuid())
+  userId                 String
+  type                   SubscriptionType
+  status                 SubscriptionStatus @default(ACTIVE)
+  stripeSubscriptionId   String?            @unique
+  stripePriceId          String?
+  childProfileId         String?
+  nextBillingDate        DateTime?
+  nextGenerationDate     DateTime?
+  cancelledAt            DateTime?
+  currentPeriodStart     DateTime?
+  currentPeriodEnd       DateTime?
+  metadata               Json?
+  createdAt              DateTime           @default(now())
+  updatedAt              DateTime           @updatedAt
+
+  user   User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  orders Order[]
+
+  @@index([userId])
+  @@index([status])
+  @@index([stripeSubscriptionId])
+  @@map("subscriptions")
+}
+
+model Coupon {
+  id                String    @id @default(uuid())
+  code              String    @unique
+  description       String?
+  discountPercent   Int?
+  discountAmountCents Int?
+  maxUses           Int?
+  currentUses       Int       @default(0)
+  minOrderCents     Int?
+  expiresAt         DateTime?
+  isActive          Boolean   @default(true)
+  stripeCouponId    String?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  orders Order[]
+
+  @@index([code])
+  @@map("coupons")
+}
+
+model FulfillmentOrder {
+  id                String             @id @default(uuid())
+  orderId           String
+  provider          FulfillmentProvider
+  externalOrderId   String?
+  status            FulfillmentStatus  @default(PENDING)
+  trackingNumber    String?
+  trackingUrl       String?
+  shippingCarrier   String?
+  printFileUrl      String?
+  providerResponse  Json?
+  errorMessage      String?
+  submittedAt       DateTime?
+  shippedAt         DateTime?
+  deliveredAt       DateTime?
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@index([orderId])
+  @@index([externalOrderId])
+  @@index([status])
+  @@map("fulfillment_orders")
+}
+
+model GenerationJob {
+  id          String    @id @default(uuid())
+  bookId      String
+  jobType     String
+  status      JobStatus @default(QUEUED)
+  priority    Int       @default(0)
+  attempts    Int       @default(0)
+  maxAttempts Int       @default(3)
+  payload     Json?
+  result      Json?
+  error       String?
+  startedAt   DateTime?
+  completedAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  book Book @relation(fields: [bookId], references: [id], onDelete: Cascade)
+
+  @@index([bookId])
+  @@index([status])
+  @@index([jobType])
+  @@map("generation_jobs")
+}
+
+model EmailEvent {
+  id        String   @id @default(uuid())
+  orderId   String?
+  email     String
+  type      String
+  subject   String?
+  status    String   @default("sent")
+  metadata  Json?
+  sentAt    DateTime @default(now())
+
+  order Order? @relation(fields: [orderId], references: [id])
+
+  @@index([email])
+  @@index([orderId])
+  @@index([type])
+  @@map("email_events")
+}
+
+model Referral {
+  id            String   @id @default(uuid())
+  senderId      String
+  recipientId   String?
+  code          String   @unique
+  rewardCents   Int      @default(500)
+  isRedeemed    Boolean  @default(false)
+  redeemedAt    DateTime?
+  createdAt     DateTime @default(now())
+
+  sender    User  @relation("ReferralSender", fields: [senderId], references: [id])
+  recipient User? @relation("ReferralRecipient", fields: [recipientId], references: [id])
+
+  @@index([code])
+  @@index([senderId])
+  @@map("referrals")
+}
+
+model AuditLog {
+  id        String   @id @default(uuid())
+  userId    String?
+  action    String
+  entity    String
+  entityId  String?
+  metadata  Json?
+  ipAddress String?
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([entity, entityId])
+  @@index([createdAt])
+  @@map("audit_logs")
+}

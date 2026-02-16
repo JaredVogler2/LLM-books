@@ -1,0 +1,24 @@
+FROM node:20-alpine AS base
+WORKDIR /app
+
+FROM base AS deps
+COPY backend/package.json backend/package-lock.json* ./
+RUN npm ci
+
+FROM deps AS prisma
+COPY backend/prisma ./prisma
+RUN npx prisma generate
+
+FROM prisma AS build
+COPY backend/ .
+RUN npm run build
+
+FROM base AS production
+ENV NODE_ENV=production
+
+COPY --from=deps /app/node_modules ./node_modules
+COPY --from=build /app/dist ./dist
+COPY --from=build /app/prisma ./prisma
+COPY --from=prisma /app/node_modules/.prisma ./node_modules/.prisma
+
+CMD ["node", "dist/jobs/worker"]

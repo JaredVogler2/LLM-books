@@ -1,0 +1,31 @@
+FROM node:20-alpine AS base
+WORKDIR /app
+
+# Install dependencies
+FROM base AS deps
+COPY backend/package.json backend/package-lock.json* ./
+RUN npm ci --only=production && cp -R node_modules /tmp/prod_modules
+RUN npm ci
+
+# Generate Prisma client
+FROM deps AS prisma
+COPY backend/prisma ./prisma
+RUN npx prisma generate
+
+# Build
+FROM prisma AS build
+COPY backend/ .
+RUN npm run build
+
+# Production
+FROM base AS production
+ENV NODE_ENV=production
+
+COPY --from=build /tmp/prod_modules ./node_modules
+COPY --from=build /app/dist ./dist
+COPY --from=build /app/prisma ./prisma
+COPY --from=prisma /app/node_modules/.prisma ./node_modules/.prisma
+
+EXPOSE 4000
+
+CMD ["node", "dist/main"]
