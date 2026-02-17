@@ -1,0 +1,2030 @@
+\documentclass[12pt, letterpaper, oneside]{book}
+
+% ──────────────────────────────────────────────────────────────
+% PACKAGES
+% ──────────────────────────────────────────────────────────────
+\usepackage[margin=1in]{geometry}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{enumitem}
+\usepackage{tikz}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{tocloft}
+\usepackage{hyperref}
+\usepackage{cleveref}
+\usepackage{amssymb}
+\usepackage{pifont}
+\usepackage{framed}
+\usepackage{mdframed}
+\usepackage{float}
+\usepackage{caption}
+\usepackage{multicol}
+\usepackage{calc}
+\usepackage{etoolbox}
+
+% ──────────────────────────────────────────────────────────────
+% COLORS
+% ──────────────────────────────────────────────────────────────
+\definecolor{primary}{HTML}{7E22CE}
+\definecolor{accent}{HTML}{F97316}
+\definecolor{darkbg}{HTML}{1E293B}
+\definecolor{success}{HTML}{16A34A}
+\definecolor{danger}{HTML}{DC2626}
+\definecolor{info}{HTML}{2563EB}
+\definecolor{lightgray}{HTML}{F1F5F9}
+\definecolor{midgray}{HTML}{94A3B8}
+\definecolor{money}{HTML}{16A34A}
+
+% ──────────────────────────────────────────────────────────────
+% HYPERREF SETUP
+% ──────────────────────────────────────────────────────────────
+\hypersetup{
+  colorlinks=true,
+  linkcolor=primary,
+  urlcolor=info,
+  citecolor=primary,
+  bookmarks=true,
+  bookmarksopen=true,
+  pdftitle={StoryForge AI: Complete Business Launch Guide},
+  pdfauthor={StoryForge AI},
+  pdfsubject={AI-Powered Children's Book Business},
+}
+
+% ──────────────────────────────────────────────────────────────
+% CUSTOM ENVIRONMENTS
+% ──────────────────────────────────────────────────────────────
+\newmdenv[
+  backgroundcolor=lightgray,
+  linecolor=primary,
+  linewidth=2pt,
+  topline=false,
+  bottomline=false,
+  rightline=false,
+  innerleftmargin=15pt,
+  innerrightmargin=15pt,
+  innertopmargin=10pt,
+  innerbottommargin=10pt,
+  skipabove=12pt,
+  skipbelow=12pt
+]{infobox}
+
+\newmdenv[
+  backgroundcolor=red!5,
+  linecolor=danger,
+  linewidth=2pt,
+  topline=false,
+  bottomline=false,
+  rightline=false,
+  innerleftmargin=15pt,
+  innerrightmargin=15pt,
+  innertopmargin=10pt,
+  innerbottommargin=10pt,
+  skipabove=12pt,
+  skipbelow=12pt
+]{warningbox}
+
+\newmdenv[
+  backgroundcolor=green!5,
+  linecolor=success,
+  linewidth=2pt,
+  topline=false,
+  bottomline=false,
+  rightline=false,
+  innerleftmargin=15pt,
+  innerrightmargin=15pt,
+  innertopmargin=10pt,
+  innerbottommargin=10pt,
+  skipabove=12pt,
+  skipbelow=12pt
+]{successbox}
+
+\newmdenv[
+  backgroundcolor=orange!5,
+  linecolor=accent,
+  linewidth=2pt,
+  topline=false,
+  bottomline=false,
+  rightline=false,
+  innerleftmargin=15pt,
+  innerrightmargin=15pt,
+  innertopmargin=10pt,
+  innerbottommargin=10pt,
+  skipabove=12pt,
+  skipbelow=12pt
+]{costbox}
+
+\newmdenv[
+  backgroundcolor=blue!3,
+  linecolor=info,
+  linewidth=2pt,
+  topline=false,
+  bottomline=false,
+  rightline=false,
+  innerleftmargin=15pt,
+  innerrightmargin=15pt,
+  innertopmargin=10pt,
+  innerbottommargin=10pt,
+  skipabove=12pt,
+  skipbelow=12pt
+]{actionbox}
+
+% ──────────────────────────────────────────────────────────────
+% CUSTOM COMMANDS
+% ──────────────────────────────────────────────────────────────
+\newcommand{\cost}[1]{\textcolor{money}{\textbf{#1}}}
+\newcommand{\cmark}{\ding{51}}
+\newcommand{\xmark}{\ding{55}}
+\newcommand{\step}[1]{\noindent\textbf{\textcolor{primary}{Step #1:}}~}
+\newcommand{\substep}[1]{\noindent\hspace{1em}\textbf{\textcolor{midgray}{#1.}}~}
+
+% ──────────────────────────────────────────────────────────────
+% PAGE STYLE
+% ──────────────────────────────────────────────────────────────
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\textcolor{midgray}{\leftmark}}
+\fancyhead[R]{\small\textcolor{midgray}{StoryForge AI Launch Guide}}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\headrule}{\hbox to\headwidth{\color{midgray}\leaders\hrule height \headrulewidth\hfill}}
+
+% ──────────────────────────────────────────────────────────────
+% TITLE FORMATTING
+% ──────────────────────────────────────────────────────────────
+\titleformat{\chapter}[display]
+  {\normalfont\huge\bfseries\color{primary}}
+  {\chaptertitlename\ \thechapter}{20pt}{\Huge}
+\titleformat{\section}
+  {\normalfont\Large\bfseries\color{darkbg}}
+  {\thesection}{1em}{}
+\titleformat{\subsection}
+  {\normalfont\large\bfseries\color{darkbg}}
+  {\thesubsection}{1em}{}
+
+% ──────────────────────────────────────────────────────────────
+% BEGIN DOCUMENT
+% ──────────────────────────────────────────────────────────────
+\begin{document}
+
+% ══════════════════════════════════════════════════════════════
+% TITLE PAGE
+% ══════════════════════════════════════════════════════════════
+\begin{titlepage}
+\begin{center}
+\vspace*{1.5in}
+
+{\fontsize{42}{50}\selectfont\bfseries\textcolor{primary}{StoryForge AI}}
+
+\vspace{0.3in}
+{\fontsize{18}{22}\selectfont\textcolor{darkbg}{Complete Business Launch Guide}}
+
+\vspace{0.5in}
+{\large\textcolor{midgray}{From Zero to an AI-Agent-Operated\\
+Personalized Children's Book Company}}
+
+\vspace{0.4in}
+\rule{3in}{0.5pt}
+
+\vspace{0.4in}
+{\large\textcolor{darkbg}{A Step-by-Step Manual for Non-Technical Founders}}
+
+\vspace{0.3in}
+{\normalsize\textcolor{midgray}{Budget: \$2{,}000 \quad|\quad Location: South Carolina\\[6pt]
+No Programming Experience Required}}
+
+\vfill
+{\small\textcolor{midgray}{Version 1.0 --- February 2026}}
+\end{center}
+\end{titlepage}
+
+% ══════════════════════════════════════════════════════════════
+% COPYRIGHT PAGE
+% ══════════════════════════════════════════════════════════════
+\thispagestyle{empty}
+\vspace*{\fill}
+\noindent\textcolor{midgray}{\small
+This document is a comprehensive operational guide for launching and running\\
+StoryForge AI as an automated business. All pricing data is based on publicly\\
+available information as of February 2026 and is subject to change.\\[12pt]
+Always verify current pricing before making purchasing decisions.\\[12pt]
+This guide does not constitute legal, financial, or tax advice. Consult\\
+with a licensed attorney and CPA for matters specific to your situation.}
+\newpage
+
+% ══════════════════════════════════════════════════════════════
+% TABLE OF CONTENTS
+% ══════════════════════════════════════════════════════════════
+\tableofcontents
+\newpage
+
+% ══════════════════════════════════════════════════════════════
+% EXECUTIVE SUMMARY
+% ══════════════════════════════════════════════════════════════
+\chapter*{Executive Summary}
+\addcontentsline{toc}{chapter}{Executive Summary}
+
+\section*{What You Are Building}
+
+StoryForge AI is an online business that creates personalized children's books using artificial intelligence. A customer visits your website, enters details about their child (name, age, interests, favorite animals, etc.), and your system \textbf{automatically}:
+
+\begin{enumerate}[leftmargin=2em]
+  \item Generates a unique story tailored to that child
+  \item Creates custom illustrations for every other page
+  \item Assembles a print-ready PDF
+  \item Sends the file to a print-on-demand partner
+  \item Ships a physical book to the customer's door
+  \item Sends confirmation and tracking emails
+\end{enumerate}
+
+\noindent Your role is \textbf{business owner and supervisor}, not programmer or operator. AI agents handle the day-to-day: generating books, processing orders, sending emails, and monitoring for problems. You check a dashboard, handle edge cases, and focus on marketing.
+
+\section*{What ``Run by AI Agents'' Actually Means}
+
+Let us be clear about what is automated and what is not:
+
+\begin{successbox}
+\textbf{What AI Agents Handle Automatically:}
+\begin{itemize}[leftmargin=1.5em, itemsep=2pt]
+  \item Story and illustration generation (OpenAI API)
+  \item PDF assembly and quality checks
+  \item Order submission to print partner (Lulu)
+  \item Payment processing (Stripe)
+  \item Customer email notifications (order confirmation, shipping updates)
+  \item Subscription renewals and reminders
+  \item Fulfillment status tracking
+\end{itemize}
+\end{successbox}
+
+\begin{warningbox}
+\textbf{What Still Requires You (Estimated 2--5 Hours/Week):}
+\begin{itemize}[leftmargin=1.5em, itemsep=2pt]
+  \item Reviewing flagged orders or failed generations (rare)
+  \item Handling customer support emails (consider AI chatbot later)
+  \item Processing refund requests
+  \item Monitoring your dashboard for errors
+  \item Marketing: social media posts, ad campaigns, partnerships
+  \item Accounting and taxes (quarterly, with a CPA)
+  \item Updating pricing or adding new features over time
+\end{itemize}
+\end{warningbox}
+
+\section*{Your \$2{,}000 Budget at a Glance}
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{Xrr}
+\toprule
+\textbf{Category} & \textbf{One-Time} & \textbf{Monthly} \\
+\midrule
+South Carolina LLC formation & \$125 & \$0 \\
+Domain name (1 year) & \$11 & --- \\
+Hosting (Railway.app Pro) & --- & \$20 \\
+AI coding tool (Bolt.new Pro) & --- & \$20 \\
+Automation platform (Make.com Core) & --- & \$11 \\
+Email service (SendGrid Free) & --- & \$0 \\
+Payment processing (Stripe) & --- & Per-transaction \\
+OpenAI API (prepaid credits) & \$50 & Variable \\
+Marketing budget (initial) & \$200 & Variable \\
+Reserve for unexpected costs & \$300 & --- \\
+\midrule
+\textbf{Total Initial Outlay} & \textbf{\$686} & --- \\
+\textbf{Monthly Operating Costs (pre-revenue)} & --- & \textbf{\$51} \\
+\textbf{Remaining Reserve} & \textbf{\$1{,}314} & --- \\
+\bottomrule
+\end{tabularx}
+\caption{Startup budget allocation summary}
+\end{table}
+
+\noindent At \$51/month in fixed costs, your \$1{,}314 reserve covers \textbf{25+ months} of operation even with zero revenue. You do not need to rush.
+
+% ══════════════════════════════════════════════════════════════
+% CHAPTER 1: FORM YOUR LLC
+% ══════════════════════════════════════════════════════════════
+\chapter{Form Your South Carolina LLC}
+
+An LLC (Limited Liability Company) separates your personal assets from your business. If a customer ever sues over a book, they sue the LLC---not you personally. This chapter walks you through every step.
+
+\section{Before You File: Choose Your Business Name}
+
+\step{1} Pick 3--5 potential business names. Your LLC name does not have to match your website name, but it helps. Examples:
+\begin{itemize}[leftmargin=2em]
+  \item StoryForge AI LLC
+  \item StoryForge Books LLC
+  \item [YourCreativeName] LLC
+\end{itemize}
+
+\step{2} Search if the name is available:
+\begin{actionbox}
+Go to \url{https://businessfilings.sc.gov/BusinessFiling/Entity/Search}\\[4pt]
+Type your desired name. If it shows \textbf{no results}, the name is available.\\[4pt]
+Also check if a matching \texttt{.com} domain is available at \url{https://www.cloudflare.com/products/registrar/}
+\end{actionbox}
+
+\step{3} Optional: Reserve the name for 120 days by filing a Name Reservation with the SC Secretary of State (\cost{\$25} fee). This is optional---you can skip straight to filing.
+
+\section{File Your Articles of Organization}
+
+This is the official document that creates your LLC.
+
+\step{4} Go to the SC Secretary of State online filing portal:
+\begin{actionbox}
+\url{https://businessfilings.sc.gov/BusinessFiling}\\[4pt]
+Click ``Start a New Business'' $\rightarrow$ ``Limited Liability Company''
+\end{actionbox}
+
+\step{5} Fill in the required information:
+\begin{itemize}[leftmargin=2em]
+  \item \textbf{LLC Name:} Your chosen name (must end with ``LLC'' or ``L.L.C.'')
+  \item \textbf{Registered Agent:} Enter \textbf{your own name} and your \textbf{South Carolina home address}. You are allowed to be your own registered agent as long as you are a SC resident over 18 with a physical street address (not a P.O.\ box). This saves \$50--125/year.
+  \item \textbf{Organizer:} Your name and address
+  \item \textbf{Management:} Choose ``Member-Managed'' (you manage it yourself)
+  \item \textbf{Effective Date:} Today's date (or a future date if you prefer)
+\end{itemize}
+
+\step{6} Pay the filing fee: \cost{\$110} by mail or \cost{\$125} online (includes \$15 portal fee).
+
+\begin{infobox}
+\textbf{Processing time:} Online filings are typically processed within 3--5 business days. You will receive a confirmation with your LLC's file number.
+\end{infobox}
+
+\begin{costbox}
+\textbf{South Carolina Advantage:} SC does \textbf{not} require annual reports or annual fees for standard LLCs taxed as sole proprietorships. Your total state cost after formation is \textbf{\$0/year}. This is one of the cheapest states to maintain an LLC.
+\end{costbox}
+
+\section{Get Your EIN (Employer Identification Number)}
+
+An EIN is like a Social Security number for your business. You need it to open a business bank account, set up Stripe, and file taxes.
+
+\step{7} Apply online at the IRS website:
+\begin{actionbox}
+\url{https://www.irs.gov/businesses/small-businesses-self-employed/apply-for-an-employer-identification-number-ein-online}\\[4pt]
+Click ``Apply Online Now.'' Follow the prompts. Select:
+\begin{itemize}[leftmargin=1.5em]
+  \item Entity type: \textbf{Limited Liability Company}
+  \item Number of members: \textbf{1}
+  \item Reason: \textbf{Started new business}
+  \item State: \textbf{South Carolina}
+\end{itemize}
+\end{actionbox}
+
+\step{8} Print or save the confirmation letter with your EIN. You will need this number repeatedly.
+
+\begin{successbox}
+\textbf{Cost: \$0.} The IRS does not charge for an EIN. It is issued immediately online.\\[4pt]
+\textbf{Warning:} Do NOT use third-party sites that charge \$50--200 to file your EIN. The IRS site is free.
+\end{successbox}
+
+\section{Write a Simple Operating Agreement}
+
+An Operating Agreement is an internal document that describes how your LLC works. South Carolina does not require one, but having one:
+\begin{itemize}[leftmargin=2em]
+  \item Proves your LLC is a separate entity (protects your personal liability shield)
+  \item Is required by banks and some payment processors
+  \item Clarifies ownership if you ever add a partner
+\end{itemize}
+
+\step{9} Create a simple single-member Operating Agreement. You do not need a lawyer for this. A free template works:
+\begin{actionbox}
+Search for ``free single-member LLC operating agreement template'' on:
+\begin{itemize}[leftmargin=1.5em]
+  \item \url{https://www.northwestregisteredagent.com/free-llc-operating-agreement}
+  \item \url{https://www.legalzoom.com/} (free template download)
+\end{itemize}
+Fill in your LLC name, your name as sole member, your address, and the date.\\
+Sign it and keep a copy with your important business documents.
+\end{actionbox}
+
+\section{Check Local Business License Requirements}
+
+\step{10} South Carolina does not require a statewide business license, but your city or county might. Check:
+\begin{actionbox}
+Contact your local county or city business license office. If you are in:\\[4pt]
+\begin{tabular}{ll}
+  Charleston County: & \url{https://www.charlestoncounty.org/departments/business-license/} \\
+  Greenville County: & \url{https://www.greenvillecounty.org/AuditorBusinessLicense/} \\
+  Columbia (Richland): & \url{https://www.richlandcountysc.gov/} \\
+\end{tabular}\\[8pt]
+Many SC counties charge \$0--50 for a basic home-based online business license. Some require no license at all for online-only businesses.
+\end{actionbox}
+
+\section{Chapter 1 Cost Summary}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{lr}
+\toprule
+\textbf{Item} & \textbf{Cost} \\
+\midrule
+Articles of Organization (online) & \$125.00 \\
+EIN from IRS & \$0.00 \\
+Operating Agreement (free template) & \$0.00 \\
+Registered Agent (yourself) & \$0.00 \\
+Local business license (estimated) & \$0.00--50.00 \\
+\midrule
+\textbf{Chapter 1 Total} & \textbf{\$125.00--175.00} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+
+% ══════════════════════════════════════════════════════════════
+% CHAPTER 2: BANKING & FINANCES
+% ══════════════════════════════════════════════════════════════
+\chapter{Set Up Business Banking and Financial Accounts}
+
+Never mix personal and business money. It destroys your liability protection and creates tax nightmares.
+
+\section{Open a Business Checking Account}
+
+\step{1} Gather your documents:
+\begin{itemize}[leftmargin=2em]
+  \item Articles of Organization (from Chapter 1)
+  \item EIN confirmation letter (from Chapter 1)
+  \item Your driver's license
+  \item Operating Agreement
+\end{itemize}
+
+\step{2} Choose a bank. Recommended free options for small businesses:
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{lXr}
+\toprule
+\textbf{Bank} & \textbf{Why} & \textbf{Monthly Fee} \\
+\midrule
+Mercury & Online-only, built for startups, easy Stripe integration & \$0 \\
+Relay & Free business checking, up to 20 accounts & \$0 \\
+Bluevine & 2\% interest on balances up to \$250K & \$0 \\
+Local SC credit union & In-person support, community relationship & \$0--10 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\begin{infobox}
+\textbf{Recommendation:} Open a \textbf{Mercury} account at \url{https://mercury.com}. It is 100\% online, free, integrates with Stripe, and is popular with solo founders. You can apply in 10 minutes.
+\end{infobox}
+
+\step{3} Deposit your startup capital. Transfer \$2{,}000 from your personal account into your new business account. This is your \textbf{capital contribution} to the LLC.
+
+\section{Set Up Basic Bookkeeping}
+
+\step{4} Sign up for \textbf{Wave Accounting} (free):
+\begin{actionbox}
+\url{https://www.waveapps.com}\\[4pt]
+Wave is completely free accounting software. Connect your Mercury bank account so transactions import automatically. You will use this to:
+\begin{itemize}[leftmargin=1.5em]
+  \item Track all income and expenses
+  \item Generate profit/loss reports
+  \item Prepare for tax filing
+\end{itemize}
+\end{actionbox}
+
+\step{5} Create expense categories in Wave:
+\begin{multicols}{2}
+\begin{itemize}[leftmargin=1.5em, itemsep=1pt]
+  \item Hosting \& Infrastructure
+  \item AI API Costs (OpenAI)
+  \item Printing \& Fulfillment
+  \item Shipping Costs
+  \item Payment Processing Fees
+  \item Domain \& Software
+  \item Marketing \& Advertising
+  \item Legal \& Professional
+\end{itemize}
+\end{multicols}
+
+\section{Understand Your Tax Obligations}
+
+\begin{warningbox}
+\textbf{You must pay taxes.} A single-member LLC is a ``pass-through'' entity. All business profit is reported on your personal tax return.
+\begin{itemize}[leftmargin=1.5em]
+  \item \textbf{Federal:} Reported on Schedule C of your personal Form 1040
+  \item \textbf{Self-employment tax:} 15.3\% on net profit (Social Security + Medicare)
+  \item \textbf{South Carolina state income tax:} 0--6.5\% (graduated scale)
+  \item \textbf{Estimated quarterly taxes:} If you expect to owe more than \$1{,}000, you must pay quarterly estimates (April 15, June 15, Sept 15, Jan 15)
+  \item \textbf{Sales tax:} SC has a 6\% state sales tax plus county supplements (6--9\% total). Digital products may be exempt; physical books shipped in-state may be taxable. \textbf{Consult a CPA.}
+\end{itemize}
+\end{warningbox}
+
+\step{6} Find a CPA. Budget approximately \$200--500/year for a CPA to file your taxes. Ask locally or search \url{https://www.thumbtack.com} for ``CPA small business South Carolina.'' This is money well spent.
+
+\section{Chapter 2 Cost Summary}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{lr}
+\toprule
+\textbf{Item} & \textbf{Cost} \\
+\midrule
+Business checking account (Mercury) & \$0.00 \\
+Bookkeeping software (Wave) & \$0.00 \\
+CPA consultation (annual, estimated) & \$200--500 \\
+\midrule
+\textbf{Chapter 2 Total (upfront)} & \textbf{\$0.00} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+% ══════════════════════════════════════════════════════════════
+% CHAPTER 3: DOMAIN & BRAND
+% ══════════════════════════════════════════════════════════════
+\chapter{Register Your Domain and Brand Assets}
+
+\section{Register Your Domain Name}
+
+\step{1} Go to Cloudflare Registrar:
+\begin{actionbox}
+\url{https://www.cloudflare.com/products/registrar/}\\[4pt]
+Create a free Cloudflare account, then search for your desired \texttt{.com} domain.\\
+Cloudflare charges \textbf{at-cost pricing} with zero markup: approximately \cost{\$10.44/year} for a \texttt{.com}. Free WHOIS privacy is included (hides your personal address from public records).
+\end{actionbox}
+
+\step{2} If your first choice is taken, try variations:
+\begin{itemize}[leftmargin=2em]
+  \item \texttt{storyforgeai.com}
+  \item \texttt{getstoryforge.com}
+  \item \texttt{storyforgebooks.com}
+  \item \texttt{mystoryforge.com}
+\end{itemize}
+
+\section{Create a Simple Logo}
+
+You do not need to hire a designer yet. Start with one of these free tools:
+
+\step{3} Create a logo using one of:
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{lXr}
+\toprule
+\textbf{Tool} & \textbf{Description} & \textbf{Cost} \\
+\midrule
+Canva & Drag-and-drop logo maker, thousands of templates & Free \\
+Looka & AI-generated logo options & Free to browse, \$20 to download \\
+Hatchful (Shopify) & Simple logo generator & Free \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\begin{infobox}
+\textbf{Recommendation:} Use \textbf{Canva} (\url{https://www.canva.com}). Search for ``children's book logo'' templates. Customize with your brand name and colors. Export as PNG (for web) and SVG (for print). You can always upgrade to a professional logo later.
+\end{infobox}
+
+\section{Establish Brand Colors and Fonts}
+
+\step{4} For consistency, pick your brand colors now. Suggested palette:
+\begin{itemize}[leftmargin=2em]
+  \item \textbf{Primary:} A warm purple (\texttt{\#7E22CE}) --- trustworthy, creative
+  \item \textbf{Accent:} Bright orange (\texttt{\#F97316}) --- playful, calls to action
+  \item \textbf{Background:} Clean white with soft gray sections
+  \item \textbf{Text:} Dark slate (\texttt{\#1E293B})
+\end{itemize}
+
+\noindent These colors are already configured in the StoryForge codebase.
+
+\section{Chapter 3 Cost Summary}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{lr}
+\toprule
+\textbf{Item} & \textbf{Cost} \\
+\midrule
+Domain registration (Cloudflare, 1 year) & \$10.44 \\
+Logo (Canva Free) & \$0.00 \\
+\midrule
+\textbf{Chapter 3 Total} & \textbf{\$10.44} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+% ══════════════════════════════════════════════════════════════
+% CHAPTER 4: TECHNOLOGY ACCOUNTS
+% ══════════════════════════════════════════════════════════════
+\chapter{Set Up All Your Technology Accounts}
+
+This chapter lists every account you need to create, in order. Do them all in one sitting---it takes about 2 hours. Keep a spreadsheet or password manager (like \textbf{Bitwarden}, free) with all your login credentials.
+
+\begin{warningbox}
+\textbf{Security:} Use a \textbf{unique, strong password} for each account. Install \textbf{Bitwarden} (free, \url{https://bitwarden.com}) to manage all passwords. Enable two-factor authentication (2FA) on every account that offers it.
+\end{warningbox}
+
+\section{Account Setup Checklist}
+
+Work through this table from top to bottom. Each account takes 3--10 minutes.
+
+\begin{longtable}{rp{1.8in}p{2.5in}r}
+\toprule
+\textbf{\#} & \textbf{Service} & \textbf{What It Does} & \textbf{Cost} \\
+\midrule
+\endhead
+1 & Bitwarden & Password manager & Free \\
+  & \multicolumn{3}{l}{\small\url{https://bitwarden.com} --- Store all your passwords here first} \\
+\midrule
+2 & OpenAI Platform & AI text and image generation & Pay-as-you-go \\
+  & \multicolumn{3}{l}{\small\url{https://platform.openai.com} --- Add \$20 in credits to start} \\
+\midrule
+3 & Stripe & Payment processing & Free + fees \\
+  & \multicolumn{3}{l}{\small\url{https://stripe.com} --- Requires EIN and business bank account} \\
+\midrule
+4 & Lulu Direct & Print-on-demand partner & Free \\
+  & \multicolumn{3}{l}{\small\url{https://developers.lulu.com} --- Sign up for API access} \\
+\midrule
+5 & SendGrid & Transactional email & Free tier \\
+  & \multicolumn{3}{l}{\small\url{https://sendgrid.com} --- Free: 100 emails/day} \\
+\midrule
+6 & Cloudflare & Domain \& DNS management & Free \\
+  & \multicolumn{3}{l}{\small\url{https://cloudflare.com} --- Already created for domain registration} \\
+\midrule
+7 & Railway.app & Application hosting & \$5--20/mo \\
+  & \multicolumn{3}{l}{\small\url{https://railway.app} --- Where your website runs} \\
+\midrule
+8 & GitHub & Code storage & Free \\
+  & \multicolumn{3}{l}{\small\url{https://github.com} --- Where your code lives} \\
+\midrule
+9 & Bolt.new & AI app builder & \$20/mo \\
+  & \multicolumn{3}{l}{\small\url{https://bolt.new} --- For building/modifying the app without coding} \\
+\midrule
+10 & Make.com & Automation workflows & \$10.59/mo \\
+   & \multicolumn{3}{l}{\small\url{https://make.com} --- Connects everything together automatically} \\
+\midrule
+11 & Google Workspace or Gmail & Business email & Free \\
+   & \multicolumn{3}{l}{\small Use a dedicated Gmail like \texttt{storyforgeai.team@gmail.com} to start} \\
+\bottomrule
+\end{longtable}
+
+\section{Detailed Setup: OpenAI Platform}
+
+This is the ``brain'' of your business---it generates stories and illustrations.
+
+\step{5} Go to \url{https://platform.openai.com} and create an account.
+
+\step{6} Navigate to \textbf{Settings} $\rightarrow$ \textbf{Billing}. Add a payment method (your business debit card).
+
+\step{7} Add \cost{\$20} in prepaid credits. This is enough to generate approximately 20--25 complete books during testing.
+
+\step{8} Navigate to \textbf{API Keys}. Click \textbf{Create new secret key}. Name it ``StoryForge Production.'' \textbf{Copy this key immediately}---you will never see it again. Save it in Bitwarden.
+
+\begin{warningbox}
+\textbf{Never share your API key.} Never paste it into a public website, email, or chat. Anyone with this key can run up charges on your account. Set a monthly spending limit under \textbf{Settings} $\rightarrow$ \textbf{Limits} to protect yourself. Set it to \cost{\$50/month} initially.
+\end{warningbox}
+
+\section{Detailed Setup: Stripe}
+
+\step{9} Go to \url{https://stripe.com} and click \textbf{Start now}.
+
+\step{10} Complete business verification:
+\begin{itemize}[leftmargin=2em]
+  \item Business type: \textbf{LLC}
+  \item Business name: Your LLC name
+  \item EIN: Enter your EIN from Chapter 1
+  \item Business address: Your SC address
+  \item Bank account: Connect your Mercury business account
+  \item Identity verification: Upload your driver's license
+\end{itemize}
+
+\step{11} Once approved (usually same day), go to \textbf{Developers} $\rightarrow$ \textbf{API Keys}. You will see:
+\begin{itemize}[leftmargin=2em]
+  \item \textbf{Publishable key} (starts with \texttt{pk\_live\_}) --- safe to use in frontend code
+  \item \textbf{Secret key} (starts with \texttt{sk\_live\_}) --- \textbf{keep secret}, save in Bitwarden
+\end{itemize}
+
+\step{12} Create your products in Stripe Dashboard $\rightarrow$ \textbf{Products}:
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{Xlr}
+\toprule
+\textbf{Product Name} & \textbf{Type} & \textbf{Price} \\
+\midrule
+Personalized Children's Book (24-page) & One-time & \$29.99 \\
+Personalized Children's Book (50-page) & One-time & \$44.99 \\
+Birthday Club Subscription & Recurring (yearly) & \$24.99/yr \\
+Adventure Series Subscription & Recurring (quarterly) & \$22.99/qtr \\
+Digital PDF Add-on & One-time & \$4.99 \\
+Audiobook Add-on & One-time & \$9.99 \\
+Gift Wrap & One-time & \$3.99 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{Detailed Setup: Lulu Direct}
+
+\step{13} Go to \url{https://developers.lulu.com} and create a developer account.
+
+\step{14} From the developer dashboard, create an \textbf{API Application}. You will receive:
+\begin{itemize}[leftmargin=2em]
+  \item \textbf{Client Key} (like a username for the API)
+  \item \textbf{Client Secret} (like a password) --- save in Bitwarden
+\end{itemize}
+
+\step{15} Familiarize yourself with Lulu's pricing calculator:
+\begin{actionbox}
+\url{https://www.lulu.com/pricing}\\[4pt]
+Enter these specs to see your per-book cost:
+\begin{itemize}[leftmargin=1.5em]
+  \item Trim size: 8.5\,'' $\times$ 8.5\,''
+  \item Page count: 24 (or 50)
+  \item Interior: Full color
+  \item Paper: Standard 60\#
+  \item Binding: Saddle-stitch (under 32 pages) or Perfect-bound (32+ pages)
+  \item Cover: Softcover
+\end{itemize}
+\end{actionbox}
+
+\begin{infobox}
+\textbf{Important:} Books under 32 pages are \textbf{saddle-stitched} (stapled) on Lulu, not perfect-bound. If you want a spine (perfect binding), your minimum is 32 pages. A 24-page saddle-stitched book still looks professional---many children's books use this format.
+\end{infobox}
+
+\section{Detailed Setup: Railway.app}
+
+\step{16} Go to \url{https://railway.app} and sign up with your GitHub account.
+
+\step{17} Choose the \textbf{Hobby plan} at \cost{\$5/month} (includes \$5 of usage credits, which covers most small projects). Upgrade to Pro (\$20/month) when you start getting consistent orders.
+
+\step{18} You will deploy three things on Railway later (Chapter 6):
+\begin{enumerate}[leftmargin=2em]
+  \item Your backend API (NestJS)
+  \item Your frontend website (Next.js)
+  \item A PostgreSQL database
+  \item A Redis instance (for background job queues)
+\end{enumerate}
+
+\section{Chapter 4 Cost Summary}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{lr}
+\toprule
+\textbf{Item} & \textbf{Cost} \\
+\midrule
+Bitwarden (password manager) & \$0.00 \\
+OpenAI initial credits & \$20.00 \\
+Stripe account & \$0.00 \\
+Lulu Direct account & \$0.00 \\
+SendGrid account (free tier) & \$0.00 \\
+Cloudflare account & \$0.00 \\
+Railway.app (first month) & \$5.00 \\
+GitHub account & \$0.00 \\
+Bolt.new Pro (first month) & \$20.00 \\
+Make.com Core (first month) & \$10.59 \\
+\midrule
+\textbf{Chapter 4 Total} & \textbf{\$55.59} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+% ══════════════════════════════════════════════════════════════
+% CHAPTER 5: BUILD THE APP
+% ══════════════════════════════════════════════════════════════
+\chapter{Build the Application Using AI Coding Tools}
+
+You have zero programming experience. That is fine. Modern AI coding tools can build, modify, and fix a web application for you through plain English conversation. You will not write code---you will \textbf{describe what you want} and the AI writes the code.
+
+\section{Understanding the Approach}
+
+Your application has already been architected (the codebase in this repository). The process is:
+
+\begin{enumerate}[leftmargin=2em]
+  \item Use \textbf{Bolt.new} to create a working prototype from the architecture
+  \item Export the code to \textbf{GitHub}
+  \item Use \textbf{Cursor} or \textbf{Windsurf} for ongoing edits and fixes
+  \item Deploy to \textbf{Railway.app}
+\end{enumerate}
+
+\section{Option A: Start from the Existing Codebase (Recommended)}
+
+Since the full codebase already exists in this repository, you can skip the Bolt.new prototyping step and deploy directly.
+
+\step{1} Install \textbf{Cursor} on your computer:
+\begin{actionbox}
+\url{https://cursor.com}\\[4pt]
+Download and install. It looks like a text editor (similar to Microsoft Word, but for code). Sign up for the \textbf{Hobby (free)} plan to start---this gives you a 1-week Pro trial.
+\end{actionbox}
+
+\step{2} Install \textbf{Git} (the tool that manages code versions):
+\begin{actionbox}
+\textbf{On Windows:} Download from \url{https://git-scm.com/download/win} and run the installer. Accept all defaults.\\[4pt]
+\textbf{On Mac:} Open Terminal (search for it in Spotlight) and type \texttt{git --version}. If not installed, it will prompt you to install it.
+\end{actionbox}
+
+\step{3} Install \textbf{Node.js} (the engine that runs the application):
+\begin{actionbox}
+\url{https://nodejs.org}\\[4pt]
+Download the \textbf{LTS} version (not ``Current''). Run the installer. Accept all defaults.
+\end{actionbox}
+
+\step{4} Clone (download) the StoryForge codebase:
+\begin{actionbox}
+Open Cursor. Press \texttt{Ctrl+`} (backtick) to open the built-in terminal. Type:\\[4pt]
+\texttt{git clone https://github.com/YourUsername/LLM-books.git}\\[4pt]
+Then: \texttt{File} $\rightarrow$ \texttt{Open Folder} $\rightarrow$ select the \texttt{LLM-books} folder.
+\end{actionbox}
+
+\step{5} Set up the backend:
+\begin{actionbox}
+In Cursor's terminal, type these commands one at a time:\\[4pt]
+\texttt{cd backend}\\
+\texttt{npm install}\\
+\texttt{cp .env.example .env}\\[4pt]
+Then open the file \texttt{backend/.env} in Cursor and fill in your real API keys (OpenAI, Stripe, SendGrid, Lulu) from Chapter 4. Use the Cursor AI chat to ask: ``Help me fill in my .env file with my API keys.''
+\end{actionbox}
+
+\step{6} Set up the frontend:
+\begin{actionbox}
+\texttt{cd ../frontend}\\
+\texttt{npm install}\\
+\texttt{cp .env.example .env.local}\\[4pt]
+Edit \texttt{frontend/.env.local} with your Stripe publishable key.
+\end{actionbox}
+
+\section{Option B: Build from Scratch with Bolt.new}
+
+If you want to understand how the app works by building it yourself:
+
+\step{1} Go to \url{https://bolt.new}
+
+\step{2} In the chat, describe what you want:
+
+\begin{actionbox}
+Type a prompt like:\\[4pt]
+\textit{``Build me a Next.js web application for a personalized children's book business called StoryForge AI. I need: a homepage with hero section and pricing, a 4-step book creation wizard where customers enter a child's name/age/interests and choose book options, a user dashboard showing their books and orders, Stripe payment integration, and an admin panel. Use Tailwind CSS with a purple and orange color scheme. Make it mobile-friendly.''}\\[4pt]
+Bolt will generate the entire application. You can then refine by chatting: ``Make the hero section bigger,'' ``Add a gift wrap checkbox,'' etc.
+\end{actionbox}
+
+\step{3} When satisfied, click \textbf{Export to GitHub} in Bolt.new to save your code.
+
+\section{How to Make Changes Without Coding}
+
+Whenever you need to change something about your app, open Cursor and use the AI chat:
+
+\begin{infobox}
+\textbf{Example prompts you can type into Cursor's AI chat:}
+\begin{itemize}[leftmargin=1.5em, itemsep=4pt]
+  \item ``Change the price of the 24-page book from \$29.99 to \$34.99''
+  \item ``Add a new landing page for books about unicorns''
+  \item ``The checkout page is showing an error---help me fix it''
+  \item ``Add a field for the child's school name in the wizard''
+  \item ``Make the header background darker''
+  \item ``Show me which file handles order creation''
+\end{itemize}
+Cursor reads your entire codebase and makes the changes for you.
+\end{infobox}
+
+\section{Chapter 5 Cost Summary}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{lr}
+\toprule
+\textbf{Item} & \textbf{Cost} \\
+\midrule
+Cursor (Hobby/free trial) & \$0.00 \\
+Cursor Pro (if needed, monthly) & \$20.00 \\
+Node.js & \$0.00 \\
+Git & \$0.00 \\
+Bolt.new Pro (optional, monthly) & \$20.00 \\
+\midrule
+\textbf{Chapter 5 Total} & \textbf{\$0--20.00} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+
+% ══════════════════════════════════════════════════════════════
+% CHAPTER 6: DEPLOY
+% ══════════════════════════════════════════════════════════════
+\chapter{Deploy the Application (Make It Live on the Internet)}
+
+``Deploying'' means putting your application on a server so anyone in the world can visit your website. We use Railway.app because it is the simplest option for non-technical founders.
+
+\section{What Gets Deployed}
+
+Your application has four components that need to run:
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{lX}
+\toprule
+\textbf{Component} & \textbf{What It Does} \\
+\midrule
+Frontend (Next.js) & The website customers see and interact with \\
+Backend (NestJS) & The ``brain'' that processes orders, talks to OpenAI, etc. \\
+PostgreSQL Database & Stores all data: users, books, orders, payments \\
+Redis & Manages the queue of book generation jobs \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{Deploy to Railway.app}
+
+\step{1} Log in to \url{https://railway.app} with your GitHub account.
+
+\step{2} Create a new project. Click \textbf{New Project} $\rightarrow$ \textbf{Deploy from GitHub Repo} $\rightarrow$ Select your \texttt{LLM-books} repository.
+
+\step{3} Add a PostgreSQL database:
+\begin{actionbox}
+In your Railway project, click \textbf{New} $\rightarrow$ \textbf{Database} $\rightarrow$ \textbf{PostgreSQL}.\\
+Railway provisions it instantly. Click on the database and go to \textbf{Variables} tab. Copy the \texttt{DATABASE\_URL} value---you will need it.
+\end{actionbox}
+
+\step{4} Add Redis:
+\begin{actionbox}
+Click \textbf{New} $\rightarrow$ \textbf{Database} $\rightarrow$ \textbf{Redis}.\\
+Copy the \texttt{REDIS\_URL} from the Variables tab.
+\end{actionbox}
+
+\step{5} Configure the backend service:
+\begin{actionbox}
+Click on your deployed service. Go to \textbf{Settings}:
+\begin{itemize}[leftmargin=1.5em]
+  \item Root Directory: \texttt{backend}
+  \item Build Command: \texttt{npm install \&\& npx prisma generate \&\& npm run build}
+  \item Start Command: \texttt{npx prisma migrate deploy \&\& npm run start:prod}
+\end{itemize}
+Go to \textbf{Variables} and add ALL the environment variables from your \texttt{backend/.env} file. Railway has a bulk import feature---paste the entire \texttt{.env} file contents.
+\end{actionbox}
+
+\step{6} Deploy the frontend as a separate service:
+\begin{actionbox}
+Click \textbf{New} $\rightarrow$ \textbf{GitHub Repo} $\rightarrow$ Select the same repository.\\
+In Settings:
+\begin{itemize}[leftmargin=1.5em]
+  \item Root Directory: \texttt{frontend}
+  \item Build Command: \texttt{npm install \&\& npm run build}
+  \item Start Command: \texttt{npm start}
+\end{itemize}
+Add the frontend environment variables (\texttt{NEXT\_PUBLIC\_API\_URL}, etc.).
+\end{actionbox}
+
+\step{7} Set up custom domains:
+\begin{actionbox}
+In Railway, click on each service $\rightarrow$ \textbf{Settings} $\rightarrow$ \textbf{Networking} $\rightarrow$ \textbf{Custom Domain}.\\[4pt]
+\begin{itemize}[leftmargin=1.5em]
+  \item Frontend: \texttt{www.yourdomain.com} and \texttt{yourdomain.com}
+  \item Backend: \texttt{api.yourdomain.com}
+\end{itemize}
+Railway gives you DNS records to add in Cloudflare. Go to your Cloudflare dashboard $\rightarrow$ DNS $\rightarrow$ Add the CNAME records Railway provides.
+\end{actionbox}
+
+\step{8} Enable HTTPS. Railway provides free SSL/TLS certificates automatically. No action needed.
+
+\section{Verify Deployment}
+
+\step{9} Visit your domain in a browser. You should see your StoryForge homepage. Test:
+\begin{itemize}[leftmargin=2em]
+  \item[$\square$] Homepage loads with hero section
+  \item[$\square$] Navigation links work
+  \item[$\square$] Book creation wizard loads
+  \item[$\square$] User registration works
+  \item[$\square$] Login works
+\end{itemize}
+
+\section{Estimated Monthly Hosting Costs}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{lr}
+\toprule
+\textbf{Service} & \textbf{Estimated Monthly Cost} \\
+\midrule
+Railway Hobby plan base & \$5.00 \\
+Backend compute (light usage) & \$3--8.00 \\
+Frontend compute & \$2--5.00 \\
+PostgreSQL (small) & \$1--5.00 \\
+Redis (small) & \$1--3.00 \\
+\midrule
+\textbf{Total estimated hosting} & \textbf{\$12--26/month} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{infobox}
+Railway uses \textbf{per-minute billing}---you only pay for what you use. A low-traffic site in the early days may cost as little as \$8--12/month total.
+\end{infobox}
+
+% ══════════════════════════════════════════════════════════════
+% CHAPTER 7: AI AGENT AUTOMATION
+% ══════════════════════════════════════════════════════════════
+\chapter{Set Up AI Agent Automation (The ``Hands-Off'' Layer)}
+
+This is the chapter that makes your business run itself. You will use \textbf{Make.com} to create automated workflows that connect your website, OpenAI, Lulu, Stripe, and SendGrid together.
+
+\section{What Is Make.com?}
+
+Make.com is a visual automation tool. You connect ``modules'' (like Lego blocks) to create workflows. For example:
+
+\begin{center}
+\textit{When a new order is paid (Stripe)} $\rightarrow$ \textit{Generate the book (OpenAI)} $\rightarrow$ \textit{Send to printer (Lulu)} $\rightarrow$ \textit{Email the customer (SendGrid)}
+\end{center}
+
+You set this up once, and it runs automatically forever.
+
+\section{Workflow 1: New Order Processing}
+
+This is your most important automation. When a customer pays, everything happens automatically.
+
+\step{1} Log in to \url{https://make.com}. Click \textbf{Create a new scenario}.
+
+\step{2} Build this workflow:
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{\textwidth}{rlX}
+\toprule
+\textbf{Step} & \textbf{Module} & \textbf{What It Does} \\
+\midrule
+1 & Stripe: Watch Events & Triggers when \texttt{payment\_intent.succeeded} fires \\
+2 & HTTP: POST & Calls your backend API: \texttt{POST /api/v1/books/\{id\}/generate} \\
+3 & Wait / Delay & Waits 5--15 minutes for AI generation to complete \\
+4 & HTTP: GET & Checks book status: \texttt{GET /api/v1/books/\{id\}} \\
+5 & Router & If status = REVIEW\_READY $\rightarrow$ continue. If FAILED $\rightarrow$ alert you \\
+6 & HTTP: POST & Submits to Lulu: \texttt{POST /api/v1/fulfillment/orders/\{id\}/submit} \\
+7 & SendGrid: Send Email & Sends order confirmation to customer \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\begin{infobox}
+\textbf{For non-technical users:} Make.com has a visual drag-and-drop interface. You do not type code. You click on a module (e.g., ``Stripe''), select the action (``Watch Events''), and fill in your API key. Make.com handles the rest. Their documentation includes video tutorials for every module.
+\end{infobox}
+
+\section{Workflow 2: Fulfillment Status Tracking}
+
+This workflow checks Lulu every few hours for shipping updates and notifies customers.
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{\textwidth}{rlX}
+\toprule
+\textbf{Step} & \textbf{Module} & \textbf{What It Does} \\
+\midrule
+1 & Schedule & Runs every 4 hours \\
+2 & HTTP: GET & Calls your backend: \texttt{GET /api/v1/fulfillment/orders/\{id\}/status} \\
+3 & Filter & Only continue if status changed (e.g., now ``shipped'') \\
+4 & SendGrid: Send Email & Sends shipping notification with tracking link \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{Workflow 3: Subscription Renewal Processing}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{\textwidth}{rlX}
+\toprule
+\textbf{Step} & \textbf{Module} & \textbf{What It Does} \\
+\midrule
+1 & Stripe: Watch Events & Triggers on \texttt{invoice.payment\_succeeded} for subscriptions \\
+2 & HTTP: POST & Creates a new book for the child (updated age) \\
+3 & HTTP: POST & Starts generation pipeline \\
+4 & SendGrid: Send Email & ``Your child's new book is being created!'' \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{Workflow 4: Failed Generation Alert}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{\textwidth}{rlX}
+\toprule
+\textbf{Step} & \textbf{Module} & \textbf{What It Does} \\
+\midrule
+1 & Schedule & Runs every 30 minutes \\
+2 & HTTP: GET & Checks for books with status = FAILED \\
+3 & Filter & Only continue if there are failed books \\
+4 & Gmail: Send Email & Sends YOU an alert: ``A book generation failed---review needed'' \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{Workflow 5: Abandoned Cart Recovery}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{\textwidth}{rlX}
+\toprule
+\textbf{Step} & \textbf{Module} & \textbf{What It Does} \\
+\midrule
+1 & Schedule & Runs daily at 10 AM \\
+2 & HTTP: GET & Finds books in DRAFT status older than 24 hours \\
+3 & Filter & Only users who haven't been emailed already \\
+4 & SendGrid: Send Email & ``You started creating a book---finish it!'' with a link back \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{Make.com Costs at Scale}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{lrr}
+\toprule
+\textbf{Monthly Orders} & \textbf{Est.\ Operations} & \textbf{Make.com Plan Needed} \\
+\midrule
+1--20 & $\sim$500 & Core (\$10.59/mo) \\
+20--100 & $\sim$3{,}000 & Core (\$10.59/mo) \\
+100--500 & $\sim$15{,}000 & Pro (\$18.82/mo) \\
+500+ & $\sim$50{,}000+ & Teams (\$29/mo) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+
+% ══════════════════════════════════════════════════════════════
+% CHAPTER 8: PRINT-ON-DEMAND
+% ══════════════════════════════════════════════════════════════
+\chapter{Connect Print-on-Demand (Lulu Direct)}
+
+\section{How Print-on-Demand Works}
+
+You never hold inventory. When a customer orders a book:
+
+\begin{enumerate}[leftmargin=2em]
+  \item Your system sends the print-ready PDF to Lulu's API
+  \item Lulu prints a \textbf{single copy} at their nearest facility
+  \item Lulu ships it directly to your customer in \textbf{your brand's packaging} (white-label)
+  \item You pay Lulu only for the printing + shipping of that one book
+\end{enumerate}
+
+\noindent There is \textbf{no minimum order} and \textbf{no upfront inventory cost}.
+
+\section{Book Specifications for Lulu}
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{lX}
+\toprule
+\textbf{Specification} & \textbf{Value} \\
+\midrule
+Trim Size & 8.5\,'' $\times$ 8.5\,'' (square, standard children's book) \\
+Interior & Premium full color on 60\# (standard) paper \\
+Binding (under 32 pages) & Saddle-stitch (stapled) \\
+Binding (32+ pages) & Perfect-bound (glued spine) \\
+Cover & Softcover with matte or glossy lamination \\
+File Format & PDF, 300 DPI, RGB (Lulu converts to CMYK) \\
+Bleed & 0.125\,'' on all sides \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{Lulu Volume Discounts}
+
+As your business grows, per-unit printing costs decrease:
+
+\begin{table}[H]
+\centering
+\begin{tabular}{lr}
+\toprule
+\textbf{Quantity Per Order} & \textbf{Discount} \\
+\midrule
+1--29 copies & 0\% (base price) \\
+30--59 copies & 5\% off \\
+60--99 copies & 10\% off \\
+100--499 copies & 15\% off \\
+500+ copies & 20\% off \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Webhook Setup for Automatic Status Updates}
+
+When Lulu ships a book, they can notify your system automatically via a ``webhook'' (an automatic notification).
+
+\begin{actionbox}
+In your Lulu developer dashboard, set your webhook URL to:\\[4pt]
+\texttt{https://api.yourdomain.com/api/v1/fulfillment/webhook/lulu}\\[4pt]
+Select events: \texttt{PRINT\_JOB.STATUS\_CHANGED}, \texttt{PRINT\_JOB.SHIPPED}\\[4pt]
+Your backend already has the handler for this built in.
+\end{actionbox}
+
+
+% ══════════════════════════════════════════════════════════════
+% CHAPTER 9: PAYMENTS & SUBSCRIPTIONS
+% ══════════════════════════════════════════════════════════════
+\chapter{Configure Payments and Subscriptions}
+
+\section{Stripe Fee Structure}
+
+Every transaction incurs fees. Build these into your pricing:
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{Xr}
+\toprule
+\textbf{Transaction Type} & \textbf{Fee} \\
+\midrule
+Domestic credit/debit card & 2.9\% + \$0.30 \\
+International card & 3.9\% + \$0.30 \\
+Subscription billing surcharge & Additional 0.7\% \\
+ACH bank transfer & 0.8\% (max \$5.00) \\
+Refund & Original fee is NOT returned \\
+Chargeback (disputed payment) & \$15.00 per dispute \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{Example Fee Calculation}
+
+For a \$29.99 book purchased with a domestic credit card:
+
+\begin{table}[H]
+\centering
+\begin{tabular}{lr}
+\toprule
+Sale price & \$29.99 \\
+Stripe fee (2.9\% + \$0.30) & --\$1.17 \\
+\textbf{You receive} & \textbf{\$28.82} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+For a \$24.99/year subscription renewal:
+\begin{table}[H]
+\centering
+\begin{tabular}{lr}
+\toprule
+Subscription price & \$24.99 \\
+Stripe payment fee (2.9\% + \$0.30) & --\$1.02 \\
+Stripe billing fee (0.7\%) & --\$0.17 \\
+\textbf{You receive} & \textbf{\$23.80} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Setting Up Stripe Webhooks}
+
+Webhooks let Stripe notify your app when payments succeed, fail, or get refunded.
+
+\begin{actionbox}
+In Stripe Dashboard $\rightarrow$ \textbf{Developers} $\rightarrow$ \textbf{Webhooks} $\rightarrow$ \textbf{Add endpoint}:\\[4pt]
+URL: \texttt{https://api.yourdomain.com/api/v1/payments/webhook}\\[4pt]
+Select these events:
+\begin{itemize}[leftmargin=1.5em]
+  \item \texttt{payment\_intent.succeeded}
+  \item \texttt{payment\_intent.payment\_failed}
+  \item \texttt{invoice.payment\_succeeded}
+  \item \texttt{invoice.payment\_failed}
+  \item \texttt{customer.subscription.deleted}
+\end{itemize}
+Copy the \textbf{Webhook Signing Secret} (starts with \texttt{whsec\_}) and add it to your backend environment variables as \texttt{STRIPE\_WEBHOOK\_SECRET}.
+\end{actionbox}
+
+
+% ══════════════════════════════════════════════════════════════
+% CHAPTER 10: PER-BOOK COST ANALYSIS
+% ══════════════════════════════════════════════════════════════
+\chapter{Per-Book Cost Analysis}
+
+This is the most important chapter for your business planning. Every number here is based on real pricing as of February 2026.
+
+\section{AI Generation Costs}
+
+\subsection{Text Generation (Story + Illustration Prompts)}
+
+We use \textbf{GPT-4o} for story generation. Pricing: \cost{\$2.50} per 1 million input tokens, \cost{\$10.00} per 1 million output tokens.
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{Xrrrr}
+\toprule
+\textbf{Task} & \textbf{Input Tokens} & \textbf{Output Tokens} & \textbf{Cost (24pg)} & \textbf{Cost (50pg)} \\
+\midrule
+Story outline generation & 700 & 800 & \$0.010 & \$0.010 \\
+Page-by-page story text & 1{,}500 & 2{,}800 & \$0.032 & \$0.066 \\
+Illustration prompt generation & 2{,}000 & 3{,}000 & \$0.035 & \$0.073 \\
+Content safety validation & 3{,}500 & 600 & \$0.015 & \$0.027 \\
+Character description (if photo) & 500 & 400 & \$0.005 & \$0.005 \\
+\midrule
+\textbf{Text generation subtotal} & & & \textbf{\$0.097} & \textbf{\$0.181} \\
+\bottomrule
+\end{tabularx}
+\caption{GPT-4o text generation costs per book}
+\end{table}
+
+\begin{infobox}
+\textbf{Cost-saving option:} Use \textbf{GPT-4o Mini} (\$0.15/M input, \$0.60/M output) for story text and safety validation, and reserve GPT-4o only for illustration prompt generation (where quality matters most). This drops text costs to approximately \textbf{\$0.01--0.02 per book}.
+\end{infobox}
+
+\subsection{Image Generation (Illustrations)}
+
+You specified images on \textbf{every other page}, plus a cover image.
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{Xrrrrr}
+\toprule
+\textbf{Provider} & \textbf{Per Image} & \textbf{13 imgs} & \textbf{26 imgs} & \textbf{Quality} \\
+& & \textbf{(24pg)} & \textbf{(50pg)} & \\
+\midrule
+DALL-E 3 HD & \$0.080 & \$1.04 & \$2.08 & Excellent \\
+DALL-E 3 Standard & \$0.040 & \$0.52 & \$1.04 & Very Good \\
+Flux.2 Pro (BFL) & \$0.030 & \$0.39 & \$0.78 & Excellent \\
+Stability AI Core & \$0.030 & \$0.39 & \$0.78 & Good \\
+Leonardo AI & $\sim$\$0.015 & \$0.20 & \$0.39 & Very Good \\
+Flux.1 Schnell & \$0.003 & \$0.04 & \$0.08 & Good \\
+GPT Image Mini & \$0.005 & \$0.07 & \$0.13 & Good \\
+\bottomrule
+\end{tabularx}
+\caption{Image generation costs per book (every other page + cover)}
+\end{table}
+
+\noindent \textbf{Image count calculation:}
+\begin{itemize}[leftmargin=2em]
+  \item 24-page book: 12 interior illustrations + 1 cover = \textbf{13 images}
+  \item 50-page book: 25 interior illustrations + 1 cover = \textbf{26 images}
+\end{itemize}
+
+\section{Printing and Fulfillment Costs}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{lrr}
+\toprule
+\textbf{Component} & \textbf{24-Page Book} & \textbf{50-Page Book} \\
+\midrule
+Lulu print cost (estimated) & \$3.00--5.00 & \$5.50--9.00 \\
+Lulu fulfillment fee & \$1.75 & \$1.75 \\
+Shipping (standard domestic) & \$3.00--5.00 & \$3.50--6.00 \\
+\midrule
+\textbf{Printing subtotal} & \textbf{\$7.75--11.75} & \textbf{\$10.75--16.75} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Complete Cost-of-Goods-Sold (COGS) Per Book}
+
+Here is the \textbf{total cost to produce and ship one book}, under three scenarios:
+
+\subsection{Scenario A: Premium Quality (DALL-E 3 HD)}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{lrr}
+\toprule
+\textbf{Cost Component} & \textbf{24-Page} & \textbf{50-Page} \\
+\midrule
+AI text generation (GPT-4o) & \$0.10 & \$0.18 \\
+AI images (DALL-E 3 HD, 13/26 imgs) & \$1.04 & \$2.08 \\
+Lulu printing & \$4.00 & \$7.00 \\
+Lulu fulfillment fee & \$1.75 & \$1.75 \\
+Shipping (standard) & \$4.00 & \$4.50 \\
+Stripe fee (on \$29.99 / \$44.99 sale) & \$1.17 & \$1.60 \\
+\midrule
+\textbf{Total COGS} & \textbf{\$12.06} & \textbf{\$17.11} \\
+\textbf{Revenue at listed price} & \$29.99 & \$44.99 \\
+\textbf{Gross Profit} & \textcolor{success}{\textbf{\$17.93}} & \textcolor{success}{\textbf{\$27.88}} \\
+\textbf{Gross Margin} & \textcolor{success}{\textbf{59.8\%}} & \textcolor{success}{\textbf{62.0\%}} \\
+\bottomrule
+\end{tabular}
+\caption{Scenario A: DALL-E 3 HD --- Premium quality}
+\end{table}
+
+\subsection{Scenario B: Balanced (Flux.2 Pro --- Recommended)}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{lrr}
+\toprule
+\textbf{Cost Component} & \textbf{24-Page} & \textbf{50-Page} \\
+\midrule
+AI text generation (GPT-4o) & \$0.10 & \$0.18 \\
+AI images (Flux.2 Pro, 13/26 imgs) & \$0.39 & \$0.78 \\
+Lulu printing & \$4.00 & \$7.00 \\
+Lulu fulfillment fee & \$1.75 & \$1.75 \\
+Shipping (standard) & \$4.00 & \$4.50 \\
+Stripe fee (on \$29.99 / \$44.99 sale) & \$1.17 & \$1.60 \\
+\midrule
+\textbf{Total COGS} & \textbf{\$11.41} & \textbf{\$15.81} \\
+\textbf{Revenue at listed price} & \$29.99 & \$44.99 \\
+\textbf{Gross Profit} & \textcolor{success}{\textbf{\$18.58}} & \textcolor{success}{\textbf{\$29.18}} \\
+\textbf{Gross Margin} & \textcolor{success}{\textbf{62.0\%}} & \textcolor{success}{\textbf{64.9\%}} \\
+\bottomrule
+\end{tabular}
+\caption{Scenario B: Flux.2 Pro --- Recommended balance of quality and cost}
+\end{table}
+
+\subsection{Scenario C: Budget (Flux.1 Schnell + GPT-4o Mini)}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{lrr}
+\toprule
+\textbf{Cost Component} & \textbf{24-Page} & \textbf{50-Page} \\
+\midrule
+AI text generation (GPT-4o Mini) & \$0.01 & \$0.01 \\
+AI images (Flux.1 Schnell, 13/26 imgs) & \$0.04 & \$0.08 \\
+Lulu printing & \$4.00 & \$7.00 \\
+Lulu fulfillment fee & \$1.75 & \$1.75 \\
+Shipping (standard) & \$4.00 & \$4.50 \\
+Stripe fee (on \$29.99 / \$44.99 sale) & \$1.17 & \$1.60 \\
+\midrule
+\textbf{Total COGS} & \textbf{\$10.97} & \textbf{\$14.94} \\
+\textbf{Revenue at listed price} & \$29.99 & \$44.99 \\
+\textbf{Gross Profit} & \textcolor{success}{\textbf{\$19.02}} & \textcolor{success}{\textbf{\$30.05}} \\
+\textbf{Gross Margin} & \textcolor{success}{\textbf{63.4\%}} & \textcolor{success}{\textbf{66.8\%}} \\
+\bottomrule
+\end{tabular}
+\caption{Scenario C: Budget --- Lowest possible AI costs}
+\end{table}
+
+\begin{successbox}
+\textbf{Key Insight:} AI generation costs are almost negligible compared to printing and shipping. The difference between the cheapest and most expensive AI option is only \$1.00--2.00 per book. \textbf{Do not sacrifice quality to save \$1.} Use at least Flux.2 Pro or DALL-E 3 Standard for professional-looking illustrations.
+\end{successbox}
+
+
+% ══════════════════════════════════════════════════════════════
+% CHAPTER 11: STARTUP BUDGET
+% ══════════════════════════════════════════════════════════════
+\chapter{Complete Startup Budget Breakdown}
+
+Your total budget is \$2{,}000. Here is exactly how to allocate it.
+
+\section{One-Time Startup Costs}
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{Xlr}
+\toprule
+\textbf{Expense} & \textbf{Category} & \textbf{Amount} \\
+\midrule
+SC LLC formation (online filing) & Legal & \$125.00 \\
+Domain name (1 year via Cloudflare) & Infrastructure & \$10.44 \\
+OpenAI API prepaid credits & AI Services & \$20.00 \\
+Test book printing (3 samples from Lulu) & Testing & \$45.00 \\
+Initial marketing (social media ads) & Marketing & \$200.00 \\
+Logo design (Canva Pro 1 month, optional) & Brand & \$13.00 \\
+\midrule
+\textbf{One-Time Total} & & \textbf{\$413.44} \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{Monthly Operating Costs (Months 1--3, Pre-Revenue)}
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{Xlr}
+\toprule
+\textbf{Expense} & \textbf{Category} & \textbf{Monthly} \\
+\midrule
+Railway.app hosting (Hobby) & Infrastructure & \$5.00 \\
+Railway compute/database overage & Infrastructure & \$5.00--15.00 \\
+Make.com (Core plan) & Automation & \$10.59 \\
+Cursor Pro (AI code editor) & Development & \$20.00 \\
+SendGrid (free tier) & Email & \$0.00 \\
+OpenAI API (testing/generation) & AI Services & \$5.00--10.00 \\
+\midrule
+\textbf{Monthly Total (pre-revenue)} & & \textbf{\$45.59--55.59} \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{Budget Runway Calculation}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{lr}
+\toprule
+Total budget & \$2{,}000.00 \\
+Minus one-time costs & --\$413.44 \\
+\midrule
+Remaining for operations & \$1{,}586.56 \\
+Monthly burn rate (estimated) & \$50.00 \\
+\midrule
+\textbf{Months of runway (zero revenue)} & \textbf{31.7 months} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{successbox}
+\textbf{You have nearly 32 months of runway} before you need a single sale. This means you can take your time to get the product right, test thoroughly, and build an audience before revenue pressure hits.
+\end{successbox}
+
+\section{When Revenue Starts: Variable Costs Per Sale}
+
+Once you start selling, each sale generates revenue \textit{and} costs:
+
+\begin{table}[H]
+\centering
+\begin{tabular}{lrr}
+\toprule
+& \textbf{24-Page (\$29.99)} & \textbf{50-Page (\$44.99)} \\
+\midrule
+Revenue per sale & \$29.99 & \$44.99 \\
+AI generation (Flux.2 Pro) & --\$0.49 & --\$0.96 \\
+Printing (Lulu) & --\$4.00 & --\$7.00 \\
+Fulfillment fee (Lulu) & --\$1.75 & --\$1.75 \\
+Shipping & --\$4.00 & --\$4.50 \\
+Stripe fee & --\$1.17 & --\$1.60 \\
+\midrule
+\textbf{Net profit per sale} & \textcolor{success}{\textbf{\$18.58}} & \textcolor{success}{\textbf{\$29.18}} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Break-Even Analysis}
+
+How many books must you sell to cover your monthly fixed costs?
+
+\begin{table}[H]
+\centering
+\begin{tabular}{lr}
+\toprule
+Monthly fixed costs & \$50.00 \\
+Profit per 24-page book sale & \$18.58 \\
+\midrule
+\textbf{Break-even: books per month} & \textbf{2.7 $\approx$ 3 books} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{successbox}
+\textbf{You break even at just 3 sales per month.} That is extremely achievable. At 10 sales/month, you net approximately \$136/month in profit after all costs. At 50 sales/month, approximately \$880/month.
+\end{successbox}
+
+
+% ══════════════════════════════════════════════════════════════
+% CHAPTER 12: MONTHLY OPERATING COSTS AT SCALE
+% ══════════════════════════════════════════════════════════════
+\chapter{Monthly Operating Costs at Scale}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{\textwidth}{Xrrrr}
+\toprule
+\textbf{Expense} & \textbf{0 orders} & \textbf{50/mo} & \textbf{200/mo} & \textbf{500/mo} \\
+\midrule
+Railway hosting & \$10 & \$20 & \$40 & \$80 \\
+Make.com & \$11 & \$11 & \$19 & \$29 \\
+Cursor Pro & \$20 & \$20 & \$20 & \$20 \\
+SendGrid & \$0 & \$0 & \$20 & \$20 \\
+OpenAI API & \$0 & \$25 & \$98 & \$245 \\
+Domain renewal & \$1 & \$1 & \$1 & \$1 \\
+\midrule
+\textbf{Fixed costs} & \textbf{\$42} & \textbf{\$77} & \textbf{\$198} & \textbf{\$395} \\
+\midrule
+Printing (50 $\times$ \$4) & --- & \$200 & \$800 & \$2{,}000 \\
+Fulfillment fees & --- & \$88 & \$350 & \$875 \\
+Shipping & --- & \$200 & \$800 & \$2{,}000 \\
+Stripe fees & --- & \$59 & \$234 & \$585 \\
+\midrule
+\textbf{Total variable costs} & --- & \$547 & \$2{,}184 & \$5{,}460 \\
+\midrule
+\textbf{Total revenue} (at \$29.99) & \$0 & \$1{,}500 & \$5{,}998 & \$14{,}995 \\
+\textbf{Total costs} & \$42 & \$624 & \$2{,}382 & \$5{,}855 \\
+\textbf{Net Profit} & \textcolor{danger}{--\$42} & \textcolor{success}{\$876} & \textcolor{success}{\$3{,}616} & \textcolor{success}{\$9{,}140} \\
+\textbf{Profit Margin} & --- & 58.4\% & 60.3\% & 60.9\% \\
+\bottomrule
+\end{tabularx}
+\caption{Monthly P\&L at different order volumes (24-page books at \$29.99)}
+\end{table}
+
+
+% ══════════════════════════════════════════════════════════════
+% CHAPTER 13: PRICING STRATEGY
+% ══════════════════════════════════════════════════════════════
+\chapter{Pricing Strategy}
+
+\section{Recommended Retail Prices}
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{Xrrr}
+\toprule
+\textbf{Product} & \textbf{Price} & \textbf{COGS} & \textbf{Margin} \\
+\midrule
+24-page softcover book & \$29.99 & \$11.41 & 62\% \\
+50-page softcover book & \$44.99 & \$15.81 & 65\% \\
+Digital PDF add-on & \$4.99 & \$0.02 & 99\% \\
+Audiobook add-on & \$9.99 & \$0.50 & 95\% \\
+Gift wrap & \$3.99 & \$1.50 & 62\% \\
+Birthday subscription (yearly) & \$24.99/yr & \$11.41 & 54\% \\
+Quarterly subscription & \$22.99/qtr & \$11.41 & 50\% \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{Upsell Strategy}
+
+The highest-margin items are digital add-ons. Encourage every customer to add these:
+
+\begin{itemize}[leftmargin=2em]
+  \item \textbf{Digital PDF} (\$4.99): Costs you \$0.02 to generate. Almost pure profit.
+  \item \textbf{Audiobook} (\$9.99): Use OpenAI's text-to-speech API at approximately \$0.50/book.
+  \item \textbf{Gift wrap} (\$3.99): Lulu may charge \$1--2 extra for packaging.
+  \item \textbf{Multiple copies}: Offer 10\% off for 2+ copies. Printing cost barely changes.
+\end{itemize}
+
+\section{Competitive Pricing Analysis}
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{Xr}
+\toprule
+\textbf{Competitor} & \textbf{Price (comparable book)} \\
+\midrule
+Wonderbly (Lost My Name) & \$34.99--44.99 \\
+Hooray Heroes & \$39.99--49.99 \\
+I See Me! & \$34.99--39.99 \\
+Shutterfly Photo Book & \$29.99--49.99 \\
+\textbf{StoryForge AI (you)} & \textbf{\$29.99--44.99} \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\noindent Your pricing is competitive with established players, while your AI-generated personalization offers a \textbf{unique value proposition} they cannot match (fully custom stories, not template fill-in-the-blank).
+
+
+% ══════════════════════════════════════════════════════════════
+% CHAPTER 14: LAUNCH CHECKLIST
+% ══════════════════════════════════════════════════════════════
+\chapter{Launch Checklist}
+
+Complete every item before announcing your business publicly.
+
+\section{Pre-Launch Testing (Week of Launch)}
+
+\begin{itemize}[leftmargin=2em, itemsep=4pt]
+  \item[$\square$] \textbf{Order a test book yourself.} Go through the entire flow: create a child profile, configure a book, pay with Stripe (use test mode first, then a real \$1 charge), confirm the book generates, confirm the PDF looks correct, confirm Lulu receives the order, wait for the physical book to arrive. \textbf{This is the most important test.}
+  \item[$\square$] Order 2--3 books with different options (different ages, themes, page counts)
+  \item[$\square$] Test on a phone (not just a computer)---most customers will use mobile
+  \item[$\square$] Test with a friend or family member who has never seen the site
+  \item[$\square$] Verify all emails send correctly (order confirmation, shipping update)
+  \item[$\square$] Verify Stripe webhook is receiving events (check Stripe Dashboard $\rightarrow$ Developers $\rightarrow$ Webhooks $\rightarrow$ Recent events)
+  \item[$\square$] Verify Make.com automations trigger correctly (check execution history)
+  \item[$\square$] Test the refund flow (process a test refund through Stripe)
+  \item[$\square$] Check all landing pages load correctly and have proper SEO meta tags
+  \item[$\square$] Verify your domain has HTTPS (padlock icon in browser)
+  \item[$\square$] Set up Google Analytics (free) at \url{https://analytics.google.com}
+\end{itemize}
+
+\section{Legal Compliance}
+
+\begin{itemize}[leftmargin=2em, itemsep=4pt]
+  \item[$\square$] Add a \textbf{Privacy Policy} page (use a free generator: \url{https://www.privacypolicygenerator.info})
+  \item[$\square$] Add a \textbf{Terms of Service} page (free generator: \url{https://www.termsofservicegenerator.net})
+  \item[$\square$] Add a \textbf{COPPA notice} explaining you collect children's names/ages only with parental consent and do not create accounts for children
+  \item[$\square$] Add a \textbf{cookie consent} banner if using analytics
+  \item[$\square$] Add a \textbf{refund policy} (recommendation: 30-day satisfaction guarantee)
+\end{itemize}
+
+\section{Go-Live Steps}
+
+\begin{enumerate}[leftmargin=2em, itemsep=4pt]
+  \item Switch Stripe from test mode to \textbf{live mode}
+  \item Update all API keys in Railway to live keys
+  \item Verify DNS is pointing correctly (domain resolves to your site)
+  \item Announce on personal social media
+  \item Post in relevant Facebook groups (parenting groups, gift idea groups)
+  \item Submit to Product Hunt (\url{https://www.producthunt.com})
+  \item Set up a simple Google Ads campaign (\$5--10/day budget)
+\end{enumerate}
+
+
+% ══════════════════════════════════════════════════════════════
+% CHAPTER 15: ONGOING OPERATIONS
+% ══════════════════════════════════════════════════════════════
+\chapter{Ongoing Operations and Monitoring}
+
+\section{Your Weekly Routine (2--5 Hours Total)}
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{llX}
+\toprule
+\textbf{Day} & \textbf{Time} & \textbf{Task} \\
+\midrule
+Monday & 30 min & Check Stripe dashboard for revenue, failed payments, disputes \\
+Monday & 15 min & Check Make.com execution history for any failed automations \\
+Monday & 15 min & Check Railway dashboard for any service errors \\
+Wednesday & 30 min & Respond to any customer support emails \\
+Wednesday & 30 min & Review any flagged/failed book generations \\
+Friday & 15 min & Check Lulu dashboard for fulfillment status \\
+Friday & 30 min & Marketing: schedule social media posts, adjust ad spend \\
+Monthly & 1 hour & Review Wave accounting, categorize expenses, check P\&L \\
+Quarterly & 2 hours & Pay estimated taxes, review with CPA \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{What the AI Agents Handle Without You}
+
+These processes run 24/7/365 with zero intervention:
+
+\begin{enumerate}[leftmargin=2em, itemsep=2pt]
+  \item Customer places order $\rightarrow$ Stripe processes payment
+  \item Payment succeeds $\rightarrow$ Make.com triggers book generation
+  \item AI generates story $\rightarrow$ AI generates illustrations $\rightarrow$ PDF assembled
+  \item PDF sent to Lulu $\rightarrow$ Book printed and shipped
+  \item Customer receives confirmation email, then shipping email with tracking
+  \item Subscription renewals auto-bill and auto-generate new books
+  \item Abandoned carts get follow-up emails after 24 hours
+  \item Fulfillment statuses sync every 4 hours
+\end{enumerate}
+
+\section{When You Need to Intervene}
+
+Set up the ``Failed Generation Alert'' workflow (Chapter 7) so you get emailed when:
+\begin{itemize}[leftmargin=2em]
+  \item A book generation fails (usually an OpenAI API timeout---just retry)
+  \item A payment fails (Stripe handles retries, but check for patterns)
+  \item A fulfillment order is rejected by Lulu (usually a PDF formatting issue)
+  \item A customer requests a refund (process via Stripe dashboard or admin API)
+\end{itemize}
+
+\section{Scaling Triggers}
+
+When you hit these milestones, take the corresponding action:
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{lX}
+\toprule
+\textbf{Milestone} & \textbf{Action} \\
+\midrule
+10 orders/month & Upgrade Railway to Pro (\$20/mo). You can afford it. \\
+50 orders/month & Hire a virtual assistant (\$200--400/mo) for customer support \\
+100 orders/month & Upgrade SendGrid to Essentials (\$20/mo) for higher email volume \\
+200 orders/month & Consider adding a second print partner (Amazon KDP) for redundancy \\
+500 orders/month & Hire a part-time developer for feature improvements \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+
+% ══════════════════════════════════════════════════════════════
+% APPENDIX A: ACCOUNT TRACKER
+% ══════════════════════════════════════════════════════════════
+\appendix
+\chapter{Complete Account Tracker}
+
+Store all credentials in Bitwarden. This is your reference list:
+
+\begin{longtable}{p{1.5in}p{1.8in}p{2.2in}}
+\toprule
+\textbf{Service} & \textbf{URL} & \textbf{Keys/Secrets Needed} \\
+\midrule
+\endhead
+SC Secretary of State & businessfilings.sc.gov & Filing number \\
+IRS & irs.gov & EIN \\
+Mercury Bank & mercury.com & Account number, routing number \\
+Bitwarden & bitwarden.com & Master password (memorize this) \\
+Cloudflare & cloudflare.com & Account login \\
+OpenAI & platform.openai.com & API Key (\texttt{sk-...}) \\
+Stripe & stripe.com & Publishable Key (\texttt{pk\_live\_...}), Secret Key (\texttt{sk\_live\_...}), Webhook Secret (\texttt{whsec\_...}) \\
+Lulu Direct & developers.lulu.com & Client Key, Client Secret \\
+SendGrid & sendgrid.com & API Key (\texttt{SG....}) \\
+Railway & railway.app & Login via GitHub \\
+GitHub & github.com & Account login, SSH key \\
+Make.com & make.com & Account login \\
+Cursor & cursor.com & Account login \\
+Bolt.new & bolt.new & Account login \\
+Wave Accounting & waveapps.com & Account login \\
+Google Analytics & analytics.google.com & Measurement ID (\texttt{G-...}) \\
+\bottomrule
+\end{longtable}
+
+
+% ══════════════════════════════════════════════════════════════
+% APPENDIX B: AUTOMATION WORKFLOW DIAGRAMS
+% ══════════════════════════════════════════════════════════════
+\chapter{AI Agent Workflow Specifications}
+
+\section{Master Automation Architecture}
+
+\begin{center}
+\begin{tikzpicture}[
+  node distance=0.8cm and 1.5cm,
+  box/.style={rectangle, draw=primary, fill=primary!10, text width=2.8cm, minimum height=1cm, align=center, rounded corners=3pt, font=\small},
+  trigger/.style={rectangle, draw=accent, fill=accent!10, text width=2.5cm, minimum height=0.8cm, align=center, rounded corners=3pt, font=\small},
+  arrow/.style={->, thick, color=midgray}
+]
+
+\node[trigger] (stripe) {Stripe Payment Event};
+\node[box, right=of stripe] (generate) {Generate Book\\(OpenAI)};
+\node[box, right=of generate] (lulu) {Submit to\\Lulu Print};
+\node[box, right=of lulu] (email) {Email\\Customer};
+
+\draw[arrow] (stripe) -- (generate);
+\draw[arrow] (generate) -- (lulu);
+\draw[arrow] (lulu) -- (email);
+
+\node[trigger, below=1.5cm of stripe] (schedule) {Hourly\\Schedule};
+\node[box, right=of schedule] (check) {Check Lulu\\Status};
+\node[box, right=of check] (update) {Update\\Order DB};
+\node[box, right=of update] (notify) {Ship\\Notification};
+
+\draw[arrow] (schedule) -- (check);
+\draw[arrow] (check) -- (update);
+\draw[arrow] (update) -- (notify);
+
+\node[trigger, below=1.5cm of schedule] (daily) {Daily\\9 AM};
+\node[box, right=of daily] (abandoned) {Find Abandoned\\Carts};
+\node[box, right=of abandoned] (recover) {Send Recovery\\Email};
+
+\draw[arrow] (daily) -- (abandoned);
+\draw[arrow] (abandoned) -- (recover);
+
+\end{tikzpicture}
+\end{center}
+
+\section{Workflow Configuration Reference}
+
+For each workflow in Make.com, here are the exact module configurations:
+
+\subsection{Workflow 1: Order $\rightarrow$ Book $\rightarrow$ Print $\rightarrow$ Email}
+\begin{enumerate}[leftmargin=2em]
+  \item \textbf{Trigger:} Stripe $\rightarrow$ Watch Events $\rightarrow$ Event type: \texttt{payment\_intent.succeeded}
+  \item \textbf{HTTP Module:} POST to \texttt{https://api.yourdomain.com/api/v1/books/\{\{bookId\}\}/generate}
+  \begin{itemize}[leftmargin=1.5em]
+    \item Header: \texttt{Authorization: Bearer \{\{adminToken\}\}}
+  \end{itemize}
+  \item \textbf{Sleep Module:} Wait 600 seconds (10 minutes) for generation
+  \item \textbf{HTTP Module:} GET \texttt{https://api.yourdomain.com/api/v1/books/\{\{bookId\}\}}
+  \item \textbf{Router:}
+  \begin{itemize}[leftmargin=1.5em]
+    \item Route 1 (status = REVIEW\_READY): Continue to fulfillment
+    \item Route 2 (status = FAILED): Send alert email to you
+  \end{itemize}
+  \item \textbf{HTTP Module:} POST \texttt{https://api.yourdomain.com/api/v1/fulfillment/orders/\{\{orderId\}\}/submit}
+  \item \textbf{SendGrid Module:} Send ``Order Confirmed'' template to customer email
+\end{enumerate}
+
+
+% ══════════════════════════════════════════════════════════════
+% APPENDIX C: GLOSSARY
+% ══════════════════════════════════════════════════════════════
+\chapter{Glossary of Technical Terms}
+
+If you encounter an unfamiliar term anywhere in this guide, look it up here.
+
+\begin{description}[style=nextline, leftmargin=2em, itemsep=6pt]
+
+\item[API (Application Programming Interface)]
+A way for two software programs to talk to each other. When your website ``calls the OpenAI API,'' it is sending a request to OpenAI's servers and getting a response back. Think of it like ordering at a restaurant: you tell the waiter (API) what you want, the kitchen (server) makes it, and the waiter brings it back.
+
+\item[API Key]
+A secret password that identifies your account when using an API. Like a membership card that lets you into a club. Never share it publicly.
+
+\item[Backend]
+The part of your application that runs on a server (not visible to customers). It handles business logic, talks to the database, and communicates with external services like OpenAI and Stripe.
+
+\item[BullMQ]
+A software library that manages a queue of jobs. When a customer orders a book, the job ``generate this book'' goes into the queue. A worker process picks up jobs one by one and completes them.
+
+\item[COGS (Cost of Goods Sold)]
+The direct cost to produce one unit of your product. For you, this includes AI generation, printing, shipping, and payment processing fees.
+
+\item[COPPA (Children's Online Privacy Protection Act)]
+A US federal law that restricts what data websites can collect from children under 13. Since parents (not children) use your site, you are likely compliant, but you must clearly state this in your privacy policy.
+
+\item[Deploy / Deployment]
+Making your application available on the internet. ``Deploying to Railway'' means uploading your code to Railway's servers so anyone can visit your website.
+
+\item[DNS (Domain Name System)]
+The system that translates human-readable domain names (like \texttt{storyforge.ai}) into computer-readable IP addresses. You configure DNS records in Cloudflare to point your domain to your hosting provider.
+
+\item[EIN (Employer Identification Number)]
+A 9-digit number assigned by the IRS to identify your business for tax purposes. Like a Social Security number, but for your LLC.
+
+\item[Environment Variable]
+A configuration value stored outside your code. For example, your OpenAI API key is stored as an environment variable so it is not visible in the code itself. Think of it as a locked settings file.
+
+\item[Frontend]
+The part of your application that customers see and interact with in their web browser---the website itself.
+
+\item[Git / GitHub]
+Git is a tool that tracks changes to your code (like ``Track Changes'' in Microsoft Word). GitHub is a website that stores your code online and lets tools like Railway access it.
+
+\item[Gross Margin]
+The percentage of revenue remaining after subtracting COGS. A 60\% gross margin means you keep 60 cents of every dollar after production costs.
+
+\item[HTTPS / SSL / TLS]
+Encryption that protects data sent between a customer's browser and your server. Shown by the padlock icon in the browser address bar. Required for any site handling payments.
+
+\item[JWT (JSON Web Token)]
+A secure token (a long string of characters) that proves a user is logged in. When someone logs into your site, they receive a JWT that gets sent with every subsequent request.
+
+\item[NestJS]
+A framework (pre-built structure) for building backend applications in JavaScript/TypeScript. Your backend is built with NestJS.
+
+\item[Next.js]
+A framework for building frontend websites in React (JavaScript). Your frontend is built with Next.js.
+
+\item[Node.js]
+The engine that runs JavaScript code on a server (outside of a web browser). Both your backend and frontend require Node.js.
+
+\item[PostgreSQL]
+A database system that stores all your data (users, books, orders) in organized tables. Think of it as a very powerful spreadsheet.
+
+\item[Print-on-Demand (POD)]
+A business model where products are printed only after a customer orders them. No inventory, no upfront printing costs.
+
+\item[Prisma]
+A tool that makes it easy for your application to talk to the PostgreSQL database. Instead of writing complex database queries, you write simple commands.
+
+\item[Redis]
+An extremely fast, temporary data store. Your application uses it as a message queue: ``Here is a book that needs to be generated''---Redis holds that message until a worker picks it up.
+
+\item[Repository (Repo)]
+A folder of code stored on GitHub. Your entire StoryForge application lives in one repository.
+
+\item[REST API]
+A common way to structure an API using standard web addresses (URLs). For example, \texttt{GET /api/v1/books} retrieves all books, \texttt{POST /api/v1/books} creates a new one.
+
+\item[Saddle-Stitch]
+A binding method where pages are folded and stapled together. Common for thin booklets and children's books under 32 pages.
+
+\item[SaaS (Software as a Service)]
+A business model where customers pay to use software online (rather than buying a physical product). Your subscription plans make StoryForge a SaaS business.
+
+\item[Stripe]
+A payment processing company. They handle credit card charges, subscriptions, and payouts to your bank account.
+
+\item[Token (AI)]
+A unit of text processed by an AI model. Roughly 1 token = 4 characters or 0.75 words. AI APIs charge per token.
+
+\item[Webhook]
+An automatic notification sent from one service to another when something happens. When Stripe processes a payment, it sends a webhook to your backend saying ``payment succeeded.''
+
+\item[Zustand]
+A lightweight state management library for React. It stores the customer's selections as they go through the book creation wizard.
+
+\end{description}
+
+% ══════════════════════════════════════════════════════════════
+% APPENDIX D: TIMELINE
+% ══════════════════════════════════════════════════════════════
+\chapter{Suggested 8-Week Launch Timeline}
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{lX}
+\toprule
+\textbf{Week} & \textbf{Tasks} \\
+\midrule
+\textbf{Week 1} & Form LLC, get EIN, open business bank account, register domain \\
+\textbf{Week 2} & Set up all technology accounts (Chapter 4), install Cursor, clone codebase \\
+\textbf{Week 3} & Configure environment variables, deploy to Railway, get site live \\
+\textbf{Week 4} & Set up Stripe products and webhooks, configure Make.com workflows \\
+\textbf{Week 5} & Connect Lulu Direct, order 3 test books, test full order flow \\
+\textbf{Week 6} & Fix any issues found in testing, add legal pages, set up analytics \\
+\textbf{Week 7} & Soft launch: share with friends/family, gather feedback, iterate \\
+\textbf{Week 8} & Public launch: social media, Product Hunt, initial ad campaigns \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\begin{infobox}
+\textbf{Do not rush Week 5.} Order real test books and wait for them to arrive. Hold the physical book in your hands. Check the print quality, colors, binding, and text readability. This is your product---it must be excellent before you sell it to anyone.
+\end{infobox}
+
+% ══════════════════════════════════════════════════════════════
+% BACK MATTER
+% ══════════════════════════════════════════════════════════════
+\chapter*{Final Notes}
+\addcontentsline{toc}{chapter}{Final Notes}
+
+\begin{enumerate}[leftmargin=2em, itemsep=8pt]
+  \item \textbf{Start simple.} Launch with 24-page bedtime stories for ages 4--7 only. Add more options after you have paying customers and real feedback.
+
+  \item \textbf{Quality over speed.} A beautiful, well-printed 24-page book will generate referrals and repeat customers. A rushed, low-quality book will generate refunds and bad reviews.
+
+  \item \textbf{The AI handles production. You handle marketing.} The bottleneck in this business is not technology---it is getting customers to your website. Invest your time in:
+  \begin{itemize}[leftmargin=1.5em]
+    \item Posting in parenting Facebook groups
+    \item Creating TikTok/Instagram content showing the book creation process
+    \item Running targeted Google Ads for ``personalized children's book''
+    \item Building an email list with a free coloring page lead magnet
+    \item Partnering with mommy bloggers and children's book reviewers
+  \end{itemize}
+
+  \item \textbf{Every dollar of your \$2{,}000 is accounted for.} You have 31+ months of runway. Use that time wisely---do not panic-spend on tools or services you do not yet need.
+
+  \item \textbf{Reinvest profits.} Your first \$500 in revenue should go right back into advertising. Paid ads with a product that has 60\%+ margins create a flywheel: more ads $\rightarrow$ more sales $\rightarrow$ more profit $\rightarrow$ more ads.
+
+  \item \textbf{You can do this.} Thousands of non-technical founders have built successful online businesses using the exact tools described in this guide. The technology is ready. The market is large. The margins are strong. Execute the plan.
+\end{enumerate}
+
+\vfill
+\begin{center}
+\rule{2in}{0.4pt}\\[12pt]
+{\large\textcolor{primary}{\textbf{Good luck. Go build something wonderful.}}}
+\end{center}
+
+\end{document}
