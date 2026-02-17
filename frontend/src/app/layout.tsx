@@ -14,11 +14,11 @@ const fredoka = Fredoka({
 });
 
 export const metadata: Metadata = {
-  title: 'StoryForge AI - Personalized Children\'s Books',
+  title: 'Crayons & Quills - Personalized Children\'s Books',
   description: 'Create magical, personalized children\'s books with AI. Unique stories featuring your child as the hero.',
   keywords: ['children\'s books', 'personalized books', 'AI books', 'custom storybook', 'kids gifts'],
   openGraph: {
-    title: 'StoryForge AI - Personalized Children\'s Books',
+    title: 'Crayons & Quills - Personalized Children\'s Books',
     description: 'Create magical, personalized children\'s books with AI.',
     type: 'website',
   },

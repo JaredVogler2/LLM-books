@@ -49,7 +49,7 @@ export class LuluProvider implements FulfillmentProviderInterface {
             cover: { source_url: params.coverFileUrl || params.printFileUrl },
           },
           quantity: params.quantity,
-          title: 'StoryForge Book',
+          title: 'Crayons & Quills Book',
         },
       ],
       shipping_address: {

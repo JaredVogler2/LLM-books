@@ -4,7 +4,7 @@ import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 
 export const metadata: Metadata = {
-  title: 'Personalized Dinosaur Books for Kids | StoryForge AI',
+  title: 'Personalized Dinosaur Books for Kids | Crayons & Quills',
   description: 'Create a custom dinosaur adventure book starring your child. Personalized stories with T-Rex, Triceratops, and more.',
   keywords: ['dinosaur books for kids', 'personalized dinosaur book', 'custom dinosaur story'],
 };

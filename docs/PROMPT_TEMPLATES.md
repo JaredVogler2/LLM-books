@@ -1,4 +1,4 @@
-# StoryForge AI - Prompt Templates
+# Crayons & Quills - Prompt Templates
 
 ## 1. Story Outline Generation
 

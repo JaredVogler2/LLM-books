@@ -11,9 +11,8 @@ export function Header() {
       <nav className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 lg:px-8">
         <Link href="/" className="flex items-center gap-2">
           <span className="font-display text-2xl font-bold text-primary-600">
-            StoryForge
+            Crayons &amp; Quills
           </span>
-          <span className="font-display text-sm text-gray-400">AI</span>
         </Link>
 
         <div className="hidden md:flex items-center gap-8">

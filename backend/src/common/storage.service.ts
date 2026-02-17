@@ -23,7 +23,7 @@ export class StorageService {
         secretAccessKey: config.get('AWS_SECRET_ACCESS_KEY', ''),
       },
     });
-    this.bucket = config.get('S3_BUCKET_NAME', 'storyforge-assets');
+    this.bucket = config.get('S3_BUCKET_NAME', 'crayons-and-quills-assets');
   }
 
   async upload(

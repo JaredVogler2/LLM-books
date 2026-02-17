@@ -45,10 +45,10 @@ export class PdfAssemblyService {
       size: [dimensions.widthPt + bleedPt * 2, dimensions.heightPt + bleedPt * 2],
       margin: 0,
       info: {
-        Title: book.title || 'My StoryForge Book',
-        Author: 'StoryForge AI',
+        Title: book.title || 'My Crayons & Quills Book',
+        Author: 'Crayons & Quills',
         Subject: `A personalized book for ${book.childProfile.name}`,
-        Creator: 'StoryForge AI Platform',
+        Creator: 'Crayons & Quills Platform',
       },
     });
 
@@ -187,7 +187,7 @@ export class PdfAssemblyService {
     doc.rect(0, 0, dimensions.widthPt + bleedPt * 2, dimensions.heightPt + bleedPt * 2)
       .fill('#F5F5F5');
     doc.fontSize(12).fill('#666666')
-      .text('Created with StoryForge AI', bleedPt + 50, dimensions.heightPt / 2, {
+      .text('Created with Crayons & Quills', bleedPt + 50, dimensions.heightPt / 2, {
         width: dimensions.widthPt - 100,
         align: 'center',
       });
@@ -238,8 +238,8 @@ export class PdfAssemblyService {
       size: [dimensions.widthPt, dimensions.heightPt],
       margin: 36,
       info: {
-        Title: book.title || 'My StoryForge Book',
-        Author: 'StoryForge AI',
+        Title: book.title || 'My Crayons & Quills Book',
+        Author: 'Crayons & Quills',
       },
     });
 

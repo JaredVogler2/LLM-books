@@ -1,7 +1,7 @@
 {
-  "name": "storyforge-ai-backend",
+  "name": "crayons-and-quills-backend",
   "version": "0.1.0",
-  "description": "StoryForge AI - Backend API",
+  "description": "Crayons & Quills - Backend API (Atman Labs LLC)",
   "private": true,
   "license": "UNLICENSED",
   "scripts": {

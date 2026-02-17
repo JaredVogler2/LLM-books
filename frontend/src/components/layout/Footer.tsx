@@ -39,7 +39,7 @@ export function Footer() {
           </div>
         </div>
         <div className="mt-12 border-t border-gray-800 pt-8 text-center">
-          <p className="text-sm">StoryForge AI. All rights reserved.</p>
+          <p className="text-sm">Crayons &amp; Quills, an Atman Labs LLC product. All rights reserved.</p>
         </div>
       </div>
     </footer>

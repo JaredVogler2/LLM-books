@@ -38,7 +38,7 @@ async function bootstrap() {
   // Swagger (non-production only)
   if (config.get('NODE_ENV') !== 'production') {
     const swaggerConfig = new DocumentBuilder()
-      .setTitle('StoryForge AI API')
+      .setTitle('Crayons & Quills API')
       .setDescription('AI-powered personalized children\'s book platform')
       .setVersion('1.0')
       .addBearerAuth()
@@ -58,7 +58,7 @@ async function bootstrap() {
 
   const port = config.get<number>('PORT', 4000);
   await app.listen(port);
-  console.log(`StoryForge AI API running on port ${port}`);
+  console.log(`Crayons & Quills API running on port ${port}`);
 }
 
 bootstrap();

@@ -4,7 +4,7 @@ import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 
 export const metadata: Metadata = {
-  title: 'Personalized STEM Books for Girls | StoryForge AI',
+  title: 'Personalized STEM Books for Girls | Crayons & Quills',
   description: 'Inspire young girls with personalized STEM adventure books. Custom stories featuring science, technology, engineering, and math.',
   keywords: ['STEM books for girls', 'personalized science book', 'girls in STEM', 'custom educational book'],
 };

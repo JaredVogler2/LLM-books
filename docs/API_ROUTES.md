@@ -1,4 +1,4 @@
-# StoryForge AI - API Routes
+# Crayons & Quills - API Routes
 
 Base URL: `/api/v1`
 

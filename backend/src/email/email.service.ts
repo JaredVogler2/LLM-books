@@ -16,7 +16,7 @@ const TEMPLATES: Record<string, string> = {
   'order-confirmation': `
     <h1>Order Confirmed!</h1>
     <p>Hi {{firstName}},</p>
-    <p>Your StoryForge book "{{bookTitle}}" is being created!</p>
+    <p>Your Crayons & Quills book "{{bookTitle}}" is being created!</p>
     <p>Order #{{orderId}}</p>
     <p>We'll send you updates as your book progresses through creation and printing.</p>
   `,
@@ -82,7 +82,7 @@ export class EmailService {
     try {
       await sgMail.send({
         to: params.to,
-        from: this.config.get('SENDGRID_FROM_EMAIL', 'hello@storyforge.ai'),
+        from: this.config.get('SENDGRID_FROM_EMAIL', 'hello@crayonsandquills.com'),
         subject: params.subject,
         html,
       });
@@ -126,7 +126,7 @@ export class EmailService {
 
     await this.send({
       to: order.user.email,
-      subject: `Order Confirmed - ${order.items[0]?.book?.title || 'Your StoryForge Book'}`,
+      subject: `Order Confirmed - ${order.items[0]?.book?.title || 'Your Crayons & Quills Book'}`,
       template: 'order-confirmation',
       data: {
         firstName: order.user.firstName || 'there',

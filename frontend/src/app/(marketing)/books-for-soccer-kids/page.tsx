@@ -4,7 +4,7 @@ import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 
 export const metadata: Metadata = {
-  title: 'Personalized Books for Soccer Kids | StoryForge AI',
+  title: 'Personalized Books for Soccer Kids | Crayons & Quills',
   description: 'Create a custom children\'s book starring your soccer-loving child. Personalized stories featuring their name, team colors, and favorite soccer adventures.',
   keywords: ['soccer books for kids', 'personalized soccer book', 'custom children\'s book soccer'],
 };

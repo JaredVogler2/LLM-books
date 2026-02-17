@@ -3,7 +3,7 @@ import { AppModule } from '../app.module';
 
 async function bootstrap() {
   const app = await NestFactory.createApplicationContext(AppModule);
-  console.log('StoryForge AI Worker started');
+  console.log('Crayons & Quills Worker started');
 
   // Keep the process running
   process.on('SIGTERM', async () => {

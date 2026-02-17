@@ -1,4 +1,4 @@
-# StoryForge AI - System Architecture
+# Crayons & Quills - System Architecture
 
 ## High-Level Architecture
 
@@ -116,7 +116,7 @@ User Input → Wizard Store → API → Database
 ## Folder Structure
 
 ```
-storyforge-ai/
+crayons-and-quills/
 ├── backend/
 │   ├── prisma/
 │   │   └── schema.prisma          # Database schema

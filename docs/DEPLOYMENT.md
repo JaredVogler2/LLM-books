@@ -1,4 +1,4 @@
-# StoryForge AI - Deployment Guide
+# Crayons & Quills - Deployment Guide
 
 ## Prerequisites
 
