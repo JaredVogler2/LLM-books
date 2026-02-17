@@ -18,6 +18,18 @@ const BOOK_DIMENSIONS: Record<string, { widthPt: number; heightPt: number }> = {
   LANDSCAPE_11X8_5: { widthPt: 792, heightPt: 612 },  // 11" x 8.5"
 };
 
+/**
+ * Binding-specific bleed and gutter margins in points.
+ * Hardcover books need a wider gutter (inner margin) for the casewrap.
+ * Saddle-stitch books have no spine so the gutter can be smaller.
+ */
+const BINDING_MARGINS: Record<string, { bleedPt: number; gutterPt: number; outerPt: number }> = {
+  SOFTCOVER:    { bleedPt: 9, gutterPt: 36, outerPt: 36 },  // ~3mm bleed, standard margins
+  HARDCOVER:    { bleedPt: 9, gutterPt: 54, outerPt: 36 },  // wider gutter for casewrap
+  SADDLE_STITCH: { bleedPt: 9, gutterPt: 24, outerPt: 36 }, // no spine, tighter gutter
+  SPIRAL_BOUND: { bleedPt: 9, gutterPt: 54, outerPt: 36 },  // wide gutter for holes
+};
+
 @Injectable()
 export class PdfAssemblyService {
   private readonly logger = new Logger(PdfAssemblyService.name);
@@ -39,7 +51,12 @@ export class PdfAssemblyService {
     if (!book) throw new Error('Book not found');
 
     const dimensions = BOOK_DIMENSIONS[book.bookSize] || BOOK_DIMENSIONS.SQUARE_8X8;
-    const bleedPt = 9; // ~3mm bleed = ~9pt
+    const margins = BINDING_MARGINS[book.bindingType] || BINDING_MARGINS.SOFTCOVER;
+    const bleedPt = margins.bleedPt;
+
+    this.logger.log(
+      `Assembling print PDF: size=${book.bookSize} binding=${book.bindingType} paper=${book.paperType} pages=${book.pageCount}`,
+    );
 
     const doc = new PDFDocument({
       size: [dimensions.widthPt + bleedPt * 2, dimensions.heightPt + bleedPt * 2],
@@ -88,13 +105,20 @@ export class PdfAssemblyService {
         });
     }
 
-    // Content pages
+    // Content pages — use binding-specific gutter margins
     for (const page of book.pages) {
       doc.addPage();
 
-      const contentX = bleedPt + 36;
+      // Even pages (left side) have gutter on right; odd pages have gutter on left
+      const isLeftPage = page.pageNumber % 2 === 0;
+      const innerMargin = margins.gutterPt;
+      const outerMargin = margins.outerPt;
+      const leftMargin = isLeftPage ? outerMargin : innerMargin;
+      const rightMargin = isLeftPage ? innerMargin : outerMargin;
+
+      const contentX = bleedPt + leftMargin;
       const contentY = bleedPt + 36;
-      const contentWidth = dimensions.widthPt - 72;
+      const contentWidth = dimensions.widthPt - leftMargin - rightMargin;
       const contentHeight = dimensions.heightPt - 72;
 
       // Place illustration if available

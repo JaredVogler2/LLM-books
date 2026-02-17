@@ -719,19 +719,29 @@ This is the ``brain'' of your business---it generates stories and illustrations.
 \end{itemize}
 
 \step{12} Create your products in Stripe Dashboard $\rightarrow$ \textbf{Products}:
+
+\begin{infobox}
+\textbf{Dynamic pricing:} Your backend calculates the exact price based on each customer's selections (page count, binding, paper, size, and add-ons). The Stripe payment intent is created dynamically---you do \textbf{not} need a fixed Stripe Product for every combination. However, create these base products for your dashboard and subscription tracking:
+\end{infobox}
+
 \begin{table}[H]
 \centering
 \begin{tabularx}{\textwidth}{Xlr}
 \toprule
-\textbf{Product Name} & \textbf{Type} & \textbf{Price} \\
+\textbf{Product Name} & \textbf{Type} & \textbf{Starting Price} \\
 \midrule
-Personalized Children's Book (24-page) & One-time & \$29.99 \\
-Personalized Children's Book (50-page) & One-time & \$44.99 \\
+Personalized Children's Book (12-page) & One-time & From \$19.99 \\
+Personalized Children's Book (24-page) & One-time & From \$24.99 \\
+Personalized Children's Book (36-page) & One-time & From \$34.99 \\
+Hardcover Upgrade & Add-on & +\$10.00 \\
+Premium Matte Paper & Add-on & +\$5.00 \\
+Glossy Paper \& Cover & Add-on & +\$8.00 \\
+Larger Size (8.5$\times$11 or 11$\times$8.5) & Add-on & +\$3.00 \\
 Birthday Club Subscription & Recurring (yearly) & \$24.99/yr \\
 Adventure Series Subscription & Recurring (quarterly) & \$22.99/qtr \\
-Digital PDF Add-on & One-time & \$4.99 \\
-Audiobook Add-on & One-time & \$9.99 \\
-Gift Wrap & One-time & \$3.99 \\
+Digital PDF Add-on & One-time & +\$4.99 \\
+Audiobook Add-on & One-time & +\$9.99 \\
+Gift Wrap & One-time & +\$3.99 \\
 \bottomrule
 \end{tabularx}
 \end{table}
@@ -1478,15 +1488,88 @@ pm2 (process manager) & \$0.00 \\
 You never hold inventory. When a customer orders a book:
 
 \begin{enumerate}[leftmargin=2em]
-  \item Your system sends the print-ready PDF to Lulu's API
-  \item Lulu prints a \textbf{single copy} at their nearest facility
+  \item Your system sends the print-ready PDF to Lulu's API with the customer's selected book options
+  \item Lulu prints a \textbf{single copy} at their nearest facility using the specified binding, paper, and size
   \item Lulu ships it directly to your customer in \textbf{your brand's packaging} (white-label)
   \item You pay Lulu only for the printing + shipping of that one book
 \end{enumerate}
 
 \noindent There is \textbf{no minimum order} and \textbf{no upfront inventory cost}.
 
-\section{Book Specifications for Lulu}
+\section{Customer-Selectable Book Options}
+
+Your book creation wizard (already built in \texttt{frontend/src/components/wizard/StepBookOptions.tsx}) lets customers choose from the following options. The price updates live in the browser as they customize:
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{\textwidth}{lXrl}
+\toprule
+\textbf{Option} & \textbf{Choices} & \textbf{Surcharge} & \textbf{Default} \\
+\midrule
+\textbf{Page Count} & 12, 24, or 36 pages & Base price varies & 24 \\
+\textbf{Binding} & Softcover (perfect-bound) & --- & Softcover \\
+& Hardcover (casewrap) & +\$10.00 & \\
+& Saddle Stitch (stapled, $\leq$32 pages) & --- & \\
+\textbf{Paper} & Standard White (60\#) & --- & Standard \\
+& Premium Matte & +\$5.00 & \\
+& Glossy & +\$8.00 & \\
+\textbf{Book Size} & 8\,'' $\times$ 8\,'' Square & --- & Square \\
+& 8.5\,'' $\times$ 11\,'' Portrait & +\$3.00 & \\
+& 11\,'' $\times$ 8.5\,'' Landscape & +\$3.00 & \\
+\textbf{Illustration} & Full Color (AI-generated) & --- & Full Color \\
+& Black \& White (coloring book) & --- & \\
+\textbf{Add-ons} & Digital PDF download & +\$4.99 & Off \\
+& Audiobook (AI-narrated) & +\$9.99 & Off \\
+& Gift Wrap & +\$3.99 & Off \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\begin{infobox}
+\textbf{How pricing works:} The base price depends on page count: \$19.99 (12 pages), \$24.99 (24 pages), or \$34.99 (36 pages). Surcharges for binding, paper, size, and add-ons are stacked on top. Your backend (\texttt{books.service.ts}) calculates the exact price, and the frontend wizard shows it live as the customer makes selections.
+\end{infobox}
+
+\section{Compatibility Rules}
+
+Not all combinations are physically possible. Your codebase enforces these rules in both the frontend (warning banners) and backend (validation errors):
+
+\begin{warningbox}
+\textbf{Incompatible combinations your system prevents:}
+\begin{itemize}[leftmargin=1.5em, itemsep=2pt]
+  \item \textbf{Saddle stitch + more than 32 pages} --- Too many pages for stapled binding. Customer must choose softcover/hardcover or reduce pages.
+  \item \textbf{Softcover or hardcover + fewer than 24 pages} --- Perfect binding requires a minimum spine width. Customer must choose saddle stitch for 12-page books.
+  \item \textbf{Hardcover + landscape format} --- Not available through Lulu Direct. Customer must choose portrait/square or softcover.
+\end{itemize}
+\end{warningbox}
+
+\section{How Options Map to Lulu's API}
+
+Your backend (\texttt{backend/src/fulfillment/providers/lulu.provider.ts}) automatically maps customer selections to Lulu's \texttt{pod\_package\_id} format when submitting a print job:
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{\textwidth}{lX}
+\toprule
+\textbf{Customer Selection} & \textbf{Lulu pod\_package\_id Component} \\
+\midrule
+8\,'' $\times$ 8\,'' Square & \texttt{0800X0800} \\
+8.5\,'' $\times$ 11\,'' Portrait & \texttt{0850X1100} \\
+11\,'' $\times$ 8.5\,'' Landscape & \texttt{1100X0850} \\
+Softcover (perfect-bound) & \texttt{FC} \\
+Hardcover (casewrap) & \texttt{CW} \\
+Saddle Stitch & \texttt{SS} \\
+Standard paper + matte cover & \texttt{STDM} \\
+Premium paper + matte cover & \texttt{PREM} \\
+Premium paper + glossy cover & \texttt{PREG} \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\noindent Example: A customer ordering a \textbf{8$\times$8 softcover book on glossy paper} results in \texttt{pod\_package\_id = 0800X0800FCPREG}. This mapping is handled automatically by your code---you do not need to calculate it manually.
+
+\section{PDF Specifications}
 
 \begin{table}[H]
 \centering
@@ -1494,16 +1577,18 @@ You never hold inventory. When a customer orders a book:
 \toprule
 \textbf{Specification} & \textbf{Value} \\
 \midrule
-Trim Size & 8.5\,'' $\times$ 8.5\,'' (square, standard children's book) \\
-Interior & Premium full color on 60\# (standard) paper \\
-Binding (under 32 pages) & Saddle-stitch (stapled) \\
-Binding (32+ pages) & Perfect-bound (glued spine) \\
-Cover & Softcover with matte or glossy lamination \\
 File Format & PDF, 300 DPI, RGB (Lulu converts to CMYK) \\
-Bleed & 0.125\,'' on all sides \\
+Bleed & 0.125\,'' (9pt) on all sides \\
+Gutter (inner margin) & Varies by binding: 36pt softcover, 54pt hardcover, 24pt saddle stitch \\
+Interior & Full color or B\&W (based on customer's illustration style selection) \\
+Fonts & Embedded in PDF \\
 \bottomrule
 \end{tabularx}
 \end{table}
+
+\begin{infobox}
+\textbf{Already handled:} Your \texttt{PdfAssemblyService} (\texttt{backend/src/ai/pdf/pdf-assembly.service.ts}) automatically adjusts bleed, gutter margins, and page dimensions based on the customer's binding type and book size selections. It uses binding-aware margins so hardcover books have wider gutters for the casewrap.
+\end{infobox}
 
 \section{Lulu Volume Discounts}
 
@@ -1674,20 +1759,28 @@ GPT Image Mini & \$0.005 & \$0.07 & \$0.13 & Good \\
 
 \section{Printing and Fulfillment Costs}
 
+Printing costs vary based on the customer's binding, paper, and size selections. Here are the ranges for the default 8\,'' $\times$ 8\,'' format:
+
 \begin{table}[H]
 \centering
 \begin{tabular}{lrr}
 \toprule
-\textbf{Component} & \textbf{24-Page Book} & \textbf{50-Page Book} \\
+\textbf{Component} & \textbf{24-Page Book} & \textbf{36-Page Book} \\
 \midrule
-Lulu print cost (estimated) & \$3.00--5.00 & \$5.50--9.00 \\
+Lulu print cost (softcover, standard paper) & \$3.00--5.00 & \$5.50--9.00 \\
+Lulu print cost (hardcover, standard paper) & \$8.00--11.00 & \$10.50--14.00 \\
 Lulu fulfillment fee & \$1.75 & \$1.75 \\
 Shipping (standard domestic) & \$3.00--5.00 & \$3.50--6.00 \\
 \midrule
-\textbf{Printing subtotal} & \textbf{\$7.75--11.75} & \textbf{\$10.75--16.75} \\
+\textbf{Softcover printing subtotal} & \textbf{\$7.75--11.75} & \textbf{\$10.75--16.75} \\
+\textbf{Hardcover printing subtotal} & \textbf{\$12.75--17.75} & \textbf{\$15.75--21.75} \\
 \bottomrule
 \end{tabular}
 \end{table}
+
+\begin{infobox}
+\textbf{Why the surcharges are profitable:} Hardcover adds \$10 to the retail price but only costs you \$5--6 more to print. Premium matte paper adds \$5 to retail but costs $\sim$\$1--2 more. \textbf{Upgrades increase your margins, not just your revenue.} Offering more options lets customers self-select into higher price tiers.
+\end{infobox}
 
 \section{Complete Cost-of-Goods-Sold (COGS) Per Book}
 
@@ -1840,25 +1933,32 @@ Monthly burn rate (estimated) & \$30.00 \\
 
 \section{When Revenue Starts: Variable Costs Per Sale}
 
-Once you start selling, each sale generates revenue \textit{and} costs:
+Once you start selling, each sale generates revenue \textit{and} costs. The customer's selections affect both the retail price and your cost. Here are two common configurations:
 
 \begin{table}[H]
 \centering
+\small
 \begin{tabular}{lrr}
 \toprule
-& \textbf{24-Page (\$29.99)} & \textbf{50-Page (\$44.99)} \\
+& \textbf{24pg Softcover Std} & \textbf{24pg Hardcover Premium} \\
+& \textbf{(\$24.99 retail)} & \textbf{(\$39.99 retail)} \\
 \midrule
-Revenue per sale & \$29.99 & \$44.99 \\
-AI generation (Flux.2 Pro) & --\$0.49 & --\$0.96 \\
-Printing (Lulu) & --\$4.00 & --\$7.00 \\
+Revenue per sale & \$24.99 & \$39.99 \\
+AI generation (Flux.2 Pro) & --\$0.49 & --\$0.49 \\
+Printing (Lulu, varies by binding/paper) & --\$4.00 & --\$9.00 \\
 Fulfillment fee (Lulu) & --\$1.75 & --\$1.75 \\
-Shipping & --\$4.00 & --\$4.50 \\
-Stripe fee & --\$1.17 & --\$1.60 \\
+Shipping & --\$4.00 & --\$4.00 \\
+Stripe fee & --\$1.02 & --\$1.46 \\
 \midrule
-\textbf{Net profit per sale} & \textcolor{success}{\textbf{\$18.58}} & \textcolor{success}{\textbf{\$29.18}} \\
+\textbf{Net profit per sale} & \textcolor{success}{\textbf{\$13.73}} & \textcolor{success}{\textbf{\$23.29}} \\
+\textbf{Gross margin} & \textcolor{success}{\textbf{54.9\%}} & \textcolor{success}{\textbf{58.2\%}} \\
 \bottomrule
 \end{tabular}
 \end{table}
+
+\begin{infobox}
+\textbf{Upgrade economics:} When a customer upgrades from the base softcover (\$24.99) to a hardcover with premium matte paper (\$39.99), your profit jumps from \$13.73 to \$23.29---a \textbf{70\% increase in profit} per sale. This is why offering customization options is so valuable. Let customers self-select into premium tiers.
+\end{infobox}
 
 \section{Break-Even Analysis}
 
@@ -1926,31 +2026,49 @@ Stripe fees & --- & \$59 & \$234 & \$585 \\
 
 \section{Recommended Retail Prices}
 
+Your pricing is \textbf{dynamic}---the frontend wizard calculates the price live as customers select options. The backend verifies the price before creating the Stripe payment intent. Here are the base prices and upgrade surcharges:
+
 \begin{table}[H]
 \centering
 \begin{tabularx}{\textwidth}{Xrrr}
 \toprule
-\textbf{Product} & \textbf{Price} & \textbf{COGS} & \textbf{Margin} \\
+\textbf{Product / Option} & \textbf{Price} & \textbf{COGS} & \textbf{Margin} \\
 \midrule
-24-page softcover book & \$29.99 & \$11.41 & 62\% \\
-50-page softcover book & \$44.99 & \$15.81 & 65\% \\
-Digital PDF add-on & \$4.99 & \$0.02 & 99\% \\
-Audiobook add-on & \$9.99 & \$0.50 & 95\% \\
-Gift wrap & \$3.99 & \$1.50 & 62\% \\
+12-page softcover book (base) & \$19.99 & \$9.50 & 52\% \\
+24-page softcover book (base) & \$24.99 & \$11.41 & 54\% \\
+36-page softcover book (base) & \$34.99 & \$15.81 & 55\% \\
+\midrule
+\textit{Upgrade surcharges:} & & & \\
+\quad Hardcover binding & +\$10.00 & +\$5.00 & 50\%+ \\
+\quad Premium matte paper & +\$5.00 & +\$1.50 & 70\% \\
+\quad Glossy paper \& cover & +\$8.00 & +\$2.00 & 75\% \\
+\quad Larger size (8.5$\times$11 or landscape) & +\$3.00 & +\$1.00 & 67\% \\
+\midrule
+\textit{Add-ons:} & & & \\
+\quad Digital PDF add-on & +\$4.99 & \$0.02 & 99\% \\
+\quad Audiobook add-on & +\$9.99 & \$0.50 & 95\% \\
+\quad Gift wrap & +\$3.99 & \$1.50 & 62\% \\
+\midrule
 Birthday subscription (yearly) & \$24.99/yr & \$11.41 & 54\% \\
 Quarterly subscription & \$22.99/qtr & \$11.41 & 50\% \\
 \bottomrule
 \end{tabularx}
 \end{table}
 
+\begin{successbox}
+\textbf{Price range example:} A basic 12-page saddle-stitch book on standard paper costs \$19.99. A fully loaded 36-page hardcover on glossy paper with audiobook, digital PDF, and gift wrap costs \$71.95. Most customers will land in the \$24.99--\$44.99 range.
+\end{successbox}
+
 \section{Upsell Strategy}
 
-The highest-margin items are digital add-ons. Encourage every customer to add these:
+Your wizard design naturally encourages upgrades. The highest-margin items are displayed prominently:
 
 \begin{itemize}[leftmargin=2em]
-  \item \textbf{Digital PDF} (\$4.99): Costs you \$0.02 to generate. Almost pure profit.
-  \item \textbf{Audiobook} (\$9.99): Use OpenAI's text-to-speech API at approximately \$0.50/book.
-  \item \textbf{Gift wrap} (\$3.99): Lulu may charge \$1--2 extra for packaging.
+  \item \textbf{Hardcover upgrade} (+\$10.00): Your most profitable upsell. Costs you only \$5 more but adds \$10 to the price. Emphasize ``keepsake quality'' and ``lasts forever.''
+  \item \textbf{Paper upgrades} (+\$5--8): Premium matte and glossy are high-margin. ``Feel the difference'' messaging works well.
+  \item \textbf{Digital PDF} (+\$4.99): Costs you \$0.02 to generate. Almost pure profit. ``Read it on any device.''
+  \item \textbf{Audiobook} (+\$9.99): Use OpenAI's text-to-speech API at approximately \$0.50/book. ``Let them hear their story.''
+  \item \textbf{Gift wrap} (+\$3.99): Lulu may charge \$1--2 extra for packaging. ``Ready to give.''
   \item \textbf{Multiple copies}: Offer 10\% off for 2+ copies. Printing cost barely changes.
 \end{itemize}
 
@@ -1966,12 +2084,12 @@ Wonderbly (Lost My Name) & \$34.99--44.99 \\
 Hooray Heroes & \$39.99--49.99 \\
 I See Me! & \$34.99--39.99 \\
 Shutterfly Photo Book & \$29.99--49.99 \\
-\textbf{Crayons \& Quills (you)} & \textbf{\$29.99--44.99} \\
+\textbf{Crayons \& Quills (you)} & \textbf{\$19.99--71.95} \\
 \bottomrule
 \end{tabularx}
 \end{table}
 
-\noindent Your pricing is competitive with established players, while your AI-generated personalization offers a \textbf{unique value proposition} they cannot match (fully custom stories, not template fill-in-the-blank).
+\noindent Your entry price (\$19.99) undercuts every competitor, while your premium configurations (\$35--72) compete with established players. Your AI-generated personalization offers a \textbf{unique value proposition} they cannot match (fully custom stories and illustrations, not template fill-in-the-blank). Your customization options let customers choose exactly the product they want---something most competitors do not offer.
 
 
 % ══════════════════════════════════════════════════════════════

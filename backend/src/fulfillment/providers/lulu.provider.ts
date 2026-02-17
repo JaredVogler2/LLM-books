@@ -9,6 +9,53 @@ import {
   ShippingRate,
 } from '../fulfillment.interface';
 
+/**
+ * Maps Crayons & Quills book options to Lulu Direct's pod_package_id format.
+ * Format: TRIM_SIZE + BINDING + PAPER + FINISH
+ * See: https://developers.lulu.com/print-shipping-api#pod-package-id
+ */
+function buildPodPackageId(params: {
+  bindingType: string;
+  paperType: string;
+  bookSize: string;
+  pageCount: number;
+}): string {
+  // Trim size codes
+  const sizeMap: Record<string, string> = {
+    SQUARE_8X8: '0800X0800',
+    PORTRAIT_8_5X11: '0850X1100',
+    LANDSCAPE_11X8_5: '1100X0850',
+  };
+
+  // Binding codes
+  const bindingMap: Record<string, string> = {
+    SOFTCOVER: 'FC',     // Perfect-bound softcover
+    HARDCOVER: 'CW',     // Casewrap hardcover
+    SADDLE_STITCH: 'SS',  // Saddle-stitch
+  };
+
+  // Interior + paper codes
+  const paperMap: Record<string, string> = {
+    STANDARD: 'STD',         // Standard white
+    PREMIUM_MATTE: 'PRE',    // Premium
+    GLOSSY: 'PRE',           // Premium (glossy is a cover finish, not interior paper)
+  };
+
+  // Cover finish
+  const finishMap: Record<string, string> = {
+    STANDARD: 'M',     // Matte cover
+    PREMIUM_MATTE: 'M', // Matte cover
+    GLOSSY: 'G',        // Glossy cover
+  };
+
+  const size = sizeMap[params.bookSize] || '0800X0800';
+  const binding = bindingMap[params.bindingType] || 'FC';
+  const paper = paperMap[params.paperType] || 'STD';
+  const finish = finishMap[params.paperType] || 'M';
+
+  return `${size}${binding}${paper}${finish}`;
+}
+
 @Injectable()
 export class LuluProvider implements FulfillmentProviderInterface {
   private readonly logger = new Logger(LuluProvider.name);
@@ -39,11 +86,25 @@ export class LuluProvider implements FulfillmentProviderInterface {
   async submitOrder(params: SubmitOrderParams): Promise<SubmitOrderResult> {
     const token = await this.getAccessToken();
 
+    const podPackageId = buildPodPackageId({
+      bindingType: params.bindingType,
+      paperType: params.paperType,
+      bookSize: params.bookSize,
+      pageCount: params.pageCount,
+    });
+
+    this.logger.log(
+      `Submitting Lulu order: ${params.orderId} | pod_package_id: ${podPackageId} | ` +
+      `binding: ${params.bindingType} | paper: ${params.paperType} | size: ${params.bookSize} | pages: ${params.pageCount}`,
+    );
+
     const body = {
       external_id: params.orderId,
       line_items: [
         {
           external_id: params.orderId,
+          pod_package_id: podPackageId,
+          page_count: params.pageCount,
           printable_normalization: {
             interior: { source_url: params.printFileUrl },
             cover: { source_url: params.coverFileUrl || params.printFileUrl },
