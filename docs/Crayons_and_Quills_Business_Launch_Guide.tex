@@ -188,7 +188,7 @@
 {\fontsize{18}{22}\selectfont\textcolor{darkbg}{Complete Business Launch Guide}}
 
 \vspace{0.5in}
-{\large\textcolor{midgray}{From Zero to an AI-Agent-Operated\\
+{\large\textcolor{midgray}{From Existing Codebase to a Live, AI-Agent-Operated\\
 Personalized Children's Book Company}}
 
 \vspace{0.2in}
@@ -235,9 +235,23 @@ with a licensed attorney and CPA for matters specific to your situation.}
 \chapter*{Executive Summary}
 \addcontentsline{toc}{chapter}{Executive Summary}
 
-\section*{What You Are Building}
+\section*{What You Have Already Built}
 
-Crayons \& Quills is an online business that creates personalized children's books using artificial intelligence. A customer visits your website, enters details about their child (name, age, interests, favorite animals, etc.), and your system \textbf{automatically}:
+You already have a \textbf{fully architected codebase} for Crayons \& Quills. This is not a ``start from scratch'' guide---this is a ``configure, deploy, and launch'' guide. Your \texttt{LLM-books} repository contains:
+
+\begin{itemize}[leftmargin=2em, itemsep=2pt]
+  \item A \textbf{Next.js 14 frontend} with a book creation wizard, marketing landing pages, user dashboard, and responsive Tailwind CSS design
+  \item A \textbf{NestJS backend} with JWT authentication, Prisma ORM, role-based access control, and versioned REST API endpoints
+  \item A \textbf{complete AI services layer}: StoryEngineService, IllustrationEngineService, CharacterEngineService, and PdfAssemblyService
+  \item \textbf{BullMQ background workers} for asynchronous book generation and illustration pipelines
+  \item A \textbf{Prisma database schema} with 14 models (users, children, books, orders, payments, subscriptions, etc.)
+  \item \textbf{Stripe payment integration}, \textbf{SendGrid email templates}, and \textbf{Lulu Direct fulfillment} provider
+  \item \textbf{Docker Compose} configurations for both development and production
+  \item An \textbf{agents/} directory with stub scripts for six Mac Mini automation agents
+  \item \textbf{Claude Code configuration} files (\texttt{CLAUDE.md} and \texttt{.claude/settings.json}) for seamless development sessions
+\end{itemize}
+
+\noindent When fully configured and deployed, a customer visits your website, enters details about their child (name, age, interests, favorite animals, etc.), and your system \textbf{automatically}:
 
 \begin{enumerate}[leftmargin=2em]
   \item Generates a unique story tailored to that child
@@ -249,6 +263,10 @@ Crayons \& Quills is an online business that creates personalized children's boo
 \end{enumerate}
 
 \noindent Your role is \textbf{business owner and supervisor}, not programmer or operator. AI agents handle the day-to-day: generating books, processing orders, sending emails, and monitoring for problems. You check a dashboard, handle edge cases, and focus on marketing.
+
+\begin{successbox}
+\textbf{Where you are today:} The codebase is built. What remains is configuring your third-party accounts (Chapters 1--4), setting your environment variables and deploying (Chapters 5--6), setting up automation (Chapters 7--8), connecting your print partner and payments (Chapters 9--10), and launching (Chapter 15). This guide walks you through each step from \textit{exactly where you are right now}.
+\end{successbox}
 
 \section*{What ``Run by AI Agents'' Actually Means}
 
@@ -785,24 +803,59 @@ Make.com Core (first month) & \$10.59 \\
 \end{table}
 
 % ══════════════════════════════════════════════════════════════
-% CHAPTER 5: BUILD THE APP
+% CHAPTER 5: CONFIGURE AND RUN THE APP
 % ══════════════════════════════════════════════════════════════
-\chapter{Build the Application Using Claude Code}
+\chapter{Configure and Run the Application Using Claude Code}
 
-You have zero programming experience. That is fine. You already have a \textbf{Claude Max} subscription and use \textbf{Claude Code}---that is the only AI coding tool you need. Claude Code can read your entire codebase, write and edit files, run terminal commands, and deploy your application, all through plain English conversation. You will not write code---you will \textbf{describe what you want} and Claude writes the code.
+Your application is \textbf{already built}. The \texttt{LLM-books} repository contains a complete Next.js frontend, NestJS backend, Prisma database schema, AI service layer, background job workers, and all the integration code for Stripe, SendGrid, and Lulu Direct. You do not need to write code from scratch.
+
+What you need to do now is \textbf{configure} it (add your API keys), \textbf{test} it (run it locally or in the cloud), and \textbf{deploy} it (make it live on the internet). You will use \textbf{Claude Code} for all of this---through plain English conversation.
 
 \begin{successbox}
 \textbf{Advantage of Claude Max:} Because you already pay for Claude Max, your AI coding tool costs \textbf{\$0 extra per month}. Other founders pay \$20--40/month for Cursor, Windsurf, or Bolt.new. You save that entirely.
 \end{successbox}
 
-\section{Understanding the Approach}
+\section{What Already Exists in Your Codebase}
 
-Your application has already been architected (the codebase in this repository). The process is:
+Before you begin, understand what you already have:
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{\textwidth}{lX}
+\toprule
+\textbf{Directory / File} & \textbf{What It Contains} \\
+\midrule
+\texttt{backend/src/auth/} & JWT authentication with refresh tokens, login/register endpoints \\
+\texttt{backend/src/books/} & Book CRUD endpoints and generation trigger \\
+\texttt{backend/src/ai/story/} & StoryEngineService --- generates age-appropriate stories via GPT-4o \\
+\texttt{backend/src/ai/illustration/} & IllustrationEngineService --- generates images via DALL-E 3 \\
+\texttt{backend/src/ai/character/} & CharacterEngineService --- GPT-4 Vision character extraction \\
+\texttt{backend/src/ai/pdf/} & PdfAssemblyService --- print-ready and digital PDF generation \\
+\texttt{backend/src/payments/} & Stripe integration with webhook handling \\
+\texttt{backend/src/fulfillment/} & Lulu Direct API integration \\
+\texttt{backend/src/email/} & SendGrid email templates (order confirmation, shipping, etc.) \\
+\texttt{backend/prisma/schema.prisma} & Database schema with 14 models, indexes, and enums \\
+\texttt{frontend/src/app/book/create/} & Multi-step book creation wizard \\
+\texttt{frontend/src/app/dashboard/} & User dashboard for viewing orders and books \\
+\texttt{frontend/src/app/(marketing)/} & SEO-optimized landing pages \\
+\texttt{agents/} & Six Mac Mini agent script stubs (order monitor, fulfillment, etc.) \\
+\texttt{CLAUDE.md} & Persistent instructions for Claude Code sessions \\
+\texttt{.claude/settings.json} & SessionStart hook for automatic project status display \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{The Process From Here}
+
+Your remaining steps are:
 
 \begin{enumerate}[leftmargin=2em]
   \item Open the codebase in \textbf{Claude Code} (web or CLI)
-  \item Let Claude install dependencies and configure environment variables
-  \item Deploy to \textbf{Railway.app}
+  \item Let Claude install dependencies (\texttt{npm install} in both \texttt{backend/} and \texttt{frontend/})
+  \item Configure your \texttt{.env} files with the API keys from Chapter 4
+  \item Run the database migration (\texttt{npx prisma migrate dev})
+  \item Test locally (or deploy directly to Railway---see Chapter 6)
   \item Use Claude Code for all future edits, fixes, and feature additions
 \end{enumerate}
 
@@ -826,12 +879,22 @@ Your Claude Max subscription gives you full access. Claude Code on the web runs 
 \begin{actionbox}
 In the Claude Code chat, type:\\[4pt]
 \textit{``Clone my repository at https://github.com/YourUsername/LLM-books.git, install all dependencies for both the backend and frontend, and copy the .env.example files to create my local config files.''}\\[4pt]
-Claude will run all the terminal commands for you automatically.
+Claude will run all the terminal commands for you automatically. Specifically, it will run:
+\begin{itemize}[leftmargin=1.5em, itemsep=2pt]
+  \item \texttt{git clone} your repository
+  \item \texttt{npm install} in both \texttt{backend/} and \texttt{frontend/}
+  \item \texttt{cp backend/.env.example backend/.env}
+  \item \texttt{cp frontend/.env.example frontend/.env.local}
+\end{itemize}
 \end{actionbox}
+
+\begin{infobox}
+\textbf{What happens on session start:} Because your repository includes a \texttt{.claude/settings.json} file with a SessionStart hook, Claude Code will automatically print a project overview showing the tech stack, key directories, current git branch, and dependency status every time you open a session. This is already configured---you do not need to set it up.
+\end{infobox}
 
 \step{4} Configure your API keys:
 \begin{actionbox}
-Tell Claude:\\[4pt]
+Your \texttt{backend/.env.example} already lists every variable you need. Tell Claude:\\[4pt]
 \textit{``Help me fill in my backend/.env file. Here are my keys:}\\
 \textit{OpenAI: sk-...}\\
 \textit{Stripe Secret: sk\_live\_...}\\
@@ -839,16 +902,32 @@ Tell Claude:\\[4pt]
 \textit{SendGrid: SG...}\\
 \textit{Lulu API Key: ...}\\
 \textit{Lulu API Secret: ...''}\\[4pt]
-Claude will edit the \texttt{.env} file with your actual keys.
+Claude will edit the \texttt{.env} file with your actual keys. The file already contains placeholder values for:\\
+\texttt{DATABASE\_URL}, \texttt{REDIS\_URL}, \texttt{JWT\_SECRET}, \texttt{OPENAI\_API\_KEY}, \texttt{STRIPE\_SECRET\_KEY}, \texttt{STRIPE\_WEBHOOK\_SECRET}, \texttt{SENDGRID\_API\_KEY}, \texttt{LULU\_API\_KEY}, \texttt{LULU\_API\_SECRET}, \texttt{S3\_BUCKET\_NAME}, and more.
 \end{actionbox}
 
 \begin{warningbox}
 \textbf{Security note:} Claude Code conversations are private to your account, but as a best practice, avoid pasting API keys into any tool you do not fully trust. Claude Code runs in your own sandboxed environment and does not share your data.
 \end{warningbox}
 
-\step{5} Set up the frontend config:
+\step{5} Set up the database and test locally:
 \begin{actionbox}
-\textit{``Now set up the frontend/.env.local file with my Stripe publishable key pk\_live\_... and set the API URL to my backend.''}
+Tell Claude:\\[4pt]
+\textit{``Run the Prisma migration to create the database tables, then start the backend and frontend dev servers so I can test locally.''}\\[4pt]
+Claude will run:
+\begin{itemize}[leftmargin=1.5em, itemsep=2pt]
+  \item \texttt{npx prisma generate} (generates the Prisma client from your schema)
+  \item \texttt{npx prisma migrate dev --name init} (creates all 14 database tables)
+  \item \texttt{npm run start:dev} in \texttt{backend/} (starts the API on port 4000)
+  \item \texttt{npm run dev} in \texttt{frontend/} (starts the website on port 3000)
+\end{itemize}
+You can then visit \texttt{http://localhost:3000} to see your Crayons \& Quills site running.
+\end{actionbox}
+
+\step{6} Set up the frontend config:
+\begin{actionbox}
+\textit{``Now set up the frontend/.env.local file with my Stripe publishable key pk\_live\_... and set the API URL to my backend.''}\\[4pt]
+The \texttt{frontend/.env.example} already lists the required variables: \texttt{NEXT\_PUBLIC\_API\_URL} and \texttt{NEXT\_PUBLIC\_STRIPE\_PUBLISHABLE\_KEY}.
 \end{actionbox}
 
 \section{Using Claude Code Locally (Alternative)}
@@ -880,23 +959,21 @@ This opens Claude Code in your terminal, connected to your codebase.
 \step{4} Let Claude handle setup:
 \begin{actionbox}
 In the Claude Code prompt, type:\\[4pt]
-\textit{``Install all dependencies for both backend and frontend, copy .env.example files to .env, and help me fill in my API keys.''}\\[4pt]
-Claude runs \texttt{npm install}, copies files, and walks you through the configuration.
+\textit{``Install all dependencies for both backend and frontend, copy .env.example files to .env, run the Prisma migration, and help me fill in my API keys.''}\\[4pt]
+Claude runs \texttt{npm install} in both directories, copies the environment files, runs \texttt{npx prisma migrate dev}, and walks you through entering your API keys from Chapter 4. Your existing \texttt{CLAUDE.md} file gives Claude the context it needs to understand the project structure automatically.
 \end{actionbox}
 
 \section{How to Make Changes Without Coding}
 
-Whenever you need to change something about your app, open Claude Code and describe what you want:
+Your codebase is fully structured with clear module boundaries. Whenever you need to change something, open Claude Code and describe what you want. Claude reads your \texttt{CLAUDE.md} file automatically and understands the entire project:
 
 \begin{infobox}
 \textbf{Example prompts you can type into Claude Code:}
 \begin{itemize}[leftmargin=1.5em, itemsep=4pt]
-  \item ``Change the price of the 24-page book from \$29.99 to \$34.99''
-  \item ``Add a new landing page for books about unicorns''
-  \item ``The checkout page is showing an error---help me fix it''
-  \item ``Add a field for the child's school name in the wizard''
-  \item ``Make the header background darker''
-  \item ``Show me which file handles order creation''
+  \item ``Change the price of the 24-page book from \$29.99 to \$34.99'' \\ {\small(Claude edits the Stripe product config and any hardcoded references)}
+  \item ``Add a new landing page for books about unicorns'' \\ {\small(Claude creates a new page in \texttt{frontend/src/app/(marketing)/} following the existing pattern)}
+  \item ``The checkout page is showing an error---help me fix it'' \\ {\small(Claude reads error logs, traces the issue through the frontend/backend, and patches it)}
+  \item ``Add a field for the child's school name in the wizard'' \\ {\small(Claude updates the Prisma schema, generates a migration, and updates the wizard component)}
   \item ``Run the tests and fix any failures''
   \item ``Deploy the latest changes to Railway''
 \end{itemize}
@@ -904,7 +981,7 @@ Claude reads your entire codebase, makes the changes, and can commit and push th
 \end{infobox}
 
 \begin{successbox}
-\textbf{Pro tip:} You can set up a \textbf{SessionStart hook} in Claude Code so that every time you open the project, it automatically checks for issues, runs the linter, and gives you a status report. Ask Claude: \textit{``Set up a session start hook that checks my project health.''}
+\textbf{Already configured:} Your repository includes a \textbf{SessionStart hook} in \texttt{.claude/settings.json} that prints a project status report every time you start a Claude Code session. It also includes \texttt{CLAUDE.md} with persistent project instructions, so Claude always knows your tech stack, key directories, database setup, and operational rules.
 \end{successbox}
 
 \section{Chapter 5 Cost Summary}
@@ -930,11 +1007,11 @@ Git & \$0.00 \\
 % ══════════════════════════════════════════════════════════════
 \chapter{Deploy the Application (Make It Live on the Internet)}
 
-``Deploying'' means putting your application on a server so anyone in the world can visit your website. We use Railway.app because it is the simplest option for non-technical founders.
+``Deploying'' means putting your application on a server so anyone in the world can visit your website. Your codebase is already structured for deployment---it includes separate \texttt{backend/} and \texttt{frontend/} directories with their own \texttt{package.json} files, a \texttt{docker-compose.yml} for production, and a Prisma migration system. We use Railway.app because it is the simplest option for non-technical founders.
 
 \section{What Gets Deployed}
 
-Your application has four components that need to run:
+Your repository already contains all four components. Each deploys separately on Railway:
 
 \begin{table}[H]
 \centering
@@ -954,7 +1031,7 @@ Redis & Manages the queue of book generation jobs \\
 
 \step{1} Log in to \url{https://railway.app} with your GitHub account.
 
-\step{2} Create a new project. Click \textbf{New Project} $\rightarrow$ \textbf{Deploy from GitHub Repo} $\rightarrow$ Select your \texttt{LLM-books} repository.
+\step{2} Create a new project. Click \textbf{New Project} $\rightarrow$ \textbf{Deploy from GitHub Repo} $\rightarrow$ Select your \texttt{LLM-books} repository. Railway will detect your project structure automatically.
 
 \step{3} Add a PostgreSQL database:
 \begin{actionbox}
@@ -976,7 +1053,8 @@ Click on your deployed service. Go to \textbf{Settings}:
   \item Build Command: \texttt{npm install \&\& npx prisma generate \&\& npm run build}
   \item Start Command: \texttt{npx prisma migrate deploy \&\& npm run start:prod}
 \end{itemize}
-Go to \textbf{Variables} and add ALL the environment variables from your \texttt{backend/.env} file. Railway has a bulk import feature---paste the entire \texttt{.env} file contents.
+These commands work because your \texttt{backend/package.json} already defines the \texttt{build} and \texttt{start:prod} scripts, and \texttt{backend/prisma/schema.prisma} contains the full database schema.\\[4pt]
+Go to \textbf{Variables} and add ALL the environment variables from your \texttt{backend/.env} file. Railway has a bulk import feature---paste the entire \texttt{.env} file contents. Your \texttt{backend/.env.example} lists every required variable.
 \end{actionbox}
 
 \step{6} Deploy the frontend as a separate service:
@@ -1042,17 +1120,19 @@ Railway uses \textbf{per-minute billing}---you only pay for what you use. A low-
 % ══════════════════════════════════════════════════════════════
 \chapter{Set Up AI Agent Automation (The ``Hands-Off'' Layer)}
 
-This is the chapter that makes your business run itself. You will use \textbf{Make.com} to create automated workflows that connect your website, OpenAI, Lulu, Stripe, and SendGrid together.
+This is the chapter that makes your business run itself. Your backend already has all the API endpoints for book generation, fulfillment, and email notifications (see \texttt{docs/API\_ROUTES.md} in your repository). Now you need to \textbf{connect} them so they trigger automatically.
+
+You will use \textbf{Make.com} to create workflows that call your existing API. Later (Chapter 8), you can migrate these to your Mac Mini for more power and lower cost.
 
 \section{What Is Make.com?}
 
-Make.com is a visual automation tool. You connect ``modules'' (like Lego blocks) to create workflows. For example:
+Make.com is a visual automation tool. You connect ``modules'' (like Lego blocks) to create workflows that call your backend's existing REST API:
 
 \begin{center}
-\textit{When a new order is paid (Stripe)} $\rightarrow$ \textit{Generate the book (OpenAI)} $\rightarrow$ \textit{Send to printer (Lulu)} $\rightarrow$ \textit{Email the customer (SendGrid)}
+\textit{When a new order is paid (Stripe)} $\rightarrow$ \textit{Call your API to generate the book} $\rightarrow$ \textit{Call your API to send to printer} $\rightarrow$ \textit{Email the customer}
 \end{center}
 
-You set this up once, and it runs automatically forever.
+Your backend already handles all the complex work (AI generation via \texttt{backend/src/ai/}, PDF assembly, Lulu submission via \texttt{backend/src/fulfillment/}). Make.com simply triggers the right endpoints at the right time. You set this up once, and it runs automatically.
 
 \section{Workflow 1: New Order Processing}
 
@@ -1231,7 +1311,8 @@ Then install everything you need:\\[4pt]
 \begin{actionbox}
 \texttt{cd \~{}}\\
 \texttt{git clone https://github.com/YourUsername/LLM-books.git}\\
-\texttt{cd LLM-books}
+\texttt{cd LLM-books}\\[4pt]
+Your repository already includes the \texttt{agents/} directory with stub scripts, \texttt{CLAUDE.md} for Claude Code context, and \texttt{.claude/settings.json} for automatic session startup.
 \end{actionbox}
 
 \section{Agent Architecture}
@@ -1255,28 +1336,39 @@ Daily Digest Agent & Emails you a summary of orders, revenue, issues & Daily 8 A
 \end{tabularx}
 \end{table}
 
-\section{Creating Agent Scripts}
+\section{Completing the Agent Scripts}
 
-Each agent is a simple Node.js or Python script. You do \textbf{not} need to write these yourself---use Claude Code to generate them.
+Your repository already contains an \texttt{agents/} directory with \textbf{stub files} for all six agents:
+
+\begin{itemize}[leftmargin=2em, itemsep=2pt]
+  \item \texttt{agents/order-monitor.ts}
+  \item \texttt{agents/fulfillment-tracker.ts}
+  \item \texttt{agents/failed-job-recovery.ts}
+  \item \texttt{agents/abandoned-cart.ts}
+  \item \texttt{agents/health-monitor.ts}
+  \item \texttt{agents/daily-digest.ts}
+\end{itemize}
+
+These stubs define the structure and purpose of each agent. You need to \textbf{flesh them out} with your specific API URL and configuration. Use Claude Code to do this automatically.
 
 \step{4} Open Claude Code on the Mac Mini:
 \begin{actionbox}
 \texttt{cd \~{}/LLM-books}\\
 \texttt{claude}\\[4pt]
 Then tell Claude:\\[4pt]
-\textit{``Create a directory called agents/ with the following agent scripts:
+\textit{``I already have agent stubs in the agents/ directory. Flesh out each one with full implementation:
 \begin{enumerate}[leftmargin=1.5em]
-  \item order-monitor.ts --- polls my backend API every 60 seconds for new paid orders and triggers book generation via POST /api/v1/books/\{id\}/generate
-  \item fulfillment-tracker.ts --- every 4 hours, checks all orders with status SENT\_TO\_PRINT and updates their fulfillment status from Lulu, sends shipping emails when status changes to shipped
+  \item order-monitor.ts --- polls my backend API at [your Railway URL] every 60 seconds for new paid orders and triggers book generation via POST /api/v1/books/\{id\}/generate
+  \item fulfillment-tracker.ts --- every 4 hours, checks all orders with status SENT\_TO\_PRINT and updates their fulfillment status from Lulu
   \item failed-job-recovery.ts --- every 30 minutes, finds books with status FAILED and retries generation up to 3 times
   \item abandoned-cart.ts --- daily at 10 AM, finds books in DRAFT status older than 24 hours and sends reminder emails
-  \item health-monitor.ts --- every 15 minutes, pings the backend API, Railway, OpenAI, and Stripe to verify they respond, alerts me via email if anything is down
-  \item daily-digest.ts --- every day at 8 AM, compiles yesterday's order count, revenue, failed jobs, and pending issues, and emails me a summary
+  \item health-monitor.ts --- every 15 minutes, pings the backend API, OpenAI, and Stripe to verify they respond
+  \item daily-digest.ts --- every day at 8 AM, compiles yesterday's order count, revenue, and issues, and emails me a summary
 \end{enumerate}
 Each script should use environment variables from .env, include proper error handling and logging, and be designed to run under pm2.''}
 \end{actionbox}
 
-\step{5} Claude Code will generate all six scripts. Review them, then start them with pm2:
+\step{5} Claude Code will complete all six scripts based on the existing stubs. Review them, then start them with pm2:
 \begin{actionbox}
 \texttt{pm2 start agents/order-monitor.ts --name order-monitor}\\
 \texttt{pm2 start agents/fulfillment-tracker.ts --name fulfillment-tracker}\\
@@ -1898,7 +1990,7 @@ Complete every item before announcing your business publicly.
   \item[$\square$] Test with a friend or family member who has never seen the site
   \item[$\square$] Verify all emails send correctly (order confirmation, shipping update)
   \item[$\square$] Verify Stripe webhook is receiving events (check Stripe Dashboard $\rightarrow$ Developers $\rightarrow$ Webhooks $\rightarrow$ Recent events)
-  \item[$\square$] Verify Make.com automations trigger correctly (check execution history)
+  \item[$\square$] Verify Make.com automations trigger correctly (check execution history) and/or Mac Mini agents are running (\texttt{pm2 status})
   \item[$\square$] Test the refund flow (process a test refund through Stripe)
   \item[$\square$] Check all landing pages load correctly and have proper SEO meta tags
   \item[$\square$] Verify your domain has HTTPS (padlock icon in browser)
@@ -1942,7 +2034,7 @@ Complete every item before announcing your business publicly.
 \textbf{Day} & \textbf{Time} & \textbf{Task} \\
 \midrule
 Monday & 30 min & Check Stripe dashboard for revenue, failed payments, disputes \\
-Monday & 15 min & Check Make.com execution history for any failed automations \\
+Monday & 15 min & Check Make.com / Mac Mini agent logs (\texttt{pm2 logs}) for failed automations \\
 Monday & 15 min & Check Railway dashboard for any service errors \\
 Wednesday & 30 min & Respond to any customer support emails \\
 Wednesday & 30 min & Review any flagged/failed book generations \\
@@ -1960,7 +2052,7 @@ These processes run 24/7/365 with zero intervention:
 
 \begin{enumerate}[leftmargin=2em, itemsep=2pt]
   \item Customer places order $\rightarrow$ Stripe processes payment
-  \item Payment succeeds $\rightarrow$ Make.com triggers book generation
+  \item Payment succeeds $\rightarrow$ Make.com or Mac Mini agent triggers book generation
   \item AI generates story $\rightarrow$ AI generates illustrations $\rightarrow$ PDF assembled
   \item PDF sent to Lulu $\rightarrow$ Book printed and shipped
   \item Customer receives confirmation email, then shipping email with tracking
@@ -2210,11 +2302,11 @@ A lightweight state management library for React. It stores the customer's selec
 \textbf{Week} & \textbf{Tasks} \\
 \midrule
 \textbf{Week 1} & Form LLC, get EIN, open business bank account, register domain \\
-\textbf{Week 2} & Set up all technology accounts (Chapter 4), open Claude Code, clone codebase \\
-\textbf{Week 3} & Configure environment variables, deploy to Railway, get site live \\
-\textbf{Week 4} & Set up Stripe products and webhooks, configure Make.com workflows \\
-\textbf{Week 5} & Connect Lulu Direct, order 3 test books, test full order flow \\
-\textbf{Week 6} & Fix any issues found in testing, add legal pages, set up analytics \\
+\textbf{Week 2} & Set up all technology accounts (Chapter 4), open Claude Code, clone your existing \texttt{LLM-books} codebase \\
+\textbf{Week 3} & Configure \texttt{.env} files with your API keys, run Prisma migration, deploy to Railway, get site live \\
+\textbf{Week 4} & Set up Stripe products and webhooks, configure Make.com workflows, set up Mac Mini agents \\
+\textbf{Week 5} & Connect Lulu Direct, order 3 test books with different options, test full order flow end-to-end \\
+\textbf{Week 6} & Fix any issues found in testing, add legal pages, set up analytics, refine agent scripts \\
 \textbf{Week 7} & Soft launch: share with friends/family, gather feedback, iterate \\
 \textbf{Week 8} & Public launch: social media, Product Hunt, initial ad campaigns \\
 \bottomrule
@@ -2245,17 +2337,19 @@ A lightweight state management library for React. It stores the customer's selec
     \item Partnering with mommy bloggers and children's book reviewers
   \end{itemize}
 
-  \item \textbf{Every dollar of your \$2{,}000 is accounted for.} You have 31+ months of runway. Use that time wisely---do not panic-spend on tools or services you do not yet need.
+  \item \textbf{Every dollar of your \$2{,}000 is accounted for.} You have 42+ months of runway at \$31/month. Use that time wisely---do not panic-spend on tools or services you do not yet need.
 
   \item \textbf{Reinvest profits.} Your first \$500 in revenue should go right back into advertising. Paid ads with a product that has 60\%+ margins create a flywheel: more ads $\rightarrow$ more sales $\rightarrow$ more profit $\rightarrow$ more ads.
 
-  \item \textbf{You can do this.} Thousands of non-technical founders have built successful online businesses using the exact tools described in this guide. The technology is ready. The market is large. The margins are strong. Execute the plan.
+  \item \textbf{Your codebase is your head start.} Most founders spend months building their product. Yours is already built. The frontend, backend, AI services, database schema, payment integration, and email system are all in your repository. Your job now is to configure, deploy, and market. That is a massive advantage.
+
+  \item \textbf{You can do this.} The technology is ready. The codebase is built. The market is large. The margins are strong. Configure your accounts, deploy your site, order a test book, and launch. Execute the plan.
 \end{enumerate}
 
 \vfill
 \begin{center}
 \rule{2in}{0.4pt}\\[12pt]
-{\large\textcolor{primary}{\textbf{Good luck. Go build something wonderful.}}}
+{\large\textcolor{primary}{\textbf{Good luck. Go launch something wonderful.}}}
 \end{center}
 
 \end{document}
