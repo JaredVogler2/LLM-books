@@ -25,10 +25,26 @@
 │  │  ┌──────────┐ ┌───────────┐ ┌──────────┐ ┌─────────────┐ │  │
 │  │  │ OpenAI   │ │ Stripe    │ │ SendGrid │ │ Print-on-   │ │  │
 │  │  │ (GPT/    │ │ (Payments)│ │ (Email)  │ │ Demand      │ │  │
-│  │  │  DALL-E) │ │           │ │          │ │ (Printful/  │ │  │
-│  │  │          │ │           │ │          │ │  Lulu)      │ │  │
+│  │  │  DALL-E) │ │           │ │          │ │ (Lulu       │ │  │
+│  │  │          │ │           │ │          │ │  Direct)    │ │  │
 │  │  └──────────┘ └───────────┘ └──────────┘ └─────────────┘ │  │
 │  └────────────────────────────────────────────────────────────┘  │
+└─────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────┐
+│                  Mac Mini M2 Agent Runner (Local)                 │
+│                                                                   │
+│  ┌──────────────┐ ┌──────────────┐ ┌──────────────────────────┐ │
+│  │ Order        │ │ Fulfillment  │ │ Failed Job Recovery      │ │
+│  │ Monitor      │ │ Tracker      │ │ Agent                    │ │
+│  └──────────────┘ └──────────────┘ └──────────────────────────┘ │
+│  ┌──────────────┐ ┌──────────────┐ ┌──────────────────────────┐ │
+│  │ Abandoned    │ │ Health       │ │ Daily Digest             │ │
+│  │ Cart Agent   │ │ Monitor      │ │ Agent                    │ │
+│  └──────────────┘ └──────────────┘ └──────────────────────────┘ │
+│                                                                   │
+│  Managed by pm2 · Communicates with Railway backend via API       │
+│  Development via Claude Code (Claude Max)                         │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
@@ -65,6 +81,14 @@
 - UUID primary keys
 - Enum types for status fields
 - JSON columns for flexible metadata
+
+### Mac Mini M2 Agent Runner
+- **Always-on local machine** running autonomous business agents via pm2
+- 6 agents: order monitor, fulfillment tracker, failed job recovery, abandoned cart, health monitor, daily digest
+- Communicates with Railway-hosted backend via REST API
+- Can be enhanced with Claude Agent SDK for reasoning-based decision making
+- Replaces Make.com for complex automation (Make.com optional as fallback)
+- All development done via **Claude Code** (Claude Max subscription)
 
 ### Storage (S3)
 - Signed URLs for secure file access
@@ -108,7 +132,7 @@ User Input → Wizard Store → API → Database
                                      ↓
                            PDF Assembly (PDFKit)
                                      ↓
-                        Print Partner API (Printful/Lulu)
+                        Print Partner API (Lulu Direct)
                                      ↓
                           Email Notifications (SendGrid)
 ```
@@ -131,7 +155,7 @@ crayons-and-quills/
 │   │   ├── payments/              # Stripe integration
 │   │   ├── subscriptions/         # Subscription management
 │   │   ├── fulfillment/           # Print-on-demand integration
-│   │   │   └── providers/         # Printful, Lulu, Blurb
+│   │   │   └── providers/         # Lulu (primary), Printful, Blurb
 │   │   ├── admin/                 # Admin dashboard API
 │   │   ├── email/                 # Email templates + sending
 │   │   ├── ai/                    # AI service layer
@@ -166,9 +190,18 @@ crayons-and-quills/
 │   │   │   └── utils.ts           # Utilities
 │   │   └── types/                 # TypeScript types
 │   └── package.json
+├── agents/                          # Mac Mini agent scripts (pm2-managed)
+│   ├── order-monitor.ts             # Watches for new paid orders
+│   ├── fulfillment-tracker.ts       # Polls Lulu for shipping updates
+│   ├── failed-job-recovery.ts       # Retries failed book generations
+│   ├── abandoned-cart.ts            # Sends reminder emails (daily)
+│   ├── health-monitor.ts            # Pings all services (every 15 min)
+│   └── daily-digest.ts             # Emails daily business summary
 ├── infrastructure/
 │   └── docker/                    # Dockerfiles
 ├── docs/                          # Documentation
+├── .claude/                       # Claude Code configuration
+│   └── settings.json              # SessionStart hooks
 ├── docker-compose.yml             # Production compose
 └── docker-compose.dev.yml         # Dev compose
 ```

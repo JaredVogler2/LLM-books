@@ -1,0 +1,15 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '── Crayons & Quills (Atman Labs LLC) ──' && echo '' && echo 'Project: AI-powered personalized children's book platform' && echo 'Stack: Next.js 14 (frontend) + NestJS (backend) + PostgreSQL + Redis + BullMQ' && echo 'Print: Lulu Direct API | Payments: Stripe | Email: SendGrid | AI: OpenAI' && echo 'Hosting: Railway.app | Agent Runner: Mac Mini M2 (pm2)' && echo '' && echo 'Key directories:' && echo '  backend/   - NestJS API + Prisma + AI services' && echo '  frontend/  - Next.js + Tailwind + Zustand wizard' && echo '  agents/    - Mac Mini agent scripts (pm2-managed)' && echo '  docs/      - Architecture, deployment, LaTeX business guide' && echo '' && cd /home/user/LLM-books && echo \"Git: $(git branch --show-current) | $(git log --oneline -1)\" && echo '' && if [ -f backend/node_modules/.package-lock.json ]; then echo 'Dependencies: installed'; else echo 'Dependencies: NOT installed — run npm install in backend/ and frontend/'; fi"
+          }
+        ]
+      }
+    ]
+  }
+}

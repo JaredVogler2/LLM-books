@@ -11,12 +11,12 @@
 - [x] Character consistency system
 - [x] PDF assembly (print-ready + digital)
 - [x] Stripe payments (one-time purchase)
-- [x] Printful integration
+- [x] Lulu Direct integration (primary print partner)
 - [x] Email notifications (SendGrid)
 - [x] Admin dashboard
 - [x] SEO landing pages
 - [ ] 24-page softcover only
-- [ ] Single print partner (Printful)
+- [ ] Single print partner (Lulu Direct)
 
 ## Phase 2: Expansion
 
@@ -28,7 +28,7 @@
 - [ ] **Paper options**: Premium matte, glossy
 - [ ] **Book sizes**: 8.5x11 portrait, 11x8.5 landscape
 - [ ] **Page counts**: 12 and 36 page options
-- [ ] **Lulu integration**: Second print partner
+- [ ] **Printful integration**: Second print partner for redundancy
 - [ ] **Multiple copy discount**: Bulk pricing logic
 
 ## Phase 3: Subscriptions & Retention
@@ -61,7 +61,19 @@
 - [ ] **Social sharing**: Share book previews on social media
 - [ ] **Classroom/school bulk orders**: Teacher discount program
 
-## Phase 6: Platform
+## Phase 6: Mac Mini Agent Automation
+
+- [ ] **Order monitor agent**: Auto-triggers book generation on payment success
+- [ ] **Fulfillment tracker agent**: Polls Lulu for shipping updates, sends customer emails
+- [ ] **Failed job recovery agent**: Detects and retries failed generations (3x with backoff)
+- [ ] **Abandoned cart agent**: Sends reminder emails for unfinished books (24h delay)
+- [ ] **Health monitor agent**: Pings Railway, OpenAI, Stripe every 15 min, alerts on downtime
+- [ ] **Daily digest agent**: Emails daily summary of orders, revenue, and issues
+- [ ] **Claude Agent SDK integration**: Reasoning agents that analyze failures and adapt
+- [ ] **Make.com deprecation**: Migrate all workflows to Mac Mini agents, cancel Make.com
+- [ ] **UPS + Tailscale setup**: Ensure always-on reliability with remote access
+
+## Phase 7: Platform
 
 - [ ] **API for partners**: White-label book generation
 - [ ] **Mobile app**: React Native companion app
