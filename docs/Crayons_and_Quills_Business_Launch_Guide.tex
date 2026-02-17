@@ -1172,7 +1172,212 @@ This workflow checks Lulu every few hours for shipping updates and notifies cust
 
 
 % ══════════════════════════════════════════════════════════════
-% CHAPTER 8: PRINT-ON-DEMAND
+% CHAPTER 8: MAC MINI AGENT RUNNER
+% ══════════════════════════════════════════════════════════════
+\chapter{Set Up Your Mac Mini M2 as an Always-On Agent Runner}
+
+You own a \textbf{Mac Mini M2}---this is a significant advantage. Instead of relying entirely on Make.com (\$11--29/month) for automation, you can run AI agents \textbf{directly on your Mac Mini} as an always-on business operations machine. This gives you more power, more flexibility, and lower costs than any cloud automation platform.
+
+\section{Why a Dedicated Agent Machine?}
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{lXX}
+\toprule
+& \textbf{Make.com (Cloud)} & \textbf{Mac Mini M2 (Local)} \\
+\midrule
+Monthly cost & \$11--29/mo & \$0 (electricity only) \\
+Complexity limit & Simple linear workflows & Arbitrarily complex AI agents \\
+AI reasoning & None (just HTTP calls) & Full Claude/GPT reasoning \\
+Custom logic & Limited & Unlimited (any code) \\
+Uptime & 99.9\% & 99\%+ (with auto-restart) \\
+Data privacy & Third-party servers & Your own hardware \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\begin{successbox}
+\textbf{Recommended hybrid approach:} Use Make.com for the simplest webhook-triggered workflows (payment $\rightarrow$ trigger generation) and your Mac Mini for complex agent tasks (monitoring, recovery, customer communication, analytics). As you gain confidence, migrate everything to the Mac Mini and cancel Make.com entirely.
+\end{successbox}
+
+\section{Initial Setup}
+
+\step{1} Configure your Mac Mini as an always-on server:
+\begin{actionbox}
+\textbf{System Settings} $\rightarrow$ \textbf{Energy}:\\
+\begin{itemize}[leftmargin=1.5em]
+  \item Enable ``Start up automatically after a power failure''
+  \item Set ``Turn display off after'' to 1 minute (saves energy, Mac keeps running)
+  \item Disable sleep: ``Prevent automatic sleeping when the display is off'' $\rightarrow$ ON
+\end{itemize}
+\textbf{System Settings} $\rightarrow$ \textbf{General} $\rightarrow$ \textbf{Login Items \& Extensions}:\\
+\begin{itemize}[leftmargin=1.5em]
+  \item Add your agent scripts to ``Open at Login'' (we will create these next)
+\end{itemize}
+\end{actionbox}
+
+\step{2} Install the core tools:
+\begin{actionbox}
+Open Terminal on the Mac Mini and run:\\[4pt]
+\texttt{/bin/bash -c "\$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"}\\[4pt]
+Then install everything you need:\\[4pt]
+\texttt{brew install node git}\\
+\texttt{npm install -g @anthropic-ai/claude-code}\\
+\texttt{npm install -g pm2}\\[4pt]
+\textbf{pm2} is a process manager that keeps your agent scripts running 24/7, restarts them if they crash, and provides logs.
+\end{actionbox}
+
+\step{3} Clone your codebase on the Mac Mini:
+\begin{actionbox}
+\texttt{cd \~{}}\\
+\texttt{git clone https://github.com/YourUsername/LLM-books.git}\\
+\texttt{cd LLM-books}
+\end{actionbox}
+
+\section{Agent Architecture}
+
+Your Mac Mini will run several lightweight agent scripts, each handling a specific business function:
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{\textwidth}{lXl}
+\toprule
+\textbf{Agent} & \textbf{Responsibility} & \textbf{Runs} \\
+\midrule
+Order Monitor & Watches for new paid orders, triggers book generation & Continuous \\
+Fulfillment Tracker & Polls Lulu for shipping status updates & Every 4 hours \\
+Failed Job Recovery & Detects and retries failed book generations & Every 30 min \\
+Abandoned Cart Agent & Sends reminder emails for unfinished books & Daily 10 AM \\
+Health Monitor & Checks that all services (Railway, APIs) are up & Every 15 min \\
+Daily Digest Agent & Emails you a summary of orders, revenue, issues & Daily 8 AM \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{Creating Agent Scripts}
+
+Each agent is a simple Node.js or Python script. You do \textbf{not} need to write these yourself---use Claude Code to generate them.
+
+\step{4} Open Claude Code on the Mac Mini:
+\begin{actionbox}
+\texttt{cd \~{}/LLM-books}\\
+\texttt{claude}\\[4pt]
+Then tell Claude:\\[4pt]
+\textit{``Create a directory called agents/ with the following agent scripts:
+\begin{enumerate}[leftmargin=1.5em]
+  \item order-monitor.ts --- polls my backend API every 60 seconds for new paid orders and triggers book generation via POST /api/v1/books/\{id\}/generate
+  \item fulfillment-tracker.ts --- every 4 hours, checks all orders with status SENT\_TO\_PRINT and updates their fulfillment status from Lulu, sends shipping emails when status changes to shipped
+  \item failed-job-recovery.ts --- every 30 minutes, finds books with status FAILED and retries generation up to 3 times
+  \item abandoned-cart.ts --- daily at 10 AM, finds books in DRAFT status older than 24 hours and sends reminder emails
+  \item health-monitor.ts --- every 15 minutes, pings the backend API, Railway, OpenAI, and Stripe to verify they respond, alerts me via email if anything is down
+  \item daily-digest.ts --- every day at 8 AM, compiles yesterday's order count, revenue, failed jobs, and pending issues, and emails me a summary
+\end{enumerate}
+Each script should use environment variables from .env, include proper error handling and logging, and be designed to run under pm2.''}
+\end{actionbox}
+
+\step{5} Claude Code will generate all six scripts. Review them, then start them with pm2:
+\begin{actionbox}
+\texttt{pm2 start agents/order-monitor.ts --name order-monitor}\\
+\texttt{pm2 start agents/fulfillment-tracker.ts --name fulfillment-tracker}\\
+\texttt{pm2 start agents/failed-job-recovery.ts --name failed-recovery}\\
+\texttt{pm2 start agents/abandoned-cart.ts --name abandoned-cart}\\
+\texttt{pm2 start agents/health-monitor.ts --name health-monitor}\\
+\texttt{pm2 start agents/daily-digest.ts --name daily-digest}\\[4pt]
+Save the process list so they survive reboots:\\[4pt]
+\texttt{pm2 save}\\
+\texttt{pm2 startup}\\[4pt]
+pm2 will give you a command to copy/paste---run it to enable auto-start on boot.
+\end{actionbox}
+
+\section{Monitoring Your Agents}
+
+\step{6} Check agent status any time:
+\begin{actionbox}
+\texttt{pm2 status} \quad--- shows all running agents, uptime, restarts, CPU/memory\\
+\texttt{pm2 logs} \quad--- live stream of all agent logs\\
+\texttt{pm2 logs order-monitor} \quad--- logs for a specific agent\\
+\texttt{pm2 monit} \quad--- real-time dashboard
+\end{actionbox}
+
+\section{Advanced: Claude Agent SDK (Optional)}
+
+For even more powerful agents that can \textit{reason} about problems (not just follow rules), you can use the \textbf{Claude Agent SDK} to build agents that call Claude's API to make decisions:
+
+\begin{infobox}
+\textbf{Example:} Instead of a simple ``retry failed jobs'' script, a Claude-powered agent could:
+\begin{itemize}[leftmargin=1.5em, itemsep=2pt]
+  \item Analyze \textit{why} a generation failed (API timeout? content filter? malformed input?)
+  \item Decide whether to retry, modify the prompt and retry, or flag for human review
+  \item Draft a customer apology email if the delay exceeds 24 hours
+  \item Adjust the story prompt to avoid whatever triggered the content filter
+\end{itemize}
+This is the power of AI agents vs.\ simple automation scripts. Your Mac Mini M2 has more than enough power to run these locally.
+\end{infobox}
+
+\section{Remote Access to Your Mac Mini}
+
+You will want to check on your agents when you are away from home.
+
+\step{7} Enable remote access:
+\begin{actionbox}
+\textbf{Option A: SSH (free, terminal only)}\\
+\textbf{System Settings} $\rightarrow$ \textbf{General} $\rightarrow$ \textbf{Sharing} $\rightarrow$ enable \textbf{Remote Login}.\\
+From any other computer: \texttt{ssh yourusername@your-mac-ip}\\[4pt]
+\textbf{Option B: Tailscale (free, works anywhere)}\\
+Install Tailscale (\url{https://tailscale.com}, free for personal use) on both the Mac Mini and your phone/laptop. This creates a secure private network so you can SSH into your Mac Mini from anywhere in the world, even behind a router.\\[4pt]
+\textbf{Option C: Screen Sharing (free, full GUI)}\\
+\textbf{System Settings} $\rightarrow$ \textbf{General} $\rightarrow$ \textbf{Sharing} $\rightarrow$ enable \textbf{Screen Sharing}.\\
+Use the built-in Screen Sharing app on any other Mac to see the full desktop.
+\end{actionbox}
+
+\section{Mac Mini vs.\ Make.com: Migration Path}
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{lX}
+\toprule
+\textbf{Phase} & \textbf{What To Do} \\
+\midrule
+\textbf{Launch (Week 1--4)} & Use Make.com for critical workflows (payment $\rightarrow$ generation). Run Mac Mini agents for monitoring, health checks, and daily digests. \\
+\textbf{Stable (Month 2--3)} & Migrate order processing and fulfillment tracking to Mac Mini agents. Keep Make.com as a backup. \\
+\textbf{Confident (Month 4+)} & Cancel Make.com entirely (\textbf{saves \$11--29/month}). All automation runs on your Mac Mini. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\begin{warningbox}
+\textbf{Downside of self-hosted agents:} If your Mac Mini loses power or internet, your agents stop. Mitigate this with:
+\begin{itemize}[leftmargin=1.5em]
+  \item A UPS (uninterruptible power supply, \$40--80) for short outages
+  \item The health monitor agent emailing you if it detects issues
+  \item Keeping Make.com active for the first few months as a fallback
+  \item Your backend on Railway still processes webhooks regardless---the Mac Mini agents are supplementary
+\end{itemize}
+\end{warningbox}
+
+\section{Chapter 8 Cost Summary}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{lr}
+\toprule
+\textbf{Item} & \textbf{Cost} \\
+\midrule
+Mac Mini M2 (already owned) & \$0.00 \\
+Electricity (\~{}10W idle, 24/7) & \$1--2/month \\
+Tailscale (free personal tier) & \$0.00 \\
+UPS battery backup (optional) & \$40--80 one-time \\
+pm2 (process manager) & \$0.00 \\
+\midrule
+\textbf{Chapter 8 Total} & \textbf{\$0--80 one-time, \$1--2/month} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+
+% ══════════════════════════════════════════════════════════════
+% CHAPTER 9: PRINT-ON-DEMAND
 % ══════════════════════════════════════════════════════════════
 \chapter{Connect Print-on-Demand (Lulu Direct)}
 
