@@ -291,7 +291,7 @@ Let us be clear about what is automated and what is not:
 South Carolina LLC formation & \$125 & \$0 \\
 Domain name (1 year) & \$11 & --- \\
 Hosting (Railway.app Pro) & --- & \$20 \\
-AI coding tool (Bolt.new Pro) & --- & \$20 \\
+AI coding tool (Claude Code via Claude Max) & --- & \$0 (already subscribed) \\
 Automation platform (Make.com Core) & --- & \$11 \\
 Email service (SendGrid Free) & --- & \$0 \\
 Payment processing (Stripe) & --- & Per-transaction \\
@@ -300,14 +300,14 @@ Marketing budget (initial) & \$200 & Variable \\
 Reserve for unexpected costs & \$300 & --- \\
 \midrule
 \textbf{Total Initial Outlay} & \textbf{\$686} & --- \\
-\textbf{Monthly Operating Costs (pre-revenue)} & --- & \textbf{\$51} \\
+\textbf{Monthly Operating Costs (pre-revenue)} & --- & \textbf{\$31} \\
 \textbf{Remaining Reserve} & \textbf{\$1{,}314} & --- \\
 \bottomrule
 \end{tabularx}
 \caption{Startup budget allocation summary}
 \end{table}
 
-\noindent At \$51/month in fixed costs, your \$1{,}314 reserve covers \textbf{25+ months} of operation even with zero revenue. You do not need to rush.
+\noindent At \$31/month in fixed costs, your \$1{,}314 reserve covers \textbf{42+ months} of operation even with zero revenue. You do not need to rush.
 
 % ══════════════════════════════════════════════════════════════
 % CHAPTER 1: FORM YOUR LLC
@@ -653,8 +653,8 @@ Work through this table from top to bottom. Each account takes 3--10 minutes.
 8 & GitHub & Code storage & Free \\
   & \multicolumn{3}{l}{\small\url{https://github.com} --- Where your code lives} \\
 \midrule
-9 & Bolt.new & AI app builder & \$20/mo \\
-  & \multicolumn{3}{l}{\small\url{https://bolt.new} --- For building/modifying the app without coding} \\
+9 & Claude Code (Claude Max) & AI coding assistant & \$0 (included) \\
+  & \multicolumn{3}{l}{\small\url{https://claude.ai/code} --- You already have Claude Max. Use Claude Code to build/modify the app.} \\
 \midrule
 10 & Make.com & Automation workflows & \$10.59/mo \\
    & \multicolumn{3}{l}{\small\url{https://make.com} --- Connects everything together automatically} \\
@@ -776,10 +776,10 @@ SendGrid account (free tier) & \$0.00 \\
 Cloudflare account & \$0.00 \\
 Railway.app (first month) & \$5.00 \\
 GitHub account & \$0.00 \\
-Bolt.new Pro (first month) & \$20.00 \\
+Claude Code (via Claude Max) & \$0.00 (already subscribed) \\
 Make.com Core (first month) & \$10.59 \\
 \midrule
-\textbf{Chapter 4 Total} & \textbf{\$55.59} \\
+\textbf{Chapter 4 Total} & \textbf{\$35.59} \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -787,89 +787,109 @@ Make.com Core (first month) & \$10.59 \\
 % ══════════════════════════════════════════════════════════════
 % CHAPTER 5: BUILD THE APP
 % ══════════════════════════════════════════════════════════════
-\chapter{Build the Application Using AI Coding Tools}
+\chapter{Build the Application Using Claude Code}
 
-You have zero programming experience. That is fine. Modern AI coding tools can build, modify, and fix a web application for you through plain English conversation. You will not write code---you will \textbf{describe what you want} and the AI writes the code.
+You have zero programming experience. That is fine. You already have a \textbf{Claude Max} subscription and use \textbf{Claude Code}---that is the only AI coding tool you need. Claude Code can read your entire codebase, write and edit files, run terminal commands, and deploy your application, all through plain English conversation. You will not write code---you will \textbf{describe what you want} and Claude writes the code.
+
+\begin{successbox}
+\textbf{Advantage of Claude Max:} Because you already pay for Claude Max, your AI coding tool costs \textbf{\$0 extra per month}. Other founders pay \$20--40/month for Cursor, Windsurf, or Bolt.new. You save that entirely.
+\end{successbox}
 
 \section{Understanding the Approach}
 
 Your application has already been architected (the codebase in this repository). The process is:
 
 \begin{enumerate}[leftmargin=2em]
-  \item Use \textbf{Bolt.new} to create a working prototype from the architecture
-  \item Export the code to \textbf{GitHub}
-  \item Use \textbf{Cursor} or \textbf{Windsurf} for ongoing edits and fixes
+  \item Open the codebase in \textbf{Claude Code} (web or CLI)
+  \item Let Claude install dependencies and configure environment variables
   \item Deploy to \textbf{Railway.app}
+  \item Use Claude Code for all future edits, fixes, and feature additions
 \end{enumerate}
 
-\section{Option A: Start from the Existing Codebase (Recommended)}
+\section{Using Claude Code on the Web (Easiest)}
 
-Since the full codebase already exists in this repository, you can skip the Bolt.new prototyping step and deploy directly.
+You can use Claude Code directly in your browser---no software installation required on your computer.
 
-\step{1} Install \textbf{Cursor} on your computer:
+\step{1} Push your code to GitHub (if not already there):
 \begin{actionbox}
-\url{https://cursor.com}\\[4pt]
-Download and install. It looks like a text editor (similar to Microsoft Word, but for code). Sign up for the \textbf{Hobby (free)} plan to start---this gives you a 1-week Pro trial.
+Go to \url{https://github.com} and create a new repository called \texttt{LLM-books}.\\
+Upload the codebase, or use Claude Code to help you push it.
 \end{actionbox}
 
-\step{2} Install \textbf{Git} (the tool that manages code versions):
+\step{2} Open Claude Code in your browser:
+\begin{actionbox}
+Go to \url{https://claude.ai/code}\\[4pt]
+Your Claude Max subscription gives you full access. Claude Code on the web runs in a cloud environment with a terminal, file editor, and Git---everything you need.
+\end{actionbox}
+
+\step{3} Clone and set up the project:
+\begin{actionbox}
+In the Claude Code chat, type:\\[4pt]
+\textit{``Clone my repository at https://github.com/YourUsername/LLM-books.git, install all dependencies for both the backend and frontend, and copy the .env.example files to create my local config files.''}\\[4pt]
+Claude will run all the terminal commands for you automatically.
+\end{actionbox}
+
+\step{4} Configure your API keys:
+\begin{actionbox}
+Tell Claude:\\[4pt]
+\textit{``Help me fill in my backend/.env file. Here are my keys:}\\
+\textit{OpenAI: sk-...}\\
+\textit{Stripe Secret: sk\_live\_...}\\
+\textit{Stripe Publishable: pk\_live\_...}\\
+\textit{SendGrid: SG...}\\
+\textit{Lulu API Key: ...}\\
+\textit{Lulu API Secret: ...''}\\[4pt]
+Claude will edit the \texttt{.env} file with your actual keys.
+\end{actionbox}
+
+\begin{warningbox}
+\textbf{Security note:} Claude Code conversations are private to your account, but as a best practice, avoid pasting API keys into any tool you do not fully trust. Claude Code runs in your own sandboxed environment and does not share your data.
+\end{warningbox}
+
+\step{5} Set up the frontend config:
+\begin{actionbox}
+\textit{``Now set up the frontend/.env.local file with my Stripe publishable key pk\_live\_... and set the API URL to my backend.''}
+\end{actionbox}
+
+\section{Using Claude Code Locally (Alternative)}
+
+If you prefer to run everything on your own computer:
+
+\step{1} Install \textbf{Git} (the tool that manages code versions):
 \begin{actionbox}
 \textbf{On Windows:} Download from \url{https://git-scm.com/download/win} and run the installer. Accept all defaults.\\[4pt]
 \textbf{On Mac:} Open Terminal (search for it in Spotlight) and type \texttt{git --version}. If not installed, it will prompt you to install it.
 \end{actionbox}
 
-\step{3} Install \textbf{Node.js} (the engine that runs the application):
+\step{2} Install \textbf{Node.js} (the engine that runs the application):
 \begin{actionbox}
 \url{https://nodejs.org}\\[4pt]
 Download the \textbf{LTS} version (not ``Current''). Run the installer. Accept all defaults.
 \end{actionbox}
 
-\step{4} Clone (download) the Crayons \& Quills codebase:
+\step{3} Install \textbf{Claude Code CLI}:
 \begin{actionbox}
-Open Cursor. Press \texttt{Ctrl+`} (backtick) to open the built-in terminal. Type:\\[4pt]
-\texttt{git clone https://github.com/YourUsername/LLM-books.git}\\[4pt]
-Then: \texttt{File} $\rightarrow$ \texttt{Open Folder} $\rightarrow$ select the \texttt{LLM-books} folder.
+Open a terminal and run:\\[4pt]
+\texttt{npm install -g @anthropic-ai/claude-code}\\[4pt]
+Then navigate to your project folder and run:\\[4pt]
+\texttt{cd LLM-books}\\
+\texttt{claude}\\[4pt]
+This opens Claude Code in your terminal, connected to your codebase.
 \end{actionbox}
 
-\step{5} Set up the backend:
+\step{4} Let Claude handle setup:
 \begin{actionbox}
-In Cursor's terminal, type these commands one at a time:\\[4pt]
-\texttt{cd backend}\\
-\texttt{npm install}\\
-\texttt{cp .env.example .env}\\[4pt]
-Then open the file \texttt{backend/.env} in Cursor and fill in your real API keys (OpenAI, Stripe, SendGrid, Lulu) from Chapter 4. Use the Cursor AI chat to ask: ``Help me fill in my .env file with my API keys.''
+In the Claude Code prompt, type:\\[4pt]
+\textit{``Install all dependencies for both backend and frontend, copy .env.example files to .env, and help me fill in my API keys.''}\\[4pt]
+Claude runs \texttt{npm install}, copies files, and walks you through the configuration.
 \end{actionbox}
-
-\step{6} Set up the frontend:
-\begin{actionbox}
-\texttt{cd ../frontend}\\
-\texttt{npm install}\\
-\texttt{cp .env.example .env.local}\\[4pt]
-Edit \texttt{frontend/.env.local} with your Stripe publishable key.
-\end{actionbox}
-
-\section{Option B: Build from Scratch with Bolt.new}
-
-If you want to understand how the app works by building it yourself:
-
-\step{1} Go to \url{https://bolt.new}
-
-\step{2} In the chat, describe what you want:
-
-\begin{actionbox}
-Type a prompt like:\\[4pt]
-\textit{``Build me a Next.js web application for a personalized children's book business called Crayons \& Quills. I need: a homepage with hero section and pricing, a 4-step book creation wizard where customers enter a child's name/age/interests and choose book options, a user dashboard showing their books and orders, Stripe payment integration, and an admin panel. Use Tailwind CSS with a purple and orange color scheme. Make it mobile-friendly.''}\\[4pt]
-Bolt will generate the entire application. You can then refine by chatting: ``Make the hero section bigger,'' ``Add a gift wrap checkbox,'' etc.
-\end{actionbox}
-
-\step{3} When satisfied, click \textbf{Export to GitHub} in Bolt.new to save your code.
 
 \section{How to Make Changes Without Coding}
 
-Whenever you need to change something about your app, open Cursor and use the AI chat:
+Whenever you need to change something about your app, open Claude Code and describe what you want:
 
 \begin{infobox}
-\textbf{Example prompts you can type into Cursor's AI chat:}
+\textbf{Example prompts you can type into Claude Code:}
 \begin{itemize}[leftmargin=1.5em, itemsep=4pt]
   \item ``Change the price of the 24-page book from \$29.99 to \$34.99''
   \item ``Add a new landing page for books about unicorns''
@@ -877,9 +897,15 @@ Whenever you need to change something about your app, open Cursor and use the AI
   \item ``Add a field for the child's school name in the wizard''
   \item ``Make the header background darker''
   \item ``Show me which file handles order creation''
+  \item ``Run the tests and fix any failures''
+  \item ``Deploy the latest changes to Railway''
 \end{itemize}
-Cursor reads your entire codebase and makes the changes for you.
+Claude reads your entire codebase, makes the changes, and can commit and push them to GitHub for you.
 \end{infobox}
+
+\begin{successbox}
+\textbf{Pro tip:} You can set up a \textbf{SessionStart hook} in Claude Code so that every time you open the project, it automatically checks for issues, runs the linter, and gives you a status report. Ask Claude: \textit{``Set up a session start hook that checks my project health.''}
+\end{successbox}
 
 \section{Chapter 5 Cost Summary}
 
@@ -889,13 +915,11 @@ Cursor reads your entire codebase and makes the changes for you.
 \toprule
 \textbf{Item} & \textbf{Cost} \\
 \midrule
-Cursor (Hobby/free trial) & \$0.00 \\
-Cursor Pro (if needed, monthly) & \$20.00 \\
+Claude Code (via Claude Max) & \$0.00 (already subscribed) \\
 Node.js & \$0.00 \\
 Git & \$0.00 \\
-Bolt.new Pro (optional, monthly) & \$20.00 \\
 \midrule
-\textbf{Chapter 5 Total} & \textbf{\$0--20.00} \\
+\textbf{Chapter 5 Total} & \textbf{\$0.00} \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -1487,11 +1511,11 @@ Logo design (Canva Pro 1 month, optional) & Brand & \$13.00 \\
 Railway.app hosting (Hobby) & Infrastructure & \$5.00 \\
 Railway compute/database overage & Infrastructure & \$5.00--15.00 \\
 Make.com (Core plan) & Automation & \$10.59 \\
-Cursor Pro (AI code editor) & Development & \$20.00 \\
+Claude Code (via Claude Max) & Development & \$0.00 (already subscribed) \\
 SendGrid (free tier) & Email & \$0.00 \\
 OpenAI API (testing/generation) & AI Services & \$5.00--10.00 \\
 \midrule
-\textbf{Monthly Total (pre-revenue)} & & \textbf{\$45.59--55.59} \\
+\textbf{Monthly Total (pre-revenue)} & & \textbf{\$25.59--35.59} \\
 \bottomrule
 \end{tabularx}
 \end{table}
@@ -1506,15 +1530,15 @@ Total budget & \$2{,}000.00 \\
 Minus one-time costs & --\$413.44 \\
 \midrule
 Remaining for operations & \$1{,}586.56 \\
-Monthly burn rate (estimated) & \$50.00 \\
+Monthly burn rate (estimated) & \$30.00 \\
 \midrule
-\textbf{Months of runway (zero revenue)} & \textbf{31.7 months} \\
+\textbf{Months of runway (zero revenue)} & \textbf{52.9 months} \\
 \bottomrule
 \end{tabular}
 \end{table}
 
 \begin{successbox}
-\textbf{You have nearly 32 months of runway} before you need a single sale. This means you can take your time to get the product right, test thoroughly, and build an audience before revenue pressure hits.
+\textbf{You have over 4 years of runway} before you need a single sale. Because your Claude Max subscription eliminates AI coding tool costs, your monthly burn is remarkably low. Take your time to get the product right, test thoroughly, and build an audience before revenue pressure hits.
 \end{successbox}
 
 \section{When Revenue Starts: Variable Costs Per Sale}
@@ -1547,16 +1571,16 @@ How many books must you sell to cover your monthly fixed costs?
 \centering
 \begin{tabular}{lr}
 \toprule
-Monthly fixed costs & \$50.00 \\
+Monthly fixed costs & \$30.00 \\
 Profit per 24-page book sale & \$18.58 \\
 \midrule
-\textbf{Break-even: books per month} & \textbf{2.7 $\approx$ 3 books} \\
+\textbf{Break-even: books per month} & \textbf{1.6 $\approx$ 2 books} \\
 \bottomrule
 \end{tabular}
 \end{table}
 
 \begin{successbox}
-\textbf{You break even at just 3 sales per month.} That is extremely achievable. At 10 sales/month, you net approximately \$136/month in profit after all costs. At 50 sales/month, approximately \$880/month.
+\textbf{You break even at just 2 sales per month.} That is extremely achievable. At 10 sales/month, you net approximately \$156/month in profit after all costs. At 50 sales/month, approximately \$900/month.
 \end{successbox}
 
 
@@ -1574,12 +1598,12 @@ Profit per 24-page book sale & \$18.58 \\
 \midrule
 Railway hosting & \$10 & \$20 & \$40 & \$80 \\
 Make.com & \$11 & \$11 & \$19 & \$29 \\
-Cursor Pro & \$20 & \$20 & \$20 & \$20 \\
+Claude Code (Claude Max) & \$0 & \$0 & \$0 & \$0 \\
 SendGrid & \$0 & \$0 & \$20 & \$20 \\
 OpenAI API & \$0 & \$25 & \$98 & \$245 \\
 Domain renewal & \$1 & \$1 & \$1 & \$1 \\
 \midrule
-\textbf{Fixed costs} & \textbf{\$42} & \textbf{\$77} & \textbf{\$198} & \textbf{\$395} \\
+\textbf{Fixed costs} & \textbf{\$22} & \textbf{\$57} & \textbf{\$178} & \textbf{\$375} \\
 \midrule
 Printing (50 $\times$ \$4) & --- & \$200 & \$800 & \$2{,}000 \\
 Fulfillment fees & --- & \$88 & \$350 & \$875 \\
@@ -1589,9 +1613,9 @@ Stripe fees & --- & \$59 & \$234 & \$585 \\
 \textbf{Total variable costs} & --- & \$547 & \$2{,}184 & \$5{,}460 \\
 \midrule
 \textbf{Total revenue} (at \$29.99) & \$0 & \$1{,}500 & \$5{,}998 & \$14{,}995 \\
-\textbf{Total costs} & \$42 & \$624 & \$2{,}382 & \$5{,}855 \\
-\textbf{Net Profit} & \textcolor{danger}{--\$42} & \textcolor{success}{\$876} & \textcolor{success}{\$3{,}616} & \textcolor{success}{\$9{,}140} \\
-\textbf{Profit Margin} & --- & 58.4\% & 60.3\% & 60.9\% \\
+\textbf{Total costs} & \$22 & \$604 & \$2{,}362 & \$5{,}835 \\
+\textbf{Net Profit} & \textcolor{danger}{--\$22} & \textcolor{success}{\$896} & \textcolor{success}{\$3{,}636} & \textcolor{success}{\$9{,}160} \\
+\textbf{Profit Margin} & --- & 59.7\% & 60.6\% & 61.1\% \\
 \bottomrule
 \end{tabularx}
 \caption{Monthly P\&L at different order volumes (24-page books at \$29.99)}
@@ -1795,8 +1819,7 @@ SendGrid & sendgrid.com & API Key (\texttt{SG....}) \\
 Railway & railway.app & Login via GitHub \\
 GitHub & github.com & Account login, SSH key \\
 Make.com & make.com & Account login \\
-Cursor & cursor.com & Account login \\
-Bolt.new & bolt.new & Account login \\
+Claude Code (Claude Max) & claude.ai/code & Already logged in via Claude Max \\
 Wave Accounting & waveapps.com & Account login \\
 Google Analytics & analytics.google.com & Measurement ID (\texttt{G-...}) \\
 \bottomrule
@@ -1982,7 +2005,7 @@ A lightweight state management library for React. It stores the customer's selec
 \textbf{Week} & \textbf{Tasks} \\
 \midrule
 \textbf{Week 1} & Form LLC, get EIN, open business bank account, register domain \\
-\textbf{Week 2} & Set up all technology accounts (Chapter 4), install Cursor, clone codebase \\
+\textbf{Week 2} & Set up all technology accounts (Chapter 4), open Claude Code, clone codebase \\
 \textbf{Week 3} & Configure environment variables, deploy to Railway, get site live \\
 \textbf{Week 4} & Set up Stripe products and webhooks, configure Make.com workflows \\
 \textbf{Week 5} & Connect Lulu Direct, order 3 test books, test full order flow \\
