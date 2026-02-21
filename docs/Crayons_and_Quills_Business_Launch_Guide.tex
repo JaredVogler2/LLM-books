@@ -846,9 +846,13 @@ Before you begin, understand what you already have:
 \texttt{backend/src/fulfillment/} & Lulu Direct API integration \\
 \texttt{backend/src/email/} & SendGrid email templates (order confirmation, shipping, etc.) \\
 \texttt{backend/prisma/schema.prisma} & Database schema with 14 models, indexes, and enums \\
-\texttt{frontend/src/app/book/create/} & Multi-step book creation wizard \\
-\texttt{frontend/src/app/dashboard/} & User dashboard for viewing orders and books \\
-\texttt{frontend/src/app/(marketing)/} & SEO-optimized landing pages \\
+\texttt{frontend/src/app/book/create/} & Multi-step book creation wizard (4 steps) \\
+\texttt{frontend/src/app/checkout/[bookId]/} & Checkout page with shipping address form and Stripe payment \\
+\texttt{frontend/src/app/order/confirmation/} & Order confirmation with ``what happens next'' timeline \\
+\texttt{frontend/src/app/dashboard/} & User dashboard with book status tracking, order history, auto-refresh \\
+\texttt{frontend/src/app/auth/login/} & Customer login page \\
+\texttt{frontend/src/app/auth/register/} & Customer registration page with terms acceptance \\
+\texttt{frontend/src/app/(marketing)/} & SEO-optimized landing pages (STEM girls, dinosaur lovers, soccer kids) \\
 \texttt{agents/} & Six Mac Mini agent script stubs (order monitor, fulfillment, etc.) \\
 \texttt{CLAUDE.md} & Persistent instructions for Claude Code sessions \\
 \texttt{.claude/settings.json} & SessionStart hook for automatic project status display \\
@@ -868,6 +872,92 @@ Your remaining steps are:
   \item Test locally (or deploy directly to Railway---see Chapter 6)
   \item Use Claude Code for all future edits, fixes, and feature additions
 \end{enumerate}
+
+\section{How Your Website Works: The Complete Customer Journey}
+
+Understanding the customer journey is essential. Here is exactly what happens when someone visits your site, step by step. \textbf{Every page described below already exists in your codebase.}
+
+\subsection*{Step 1: Customer Arrives at Your Website}
+The customer lands on your \textbf{homepage} (\texttt{frontend/src/app/page.tsx}). They see:
+\begin{itemize}[leftmargin=2em]
+  \item A hero section: ``Where Every Child Is the Hero of Their Own Story''
+  \item A three-step explainer (Tell Us About Your Child $\rightarrow$ Choose Your Book $\rightarrow$ We Create \& Ship)
+  \item Pricing cards (Single Book \$24.99, Birthday Club \$19.99/yr, Adventure Series \$17.99/quarter)
+  \item A call-to-action button: ``Create Your Book''
+\end{itemize}
+
+\subsection*{Step 2: Customer Creates an Account}
+Clicking ``Get Started'' or ``Create Your Book'' takes them to the \textbf{registration page} (\texttt{frontend/src/app/auth/register/page.tsx}). They enter:
+\begin{itemize}[leftmargin=2em]
+  \item First name, last name, email, and password
+  \item The backend creates their account with bcrypt-hashed password and JWT tokens
+  \item They are redirected to the book creation wizard
+\end{itemize}
+Returning customers use the \textbf{login page} (\texttt{frontend/src/app/auth/login/page.tsx}).
+
+\subsection*{Step 3: Book Creation Wizard (4 Steps)}
+The wizard (\texttt{frontend/src/app/book/create/page.tsx}) guides the customer through four steps:
+
+\begin{enumerate}[leftmargin=2em]
+  \item \textbf{Child Info} --- Name, age, interests, favorite colors, personality traits, favorite animals, and story themes. This information is used to personalize the story.
+  \item \textbf{Photo Upload} --- Optional reference photo of the child. Used by the CharacterEngineService to make illustrations look like the child.
+  \item \textbf{Book Options} --- Card-based selectors (not dropdowns) for:
+    \begin{itemize}[leftmargin=1.5em]
+      \item Story type (Bedtime, Rhyming, Adventure, Choose Your Own, STEM)
+      \item Moral lesson (Kindness, Bravery, Sharing, etc.)
+      \item Page count (12, 24, or 36 pages)
+      \item Illustration style (Full Color or Black \& White Coloring Book)
+      \item Binding (Softcover, Hardcover +\$10, Saddle Stitch)
+      \item Paper (Standard, Premium Matte +\$5, Glossy +\$8)
+      \item Book size (8''$\times$8'' Square, 8.5''$\times$11'' Portrait +\$3, 11''$\times$8.5'' Landscape +\$3)
+      \item Add-ons (Audiobook +\$9.99, Digital PDF +\$4.99, Gift Wrap +\$3.99)
+    \end{itemize}
+    A \textbf{live price estimate} updates in real time at the top of the page as the customer selects options. Incompatible combinations (e.g., hardcover + landscape) show validation warnings and prevent checkout.
+  \item \textbf{Review} --- Shows a complete summary of child details, book options, and the estimated price. The customer clicks ``Proceed to Checkout.''
+\end{enumerate}
+
+\subsection*{Step 4: Checkout and Payment}
+The \textbf{checkout page} (\texttt{frontend/src/app/checkout/[bookId]/page.tsx}) has two sub-steps:
+
+\begin{enumerate}[leftmargin=2em]
+  \item \textbf{Shipping} --- The customer enters their full shipping address (name, street, city, state, ZIP), chooses Standard Shipping (\$5.99, 7--14 days) or Express Shipping (\$12.99, 3--5 days), and optionally enters a coupon code.
+  \item \textbf{Payment} --- Stripe Elements renders a secure credit card form directly on your page. You \textit{never} see or handle the customer's card number---Stripe handles all PCI compliance. The customer sees a ``Pay \$XX.XX'' button with the exact total.
+\end{enumerate}
+
+An \textbf{order summary sidebar} is always visible, showing the book details, price breakdown (book + shipping + tax), trust badges (SSL secure, 30-day returns, made with love), and the total.
+
+\begin{infobox}
+\textbf{How Stripe Elements works:} When the customer clicks ``Continue to Payment,'' your backend creates a Stripe PaymentIntent and returns a \texttt{clientSecret}. The frontend uses this secret to render Stripe's pre-built payment form. After the customer pays, Stripe redirects them to your confirmation page. A webhook then notifies your backend that payment succeeded, and the order status updates to ``Paid.'' \textbf{You do not need to write any payment processing code---it is already implemented.}
+\end{infobox}
+
+\subsection*{Step 5: Order Confirmation}
+After successful payment, the customer sees the \textbf{confirmation page} (\texttt{frontend/src/app/order/confirmation/[orderId]/page.tsx}):
+\begin{itemize}[leftmargin=2em]
+  \item A green checkmark and ``Thank You for Your Order!''
+  \item A ``What Happens Next'' timeline showing: AI Story Generation (active, with pulsing animation) $\rightarrow$ Illustration Creation $\rightarrow$ Book Assembly \& Review $\rightarrow$ Printing \& Shipping
+  \item Full order details (order ID, date, items, shipping, tax, total)
+  \item Buttons to ``Go to My Books'' or ``Create Another Book''
+\end{itemize}
+
+\textbf{Behind the scenes:} The confirmation page automatically triggers book generation. The AI starts writing the story immediately after payment is confirmed.
+
+\subsection*{Step 6: Customer Dashboard}
+The \textbf{dashboard} (\texttt{frontend/src/app/dashboard/page.tsx}) is where customers track their books:
+\begin{itemize}[leftmargin=2em]
+  \item \textbf{My Books tab} --- Card grid showing each book with its cover image (or a ``Creating your book\ldots'' spinner during generation), a color-coded status badge (Writing Story, Creating Art, Ready to Review, Shipped, Delivered, etc.), and contextual action buttons:
+    \begin{itemize}[leftmargin=1.5em]
+      \item Draft books: ``Complete Purchase'' button linking to checkout
+      \item Ready books: ``Preview Book'' button to view the PDF
+      \item Digital copies: ``Download PDF'' button
+    \end{itemize}
+  \item \textbf{Orders tab} --- Full order history with price breakdowns (subtotal, shipping, tax, discounts, total)
+  \item \textbf{Auto-refresh} --- When a book is generating, the dashboard automatically checks for status updates every 15 seconds, so the customer can watch their book being created in real time
+  \item \textbf{Sign Out} button and personalized greeting (``Hi, Jane!'')
+\end{itemize}
+
+\begin{successbox}
+\textbf{The complete flow is already built.} Every page described above---homepage, registration, login, wizard, checkout, confirmation, and dashboard---already exists in your codebase as real, working React components with Tailwind CSS styling, API integration, and state management. You do not need to build any of this from scratch.
+\end{successbox}
 
 \section{Using Claude Code on the Web (Easiest)}
 
@@ -1692,6 +1782,49 @@ Select these events:
 Copy the \textbf{Webhook Signing Secret} (starts with \texttt{whsec\_}) and add it to your backend environment variables as \texttt{STRIPE\_WEBHOOK\_SECRET}.
 \end{actionbox}
 
+\section{How the Checkout Payment Flow Works}
+
+This is the technical flow already implemented in your codebase. You do not need to build any of this---it is included so you understand how money moves through your system.
+
+\begin{enumerate}[leftmargin=2em]
+  \item \textbf{Customer fills out shipping address} on the checkout page. They choose standard (\$5.99) or express (\$12.99) shipping.
+  \item \textbf{Frontend calls \texttt{POST /orders}} with the book ID, shipping address, and coupon code. The backend calculates the total: \textit{book price + shipping + tax (8\%) -- discount}.
+  \item \textbf{Frontend calls \texttt{POST /payments/orders/:orderId/pay}}. The backend:
+    \begin{itemize}[leftmargin=1.5em]
+      \item Gets or creates a Stripe Customer for this user
+      \item Creates a Stripe PaymentIntent with the order total
+      \item Returns a \texttt{clientSecret} and \texttt{publishableKey} to the frontend
+    \end{itemize}
+  \item \textbf{Frontend renders Stripe Elements} using the \texttt{clientSecret}. The customer enters their card number directly into Stripe's secure form.
+  \item \textbf{Customer clicks ``Pay.''} Stripe processes the payment and redirects the customer to the confirmation page.
+  \item \textbf{Stripe sends a webhook} to \texttt{POST /payments/webhook}. Your backend verifies the signature, marks the Payment as ``Succeeded'' and the Order as ``Paid.''
+  \item \textbf{The confirmation page triggers book generation} by calling \texttt{POST /books/:id/generate}. The AI starts writing the story immediately.
+\end{enumerate}
+
+\begin{infobox}
+\textbf{You never handle credit card numbers.} Stripe Elements runs in an iframe on your page. Card data goes directly from the customer's browser to Stripe's servers. Your backend only sees a PaymentIntent ID. This means you do \textbf{not} need PCI DSS certification---Stripe handles all payment security for you.
+\end{infobox}
+
+\section{Testing Payments Before Launch}
+
+Before accepting real money, test with Stripe's test mode:
+
+\begin{actionbox}
+\begin{enumerate}[leftmargin=2em]
+  \item In your Stripe Dashboard, make sure the toggle at the top says \textbf{``Test mode''} (not ``Live mode'')
+  \item Use your \textbf{test} API keys (starting with \texttt{sk\_test\_} and \texttt{pk\_test\_}) in your \texttt{.env} file
+  \item Use these test card numbers:
+    \begin{itemize}[leftmargin=1.5em]
+      \item \texttt{4242 4242 4242 4242} --- Succeeds
+      \item \texttt{4000 0000 0000 0002} --- Declines
+      \item \texttt{4000 0025 0000 3155} --- Requires 3D Secure authentication
+    \end{itemize}
+  \item Any future expiry date and any 3-digit CVC will work
+  \item Go through the full checkout flow on your site: wizard $\rightarrow$ checkout $\rightarrow$ payment $\rightarrow$ confirmation
+  \item Check the Stripe Dashboard to confirm the test payment appears
+  \item When ready for real customers, switch to \textbf{live} API keys (starting with \texttt{sk\_live\_} and \texttt{pk\_live\_})
+\end{enumerate}
+\end{actionbox}
 
 % ══════════════════════════════════════════════════════════════
 % CHAPTER 10: PER-BOOK COST ANALYSIS
@@ -2236,12 +2369,28 @@ Complete every item before announcing your business publicly.
   \item[$\square$] Add a \textbf{refund policy} (recommendation: 30-day satisfaction guarantee)
 \end{itemize}
 
+\section{Pre-Launch Testing Checklist}
+
+Before going live, test every part of the customer journey using test API keys:
+
+\begin{enumerate}[leftmargin=2em, itemsep=4pt]
+  \item \textbf{Create an account} --- go to \texttt{/auth/register} and create a test account
+  \item \textbf{Complete the wizard} --- enter child info, skip photo upload, select book options, review
+  \item \textbf{Checkout} --- enter a test shipping address, use Stripe test card \texttt{4242 4242 4242 4242}
+  \item \textbf{Confirmation page} --- verify you see ``Thank You for Your Order'' with the timeline
+  \item \textbf{Dashboard} --- go to \texttt{/dashboard} and verify your book appears with a ``Writing Story'' status
+  \item \textbf{Log out and log back in} --- verify the login page works and redirects to the dashboard
+  \item \textbf{Check Stripe Dashboard} --- confirm the test payment appears in your Stripe test mode
+  \item \textbf{Check the database} --- verify the Order and Payment records exist (use Prisma Studio: \texttt{npx prisma studio})
+\end{enumerate}
+
 \section{Go-Live Steps}
 
 \begin{enumerate}[leftmargin=2em, itemsep=4pt]
   \item Switch Stripe from test mode to \textbf{live mode}
   \item Update all API keys in Railway to live keys
   \item Verify DNS is pointing correctly (domain resolves to your site)
+  \item Test one real purchase with your own credit card (you can refund yourself afterward)
   \item Announce on personal social media
   \item Post in relevant Facebook groups (parenting groups, gift idea groups)
   \item Submit to Product Hunt (\url{https://www.producthunt.com})
@@ -2280,9 +2429,11 @@ Quarterly & 2 hours & Pay estimated taxes, review with CPA \\
 These processes run 24/7/365 with zero intervention:
 
 \begin{enumerate}[leftmargin=2em, itemsep=2pt]
-  \item Customer places order $\rightarrow$ Stripe processes payment
-  \item Payment succeeds $\rightarrow$ Make.com or Mac Mini agent triggers book generation
+  \item Customer visits homepage $\rightarrow$ creates account $\rightarrow$ completes book creation wizard
+  \item Customer enters shipping address on checkout page $\rightarrow$ pays via Stripe Elements
+  \item Payment succeeds $\rightarrow$ confirmation page triggers book generation automatically
   \item AI generates story $\rightarrow$ AI generates illustrations $\rightarrow$ PDF assembled
+  \item Dashboard auto-refreshes every 15 seconds so customer can watch progress
   \item PDF sent to Lulu $\rightarrow$ Book printed and shipped
   \item Customer receives confirmation email, then shipping email with tracking
   \item Subscription renewals auto-bill and auto-generate new books

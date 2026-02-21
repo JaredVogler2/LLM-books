@@ -106,6 +106,10 @@ class ApiClient {
     return this.request<any[]>('/orders');
   }
 
+  async getOrder(orderId: string) {
+    return this.request<any>(`/orders/${orderId}`);
+  }
+
   // Payments
   async createPayment(orderId: string) {
     return this.request<{ clientSecret: string; publishableKey: string }>(

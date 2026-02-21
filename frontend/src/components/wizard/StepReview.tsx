@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
+import { useRouter } from 'next/navigation';
 import { useWizardStore } from '@/lib/store';
 import { api } from '@/lib/api';
 
@@ -8,13 +9,42 @@ interface Props {
   onBack: () => void;
 }
 
+function formatPrice(cents: number): string {
+  return `$${(cents / 100).toFixed(2)}`;
+}
+
+function calculateEstimatedPrice(options: {
+  pageCount: number;
+  bindingType: string;
+  paperType: string;
+  bookSize: string;
+  includeAudiobook: boolean;
+  includeDigitalPdf: boolean;
+  giftWrap: boolean;
+}) {
+  let total = 0;
+  if (options.pageCount <= 12) total += 1999;
+  else if (options.pageCount <= 24) total += 2499;
+  else total += 3499;
+  if (options.bindingType === 'HARDCOVER') total += 1000;
+  if (options.paperType === 'PREMIUM_MATTE') total += 500;
+  else if (options.paperType === 'GLOSSY') total += 800;
+  if (options.bookSize === 'PORTRAIT_8_5X11' || options.bookSize === 'LANDSCAPE_11X8_5') total += 300;
+  if (options.includeAudiobook) total += 999;
+  if (options.includeDigitalPdf) total += 499;
+  if (options.giftWrap) total += 399;
+  return total;
+}
+
 export function StepReview({ onBack }: Props) {
+  const router = useRouter();
   const { childData, bookOptions, referenceImage } = useWizardStore();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState(false);
 
-  const handleCreateBook = async () => {
+  const estimatedPrice = useMemo(() => calculateEstimatedPrice(bookOptions), [bookOptions]);
+
+  const handleProceedToCheckout = async () => {
     setLoading(true);
     setError(null);
 
@@ -31,7 +61,7 @@ export function StepReview({ onBack }: Props) {
         themes: childData.themes,
       });
 
-      // Step 2: Create book
+      // Step 2: Create book configuration (generation starts after payment)
       const book = await api.createBook({
         childProfileId: (child as any).id,
         storyType: bookOptions.storyType,
@@ -47,38 +77,13 @@ export function StepReview({ onBack }: Props) {
         giftWrap: bookOptions.giftWrap,
       });
 
-      // Step 3: Start generation
-      await api.startGeneration(book.id);
-
-      setSuccess(true);
+      // Step 3: Redirect to checkout — payment first, then generation
+      router.push(`/checkout/${book.id}`);
     } catch (err: any) {
       setError(err.message || 'Something went wrong. Please try again.');
-    } finally {
       setLoading(false);
     }
   };
-
-  if (success) {
-    return (
-      <div className="card text-center py-16">
-        <div className="mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-6">
-          <svg className="w-8 h-8 text-green-600" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-          </svg>
-        </div>
-        <h2 className="font-display text-2xl font-bold text-gray-900">
-          Your Book Is Being Created!
-        </h2>
-        <p className="mt-4 text-gray-600 max-w-md mx-auto">
-          Our AI is crafting a unique story and illustrations for {childData.name}.
-          We&apos;ll notify you when it&apos;s ready for review.
-        </p>
-        <a href="/dashboard" className="btn-primary mt-8 inline-block">
-          Go to My Books
-        </a>
-      </div>
-    );
-  }
 
   return (
     <div className="card space-y-6">
@@ -98,6 +103,16 @@ export function StepReview({ onBack }: Props) {
           {childData.themes.length > 0 && (
             <div className="col-span-2">
               <span className="text-gray-500">Themes:</span> {childData.themes.join(', ')}
+            </div>
+          )}
+          {childData.favoriteAnimals.length > 0 && (
+            <div className="col-span-2">
+              <span className="text-gray-500">Favorite Animals:</span> {childData.favoriteAnimals.join(', ')}
+            </div>
+          )}
+          {childData.personalityTraits.length > 0 && (
+            <div className="col-span-2">
+              <span className="text-gray-500">Personality:</span> {childData.personalityTraits.join(', ')}
             </div>
           )}
         </div>
@@ -127,9 +142,9 @@ export function StepReview({ onBack }: Props) {
         </div>
         {(bookOptions.includeAudiobook || bookOptions.includeDigitalPdf || bookOptions.giftWrap) && (
           <div className="mt-2 flex flex-wrap gap-2">
-            {bookOptions.includeAudiobook && <span className="text-xs bg-primary-100 text-primary-700 px-2 py-1 rounded-full">Audiobook</span>}
-            {bookOptions.includeDigitalPdf && <span className="text-xs bg-primary-100 text-primary-700 px-2 py-1 rounded-full">Digital PDF</span>}
-            {bookOptions.giftWrap && <span className="text-xs bg-primary-100 text-primary-700 px-2 py-1 rounded-full">Gift Wrap</span>}
+            {bookOptions.includeAudiobook && <span className="text-xs bg-primary-100 text-primary-700 px-2 py-1 rounded-full">Audiobook +$9.99</span>}
+            {bookOptions.includeDigitalPdf && <span className="text-xs bg-primary-100 text-primary-700 px-2 py-1 rounded-full">Digital PDF +$4.99</span>}
+            {bookOptions.giftWrap && <span className="text-xs bg-primary-100 text-primary-700 px-2 py-1 rounded-full">Gift Wrap +$3.99</span>}
           </div>
         )}
       </div>
@@ -141,8 +156,17 @@ export function StepReview({ onBack }: Props) {
         </div>
       )}
 
+      {/* Price Summary */}
+      <div className="rounded-xl bg-primary-50 border border-primary-200 p-4">
+        <div className="flex items-center justify-between">
+          <span className="text-sm font-semibold text-primary-800">Estimated Book Price</span>
+          <span className="text-2xl font-bold text-primary-900">{formatPrice(estimatedPrice)}</span>
+        </div>
+        <p className="text-xs text-primary-600 mt-1">Shipping and tax calculated at checkout.</p>
+      </div>
+
       {error && (
-        <div className="rounded-xl bg-red-50 p-4 text-sm text-red-700">
+        <div className="rounded-xl bg-red-50 border border-red-200 p-4 text-sm text-red-700">
           {error}
         </div>
       )}
@@ -152,11 +176,11 @@ export function StepReview({ onBack }: Props) {
           Back
         </button>
         <button
-          onClick={handleCreateBook}
+          onClick={handleProceedToCheckout}
           disabled={loading}
           className="btn-primary disabled:opacity-50"
         >
-          {loading ? 'Creating...' : 'Create My Book'}
+          {loading ? 'Preparing...' : 'Proceed to Checkout'}
         </button>
       </div>
     </div>
