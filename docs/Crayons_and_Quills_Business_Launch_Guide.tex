@@ -1700,62 +1700,173 @@ Copy the \textbf{Webhook Signing Secret} (starts with \texttt{whsec\_}) and add 
 
 This is the most important chapter for your business planning. Every number here is based on real pricing as of February 2026.
 
-\section{AI Generation Costs}
+\section{AI Story Generation Costs: Claude vs.\ OpenAI}
 
-\subsection{Text Generation (Story + Illustration Prompts)}
+Choosing the right AI model for story generation is critical---it directly affects the quality of your product. Children's book stories require creative prose, age-appropriate vocabulary, narrative coherence, and natural-sounding personalization. This section compares every viable API model as of February 2026.
 
-We use \textbf{GPT-4o} for story generation. Pricing: \cost{\$2.50} per 1 million input tokens, \cost{\$10.00} per 1 million output tokens.
+\subsection{Token Usage for a 30-Page Book}
+
+Each book generation requires several API calls. Here is the estimated token usage:
 
 \begin{table}[H]
 \centering
-\begin{tabularx}{\textwidth}{Xrrrr}
+\small
+\begin{tabularx}{\textwidth}{Xrrr}
 \toprule
-\textbf{Task} & \textbf{Input Tokens} & \textbf{Output Tokens} & \textbf{Cost (24pg)} & \textbf{Cost (50pg)} \\
+\textbf{Pipeline Stage} & \textbf{Input Tokens} & \textbf{Output Tokens} & \textbf{API Calls} \\
 \midrule
-Story outline generation & 700 & 800 & \$0.010 & \$0.010 \\
-Page-by-page story text & 1{,}500 & 2{,}800 & \$0.032 & \$0.066 \\
-Illustration prompt generation & 2{,}000 & 3{,}000 & \$0.035 & \$0.073 \\
-Content safety validation & 3{,}500 & 600 & \$0.015 & \$0.027 \\
-Character description (if photo) & 500 & 400 & \$0.005 & \$0.005 \\
+Story outline generation & 800 & 1{,}200 & 1 \\
+Page-by-page story text (30 pages) & 8{,}000 & 4{,}000 & 2--3 \\
+Illustration prompt generation (16 images) & 4{,}900 & 2{,}400 & 1--2 \\
+Content safety validation & 4{,}500 & 800 & 1 \\
+Character description (from photo, optional) & 800 & 500 & 1 \\
 \midrule
-\textbf{Text generation subtotal} & & & \textbf{\$0.097} & \textbf{\$0.181} \\
+\textbf{Total} & \textbf{19{,}000} & \textbf{8{,}900} & \textbf{6--8} \\
 \bottomrule
 \end{tabularx}
-\caption{GPT-4o text generation costs per book}
+\caption{Token usage for a 30-page personalized children's book}
+\end{table}
+
+\subsection{Cost Per Model: Full Comparison}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{\textwidth}{Xrrrr}
+\toprule
+\textbf{Model} & \textbf{Input \$/1M} & \textbf{Output \$/1M} & \textbf{Cost/Book} & \textbf{Creative Quality} \\
+\midrule
+\multicolumn{5}{l}{\textit{Anthropic Claude (recommended for story text):}} \\
+\textbf{Claude Opus 4.6} & \$5.00 & \$25.00 & \cost{\$0.32} & Best in class \\
+\textbf{Claude Sonnet 4.5} & \$3.00 & \$15.00 & \cost{\$0.19} & Excellent \\
+Claude Haiku 4.5 & \$1.00 & \$5.00 & \cost{\$0.064} & Good \\
+\midrule
+\multicolumn{5}{l}{\textit{OpenAI GPT (good alternative for structured tasks):}} \\
+GPT-4.1 & \$2.00 & \$8.00 & \cost{\$0.11} & Very good \\
+GPT-4o & \$2.50 & \$10.00 & \cost{\$0.13} & Very good \\
+GPT-4.1 Mini & \$0.40 & \$1.60 & \cost{\$0.022} & Acceptable \\
+GPT-4o Mini & \$0.15 & \$0.60 & \cost{\$0.008} & Fair \\
+GPT-4.1 Nano & \$0.10 & \$0.40 & \cost{\$0.006} & Low \\
+\midrule
+\multicolumn{5}{l}{\textit{OpenAI Reasoning Models (not recommended for creative writing):}} \\
+o3 & \$2.00 & \$8.00 & \cost{\$0.15--0.30*} & Overkill \\
+o4-mini & \$1.10 & \$4.40 & \cost{\$0.10--0.20*} & Overkill \\
+\bottomrule
+\end{tabularx}
+\caption{Story generation cost per 30-page book by model. *O-series costs are unpredictable due to hidden reasoning tokens.}
+\end{table}
+
+\begin{warningbox}
+\textbf{Avoid O-series reasoning models} (o1, o3, o4-mini) for story generation. These models consume invisible ``reasoning tokens'' billed as output that can 3--5$\times$ the actual cost. They are designed for math/logic problems, not creative writing. Use Claude or GPT-4.1 instead.
+\end{warningbox}
+
+\subsection{Why Claude Excels at Children's Stories}
+
+In independent benchmarks and community evaluations, Claude models consistently outperform GPT models for creative fiction writing. Specifically:
+
+\begin{itemize}[leftmargin=2em, itemsep=2pt]
+  \item \textbf{Natural prose:} Claude produces more vivid, flowing narrative text that sounds like a real children's book author
+  \item \textbf{Age-appropriate voice:} Claude better adapts vocabulary and sentence complexity to the target age range (e.g., simpler words for ages 3--5, richer language for ages 8--10)
+  \item \textbf{Character consistency:} Claude maintains the child's personality traits and interests throughout the story without forced references
+  \item \textbf{Moral lesson integration:} Claude weaves themes naturally into the narrative rather than adding preachy lessons at the end
+  \item \textbf{Read-aloud quality:} Claude's prose has better rhythm and cadence---important for books parents read aloud
+  \item \textbf{Personalization:} Claude integrates the child's name, interests, and details in a way that feels organic, not template-like
+\end{itemize}
+
+\begin{successbox}
+\textbf{Recommended configuration:} Use \textbf{Claude Sonnet 4.5} for story outline and page-by-page text generation (where creative quality is paramount), and \textbf{GPT-4.1} for illustration prompt generation and safety validation (where structured output matters more than prose quality). This hybrid approach costs approximately \textbf{\$0.21 per book}---and with batch processing, as low as \textbf{\$0.11 per book}.
+\end{successbox}
+
+\subsection{Recommended Hybrid Pipeline}
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{lXrr}
+\toprule
+\textbf{Stage} & \textbf{Model} & \textbf{Cost} & \textbf{Why This Model} \\
+\midrule
+Story outline & Claude Sonnet 4.5 & \$0.02 & Best narrative structure \\
+Page-by-page text & Claude Sonnet 4.5 & \$0.15 & Best creative prose \\
+Illustration prompts & GPT-4.1 & \$0.03 & Structured visual descriptions \\
+Safety validation & GPT-4.1 Nano & \$0.003 & Simple classification, cheapest \\
+Character description & GPT-4o (vision) & \$0.01 & Vision model for photo analysis \\
+\midrule
+\textbf{Total per book} & & \textbf{\$0.21} & \\
+\textbf{With batch API (50\% off)} & & \textbf{\$0.11} & \\
+\bottomrule
+\end{tabularx}
+\caption{Recommended hybrid pipeline: Claude for story quality, GPT for structured tasks}
 \end{table}
 
 \begin{infobox}
-\textbf{Cost-saving option:} Use \textbf{GPT-4o Mini} (\$0.15/M input, \$0.60/M output) for story text and safety validation, and reserve GPT-4o only for illustration prompt generation (where quality matters most). This drops text costs to approximately \textbf{\$0.01--0.02 per book}.
+\textbf{Batch processing:} Both Anthropic and OpenAI offer a \textbf{Batch API} with 50\% off all token costs. Results are returned within 24 hours instead of immediately. Since book generation already takes 5--15 minutes (mostly waiting for illustrations), the batch API is a natural fit. Configure your backend to use batch endpoints for non-urgent generations.
 \end{infobox}
 
-\subsection{Image Generation (Illustrations)}
-
-You specified images on \textbf{every other page}, plus a cover image.
+\subsection{Alternative Configurations}
 
 \begin{table}[H]
 \centering
+\small
+\begin{tabularx}{\textwidth}{lXrr}
+\toprule
+\textbf{Config} & \textbf{Models Used} & \textbf{Cost/Book} & \textbf{Quality} \\
+\midrule
+\textbf{Premium} & Claude Opus 4.6 (all text) + GPT-4o (prompts) & \$0.37 & Best possible \\
+\textbf{Recommended} & Claude Sonnet 4.5 (text) + GPT-4.1 (prompts) & \$0.21 & Excellent \\
+\textbf{Budget} & Claude Haiku 4.5 (text) + GPT-4.1 Mini (prompts) & \$0.08 & Good \\
+\textbf{Minimum} & GPT-4.1 (text) + GPT-4.1 Nano (prompts) & \$0.05 & Acceptable \\
+\bottomrule
+\end{tabularx}
+\caption{Four configuration options from premium to minimum cost}
+\end{table}
+
+\begin{warningbox}
+\textbf{Do not use the ``Minimum'' configuration for paying customers.} GPT-4.1 Nano produces noticeably lower-quality prose. It is acceptable for testing and development but not for a product parents are paying \$25--45 for. The difference between ``Recommended'' (\$0.21) and ``Minimum'' (\$0.05) is only \textbf{16 cents per book}---that is not worth sacrificing quality.
+\end{warningbox}
+
+\subsection{Anthropic API Note: Using Claude Without Extra Cost}
+
+You already pay for \textbf{Claude Max}, which gives you unlimited Claude Code usage. However, Claude Max does \textbf{not} include API access for your backend. To use Claude Sonnet 4.5 in your production pipeline, you need a separate \textbf{Anthropic API account} at \url{https://console.anthropic.com}:
+
+\begin{actionbox}
+\step{1} Go to \url{https://console.anthropic.com} and create an account (or log in with your existing Anthropic account).\\[4pt]
+\step{2} Add a payment method (your business debit card).\\[4pt]
+\step{3} Add \cost{\$20} in prepaid credits. At \$0.21/book, this covers approximately \textbf{95 books} of story generation.\\[4pt]
+\step{4} Create an API key. Save it in Bitwarden and add it to your \texttt{backend/.env} as \texttt{ANTHROPIC\_API\_KEY}.\\[4pt]
+\step{5} Set a monthly spending limit of \cost{\$50} under Settings $\rightarrow$ Limits to protect yourself.
+\end{actionbox}
+
+\subsection{Image Generation (Illustrations)}
+
+Every other page gets an illustration, plus a cover image:
+
+\noindent \textbf{Image count by page count:}
+\begin{itemize}[leftmargin=2em]
+  \item 12-page book: 6 interior illustrations + 1 cover = \textbf{7 images}
+  \item 24-page book: 12 interior illustrations + 1 cover = \textbf{13 images}
+  \item 30-page book: 15 interior illustrations + 1 cover = \textbf{16 images}
+  \item 36-page book: 18 interior illustrations + 1 cover = \textbf{19 images}
+\end{itemize}
+
+\begin{table}[H]
+\centering
+\small
 \begin{tabularx}{\textwidth}{Xrrrrr}
 \toprule
-\textbf{Provider} & \textbf{Per Image} & \textbf{13 imgs} & \textbf{26 imgs} & \textbf{Quality} \\
-& & \textbf{(24pg)} & \textbf{(50pg)} & \\
+\textbf{Provider} & \textbf{Per Image} & \textbf{13 imgs} & \textbf{16 imgs} & \textbf{19 imgs} & \textbf{Quality} \\
+& & \textbf{(24pg)} & \textbf{(30pg)} & \textbf{(36pg)} \\
 \midrule
-DALL-E 3 HD & \$0.080 & \$1.04 & \$2.08 & Excellent \\
-DALL-E 3 Standard & \$0.040 & \$0.52 & \$1.04 & Very Good \\
-Flux.2 Pro (BFL) & \$0.030 & \$0.39 & \$0.78 & Excellent \\
-Stability AI Core & \$0.030 & \$0.39 & \$0.78 & Good \\
-Leonardo AI & $\sim$\$0.015 & \$0.20 & \$0.39 & Very Good \\
-Flux.1 Schnell & \$0.003 & \$0.04 & \$0.08 & Good \\
-GPT Image Mini & \$0.005 & \$0.07 & \$0.13 & Good \\
+DALL-E 3 HD & \$0.080 & \$1.04 & \$1.28 & \$1.52 & Excellent \\
+DALL-E 3 Standard & \$0.040 & \$0.52 & \$0.64 & \$0.76 & Very Good \\
+Flux.2 Pro (BFL) & \$0.030 & \$0.39 & \$0.48 & \$0.57 & Excellent \\
+Stability AI Core & \$0.030 & \$0.39 & \$0.48 & \$0.57 & Good \\
+Leonardo AI & $\sim$\$0.015 & \$0.20 & \$0.24 & \$0.29 & Very Good \\
+GPT Image Mini & \$0.005 & \$0.07 & \$0.08 & \$0.10 & Good \\
+Flux.1 Schnell & \$0.003 & \$0.04 & \$0.05 & \$0.06 & Good \\
 \bottomrule
 \end{tabularx}
 \caption{Image generation costs per book (every other page + cover)}
 \end{table}
-
-\noindent \textbf{Image count calculation:}
-\begin{itemize}[leftmargin=2em]
-  \item 24-page book: 12 interior illustrations + 1 cover = \textbf{13 images}
-  \item 50-page book: 25 interior illustrations + 1 cover = \textbf{26 images}
-\end{itemize}
 
 \section{Printing and Fulfillment Costs}
 
