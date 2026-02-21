@@ -36,6 +36,42 @@ export class UsersService {
     });
   }
 
+  async updateProfile(
+    id: string,
+    data: { firstName?: string; lastName?: string },
+  ): Promise<User> {
+    return this.prisma.user.update({
+      where: { id },
+      data,
+    });
+  }
+
+  async updatePassword(id: string, passwordHash: string): Promise<void> {
+    await this.prisma.user.update({
+      where: { id },
+      data: { passwordHash },
+    });
+  }
+
+  async updateEmail(id: string, email: string): Promise<User> {
+    return this.prisma.user.update({
+      where: { id },
+      data: { email, emailVerified: false },
+    });
+  }
+
+  async markEmailVerified(id: string): Promise<void> {
+    await this.prisma.user.update({
+      where: { id },
+      data: { emailVerified: true, emailVerifiedAt: new Date() },
+    });
+  }
+
+  async deleteAccount(id: string): Promise<void> {
+    // Prisma cascade deletes children, books, orders, subscriptions
+    await this.prisma.user.delete({ where: { id } });
+  }
+
   async updateStripeCustomerId(
     id: string,
     stripeCustomerId: string,

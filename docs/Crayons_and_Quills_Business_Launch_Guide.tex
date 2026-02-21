@@ -836,7 +836,7 @@ Before you begin, understand what you already have:
 \toprule
 \textbf{Directory / File} & \textbf{What It Contains} \\
 \midrule
-\texttt{backend/src/auth/} & JWT authentication with refresh tokens, login/register endpoints \\
+\texttt{backend/src/auth/} & JWT authentication, login/register, password reset, email verification, account lockout \\
 \texttt{backend/src/books/} & Book CRUD endpoints and generation trigger \\
 \texttt{backend/src/ai/story/} & StoryEngineService --- generates age-appropriate stories via GPT-4o \\
 \texttt{backend/src/ai/illustration/} & IllustrationEngineService --- generates images via DALL-E 3 \\
@@ -850,8 +850,13 @@ Before you begin, understand what you already have:
 \texttt{frontend/src/app/checkout/[bookId]/} & Checkout page with shipping address form and Stripe payment \\
 \texttt{frontend/src/app/order/confirmation/} & Order confirmation with ``what happens next'' timeline \\
 \texttt{frontend/src/app/dashboard/} & User dashboard with book status tracking, order history, auto-refresh \\
-\texttt{frontend/src/app/auth/login/} & Customer login page \\
-\texttt{frontend/src/app/auth/register/} & Customer registration page with terms acceptance \\
+\texttt{frontend/src/app/auth/login/} & Customer login page with forgot-password link \\
+\texttt{frontend/src/app/auth/register/} & Customer registration page with password strength rules \\
+\texttt{frontend/src/app/auth/forgot-password/} & ``Forgot password'' form --- sends reset link to email \\
+\texttt{frontend/src/app/auth/reset-password/} & Set new password page (accessed via email link) \\
+\texttt{frontend/src/app/auth/verify-email/} & Email verification page (accessed via email link) \\
+\texttt{frontend/src/app/account/} & Account settings: profile editing, password change, subscriptions, delete \\
+\texttt{backend/src/users/users.controller.ts} & Profile update, password change, account deletion endpoints \\
 \texttt{frontend/src/app/(marketing)/} & SEO-optimized landing pages (STEM girls, dinosaur lovers, soccer kids) \\
 \texttt{agents/} & Six Mac Mini agent script stubs (order monitor, fulfillment, etc.) \\
 \texttt{CLAUDE.md} & Persistent instructions for Claude Code sessions \\
@@ -957,6 +962,103 @@ The \textbf{dashboard} (\texttt{frontend/src/app/dashboard/page.tsx}) is where c
 
 \begin{successbox}
 \textbf{The complete flow is already built.} Every page described above---homepage, registration, login, wizard, checkout, confirmation, and dashboard---already exists in your codebase as real, working React components with Tailwind CSS styling, API integration, and state management. You do not need to build any of this from scratch.
+\end{successbox}
+
+\section{How Your Website Keeps Customers Secure}
+
+Modern customers expect the same level of security they get from Amazon or Netflix. Your application implements all the industry-standard security features that professional websites use. Here is exactly what is built and how each feature protects your customers.
+
+\subsection*{Password Security}
+
+\begin{itemize}[leftmargin=2em]
+  \item \textbf{Strong password requirements} --- Every password must be at least 8 characters long and include at least one uppercase letter (A--Z), one lowercase letter (a--z), and one number (0--9). The system enforces this on both the registration page \emph{and} the backend server, so it cannot be bypassed.
+  \item \textbf{Secure password storage} --- Passwords are never stored in readable form. They are ``hashed'' using bcrypt with 12 rounds of salting. Even if someone gained access to your database, they could not read any customer's password. This is the same method used by companies like Dropbox and GitHub.
+  \item \textbf{Password change requires current password} --- When customers change their password in Account Settings, they must enter their existing password first. This prevents unauthorized changes even if someone gains temporary access to a logged-in session.
+\end{itemize}
+
+\subsection*{Forgot Password / Password Reset}
+
+If a customer forgets their password, they can reset it securely:
+
+\begin{enumerate}[leftmargin=2em]
+  \item Customer clicks ``Forgot password?'' on the login page (\texttt{/auth/forgot-password})
+  \item They enter their email address and click ``Send Reset Link''
+  \item If the email exists in the system, a password reset email is sent with a secure one-time link
+  \item The link expires after \textbf{1 hour} for security
+  \item Customer clicks the link, which opens the reset page (\texttt{/auth/reset-password?token=...})
+  \item They enter and confirm their new password (must meet strength requirements)
+  \item Password is updated immediately---customer can sign in with their new password
+\end{enumerate}
+
+\begin{tipbox}
+\textbf{Anti-enumeration protection:} The ``forgot password'' page always shows a success message, even if the email is not registered. This prevents attackers from discovering which email addresses have accounts on your site.
+\end{tipbox}
+
+\subsection*{Email Verification}
+
+When a customer registers, they receive an email with a verification link:
+
+\begin{itemize}[leftmargin=2em]
+  \item The verification link is valid for \textbf{7 days}
+  \item Clicking the link opens the verification page (\texttt{/auth/verify-email?token=...})
+  \item The page shows a spinner while verifying, then a success or error message
+  \item If the customer did not receive the email or the link expired, they can resend the verification from their Account Settings page
+  \item A yellow banner appears at the top of Account Settings reminding unverified customers to check their inbox
+\end{itemize}
+
+\subsection*{Account Lockout (Brute Force Protection)}
+
+If someone tries to guess a customer's password by trying many times:
+
+\begin{itemize}[leftmargin=2em]
+  \item After \textbf{5 failed login attempts}, the account is temporarily locked
+  \item The lockout lasts for \textbf{15 minutes}
+  \item The customer sees a message telling them how many minutes to wait
+  \item After 15 minutes, they can try again
+  \item A successful login clears the failed attempt counter
+\end{itemize}
+
+This prevents automated ``password guessing'' attacks, which is how many accounts get compromised on less-secure websites.
+
+\subsection*{Account Settings Page}
+
+Logged-in customers can access their Account Settings (\texttt{/account}) by clicking their name in the navigation bar. The page has three tabs:
+
+\begin{enumerate}[leftmargin=2em]
+  \item \textbf{Profile} --- Edit first name and last name. Email is shown but cannot be changed directly (for security, customers must contact support to change their email).
+  \item \textbf{Security} --- Change password (requires entering current password first). Also contains the ``Delete Account'' section for customers who want to permanently remove their data.
+  \item \textbf{Subscriptions} --- View active subscriptions with their status (Active, Cancelled, etc.) and renewal dates. Customers can cancel subscriptions directly from this page.
+\end{enumerate}
+
+\subsection*{Account Deletion (GDPR/CCPA Compliance)}
+
+Customers have the right to delete their account and all associated data:
+
+\begin{itemize}[leftmargin=2em]
+  \item Located in the Security tab of Account Settings
+  \item Requires entering their password to confirm (prevents accidental deletion)
+  \item Permanently deletes: their account, all saved books, order history, subscriptions, and child profiles
+  \item This action \textbf{cannot be undone}---the page makes this very clear with a red warning
+  \item Complies with GDPR (European privacy law) and CCPA (California privacy law), which require that businesses let users delete their data on request
+\end{itemize}
+
+\subsection*{Logged-In Navigation}
+
+The website header changes depending on whether a customer is logged in:
+
+\begin{itemize}[leftmargin=2em]
+  \item \textbf{Not logged in:} Shows ``Sign In'' and ``Get Started'' buttons
+  \item \textbf{Logged in:} Shows the customer's first name with their initial in a colored circle. Clicking their name opens a dropdown menu with:
+    \begin{itemize}[leftmargin=1.5em]
+      \item My Books (dashboard)
+      \item Account Settings
+      \item Sign Out
+    \end{itemize}
+  \item The mobile menu (for phones and tablets) also adapts based on login status
+\end{itemize}
+
+\begin{successbox}
+\textbf{All security features are already built.} Password hashing, login lockout, email verification, password reset, account deletion, and the Account Settings page are all implemented in your codebase. These are the same security patterns used by companies like Stripe, Notion, and Shopify.
 \end{successbox}
 
 \section{Using Claude Code on the Web (Easiest)}
@@ -2355,6 +2457,10 @@ Complete every item before announcing your business publicly.
   \item[$\square$] Verify Make.com automations trigger correctly (check execution history) and/or Mac Mini agents are running (\texttt{pm2 status})
   \item[$\square$] Test the refund flow (process a test refund through Stripe)
   \item[$\square$] Check all landing pages load correctly and have proper SEO meta tags
+  \item[$\square$] Test ``Forgot Password'' flow (request reset, check email, set new password, log in)
+  \item[$\square$] Test email verification (register, click verification link in email)
+  \item[$\square$] Test account lockout (enter wrong password 5 times, confirm lockout message appears)
+  \item[$\square$] Test account deletion from Account Settings $\rightarrow$ Security tab
   \item[$\square$] Verify your domain has HTTPS (padlock icon in browser)
   \item[$\square$] Set up Google Analytics (free) at \url{https://analytics.google.com}
 \end{itemize}

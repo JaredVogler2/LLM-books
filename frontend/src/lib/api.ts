@@ -130,9 +130,62 @@ class ApiClient {
     return this.request<any[]>('/subscriptions');
   }
 
+  async cancelSubscription(id: string) {
+    return this.request(`/subscriptions/${id}`, { method: 'DELETE' });
+  }
+
   // User
   async getProfile() {
     return this.request<any>('/users/me');
+  }
+
+  async updateProfile(data: { firstName?: string; lastName?: string }) {
+    return this.request<any>('/users/me', {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async changePassword(currentPassword: string, newPassword: string) {
+    return this.request<{ message: string }>('/users/me/password', {
+      method: 'PUT',
+      body: JSON.stringify({ currentPassword, newPassword }),
+    });
+  }
+
+  async deleteAccount(password: string) {
+    return this.request<{ message: string }>('/users/me', {
+      method: 'DELETE',
+      body: JSON.stringify({ password }),
+    });
+  }
+
+  // Auth - Password Reset & Email Verification
+  async forgotPassword(email: string) {
+    return this.request<{ message: string }>('/auth/forgot-password', {
+      method: 'POST',
+      body: JSON.stringify({ email }),
+    });
+  }
+
+  async resetPassword(token: string, newPassword: string) {
+    return this.request<{ message: string }>('/auth/reset-password', {
+      method: 'POST',
+      body: JSON.stringify({ token, newPassword }),
+    });
+  }
+
+  async verifyEmail(token: string) {
+    return this.request<{ message: string }>('/auth/verify-email', {
+      method: 'POST',
+      body: JSON.stringify({ token }),
+    });
+  }
+
+  async resendVerification() {
+    return this.request<{ message: string }>('/auth/resend-verification', {
+      method: 'POST',
+    });
   }
 }
 

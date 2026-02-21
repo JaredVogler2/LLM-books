@@ -56,6 +56,20 @@ const TEMPLATES: Record<string, string> = {
     <p>Your digital copy of "{{bookTitle}}" is ready to download.</p>
     <p><a href="{{downloadUrl}}">Download PDF</a></p>
   `,
+  'password-reset': `
+    <h1>Reset Your Password</h1>
+    <p>Hi {{firstName}},</p>
+    <p>We received a request to reset your Crayons & Quills password.</p>
+    <p><a href="{{resetUrl}}" style="display:inline-block;background:#6d28d9;color:#fff;padding:12px 24px;border-radius:8px;text-decoration:none;font-weight:bold;">Reset Password</a></p>
+    <p style="color:#666;font-size:13px;">This link expires in 1 hour. If you didn't request this, you can safely ignore this email.</p>
+  `,
+  'email-verification': `
+    <h1>Verify Your Email</h1>
+    <p>Hi {{firstName}},</p>
+    <p>Welcome to Crayons & Quills! Please verify your email address to get the most out of your account.</p>
+    <p><a href="{{verifyUrl}}" style="display:inline-block;background:#6d28d9;color:#fff;padding:12px 24px;border-radius:8px;text-decoration:none;font-weight:bold;">Verify Email</a></p>
+    <p style="color:#666;font-size:13px;">This link expires in 7 days.</p>
+  `,
 };
 
 @Injectable()
