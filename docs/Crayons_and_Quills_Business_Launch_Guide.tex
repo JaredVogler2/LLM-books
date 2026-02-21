@@ -275,7 +275,7 @@ Let us be clear about what is automated and what is not:
 \begin{successbox}
 \textbf{What AI Agents Handle Automatically:}
 \begin{itemize}[leftmargin=1.5em, itemsep=2pt]
-  \item Story and illustration generation (OpenAI API)
+  \item Story generation (OpenAI API) and illustration generation (Flux.2 Pro via FAL.ai)
   \item PDF assembly and quality checks
   \item Order submission to print partner (Lulu)
   \item Payment processing (Stripe)
@@ -650,8 +650,11 @@ Work through this table from top to bottom. Each account takes 3--10 minutes.
 1 & Bitwarden & Password manager & Free \\
   & \multicolumn{3}{l}{\small\url{https://bitwarden.com} --- Store all your passwords here first} \\
 \midrule
-2 & OpenAI Platform & AI text and image generation & Pay-as-you-go \\
+2 & OpenAI Platform & AI text generation (stories) & Pay-as-you-go \\
   & \multicolumn{3}{l}{\small\url{https://platform.openai.com} --- Add \$20 in credits to start} \\
+\midrule
+2b & FAL.ai & AI image generation (Flux.2 Pro) & Pay-as-you-go \\
+  & \multicolumn{3}{l}{\small\url{https://fal.ai} --- Add \$10 in credits to start (\$0.03/image)} \\
 \midrule
 3 & Stripe & Payment processing & Free + fees \\
   & \multicolumn{3}{l}{\small\url{https://stripe.com} --- Requires EIN and business bank account} \\
@@ -684,19 +687,39 @@ Work through this table from top to bottom. Each account takes 3--10 minutes.
 
 \section{Detailed Setup: OpenAI Platform}
 
-This is the ``brain'' of your business---it generates stories and illustrations.
+OpenAI handles \textbf{text generation only} (stories, illustration prompts, character analysis). Image generation uses FAL.ai (see next section).
 
 \step{5} Go to \url{https://platform.openai.com} and create an account.
 
 \step{6} Navigate to \textbf{Settings} $\rightarrow$ \textbf{Billing}. Add a payment method (your business debit card).
 
-\step{7} Add \cost{\$20} in prepaid credits. This is enough to generate approximately 20--25 complete books during testing.
+\step{7} Add \cost{\$20} in prepaid credits. This is enough to generate approximately 80--100 complete book \textit{stories} during testing (text is cheap).
 
 \step{8} Navigate to \textbf{API Keys}. Click \textbf{Create new secret key}. Name it ``Crayons \& Quills Production.'' \textbf{Copy this key immediately}---you will never see it again. Save it in Bitwarden.
 
 \begin{warningbox}
 \textbf{Never share your API key.} Never paste it into a public website, email, or chat. Anyone with this key can run up charges on your account. Set a monthly spending limit under \textbf{Settings} $\rightarrow$ \textbf{Limits} to protect yourself. Set it to \cost{\$50/month} initially.
 \end{warningbox}
+
+\section{Detailed Setup: FAL.ai (Flux.2 Pro Image Generation)}
+
+FAL.ai provides access to \textbf{Flux.2 Pro}, our image generation model for illustrations. Flux.2 Pro (by Black Forest Labs) produces excellent children's book illustrations at \cost{\$0.03/image}---better prompt adherence and fewer false content-filter rejections than DALL-E 3.
+
+\step{8b} Go to \url{https://fal.ai} and create an account.
+
+\step{8c} Navigate to \textbf{Billing} in your dashboard. Add a payment method and add \cost{\$10} in prepaid credits. This is enough for approximately 300+ images (about 20 complete books).
+
+\step{8d} Navigate to \textbf{Keys} (or \textbf{API Keys}). Click \textbf{Create Key}. Name it ``Crayons \& Quills Production.'' Copy the key and save it in Bitwarden.
+
+\step{8e} In your backend \texttt{.env} file, set:
+\begin{verbatim}
+FAL_API_KEY=your-fal-api-key-here
+FAL_IMAGE_MODEL=fal-ai/flux-pro/v1.1
+\end{verbatim}
+
+\begin{infobox}
+\textbf{Why Flux.2 Pro over DALL-E 3?} Three reasons: (1) \textbf{Better quality}---Flux excels at watercolor and storybook illustration styles. (2) \textbf{Cheaper}---\$0.03/image vs \$0.08/image for DALL-E 3 HD. (3) \textbf{Fewer false rejections}---DALL-E 3 sometimes blocks perfectly innocent children's book prompts. Flux.2 Pro has a configurable safety tolerance that avoids this issue while still blocking genuinely unsafe content.
+\end{infobox}
 
 \section{Detailed Setup: Stripe}
 
@@ -839,7 +862,7 @@ Before you begin, understand what you already have:
 \texttt{backend/src/auth/} & JWT authentication, login/register, password reset, email verification, account lockout \\
 \texttt{backend/src/books/} & Book CRUD endpoints and generation trigger \\
 \texttt{backend/src/ai/story/} & StoryEngineService --- generates age-appropriate stories via GPT-4o \\
-\texttt{backend/src/ai/illustration/} & IllustrationEngineService --- generates images via DALL-E 3 \\
+\texttt{backend/src/ai/illustration/} & IllustrationEngineService --- generates images via Flux.2 Pro (FAL.ai) \\
 \texttt{backend/src/ai/character/} & CharacterEngineService --- GPT-4 Vision character extraction \\
 \texttt{backend/src/ai/pdf/} & PdfAssemblyService --- print-ready and digital PDF generation \\
 \texttt{backend/src/payments/} & Stripe integration with webhook handling \\

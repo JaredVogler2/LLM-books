@@ -24,8 +24,8 @@
 │  │                    External Services                        │  │
 │  │  ┌──────────┐ ┌───────────┐ ┌──────────┐ ┌─────────────┐ │  │
 │  │  │ OpenAI   │ │ Stripe    │ │ SendGrid │ │ Print-on-   │ │  │
-│  │  │ (GPT/    │ │ (Payments)│ │ (Email)  │ │ Demand      │ │  │
-│  │  │  DALL-E) │ │           │ │          │ │ (Lulu       │ │  │
+│  │  │ (GPT) +  │ │ (Payments)│ │ (Email)  │ │ Demand      │ │  │
+│  │  │ FAL.ai   │ │           │ │          │ │ (Lulu       │ │  │
 │  │  │          │ │           │ │          │ │  Direct)    │ │  │
 │  │  └──────────┘ └───────────┘ └──────────┘ └─────────────┘ │  │
 │  └────────────────────────────────────────────────────────────┘  │
@@ -66,7 +66,7 @@
 
 ### AI Services Layer
 - **StoryEngineService**: Parameterized story generation with age-appropriate vocabulary
-- **IllustrationEngineService**: DALL-E 3 image generation with print-quality upscaling
+- **IllustrationEngineService**: Flux.2 Pro (via FAL.ai) image generation with print-quality upscaling
 - **CharacterEngineService**: GPT-4 Vision character extraction + consistency locking
 - **PdfAssemblyService**: PDFKit-based print-ready and digital PDF generation
 

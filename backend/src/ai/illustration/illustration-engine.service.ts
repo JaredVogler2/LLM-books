@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import OpenAI from 'openai';
+import { fal } from '@fal-ai/client';
 import * as sharp from 'sharp';
 import { PrismaService } from '../../common/prisma.service';
 import { StorageService } from '../../common/storage.service';
@@ -8,14 +8,13 @@ import { StorageService } from '../../common/storage.service';
 @Injectable()
 export class IllustrationEngineService {
   private readonly logger = new Logger(IllustrationEngineService.name);
-  private readonly openai: OpenAI;
 
   constructor(
     private config: ConfigService,
     private prisma: PrismaService,
     private storage: StorageService,
   ) {
-    this.openai = new OpenAI({ apiKey: config.get('OPENAI_API_KEY') });
+    fal.config({ credentials: config.get<string>('FAL_API_KEY') });
   }
 
   async generatePageIllustration(
@@ -48,20 +47,7 @@ export class IllustrationEngineService {
 
     const fullPrompt = `${stylePrefix}\n\n${characterLock}\n\nSCENE: ${page.illustrationPrompt}\n\nIMPORTANT: Child-safe content only. No scary elements. Warm, inviting atmosphere.`;
 
-    const response = await this.openai.images.generate({
-      model: this.config.get('OPENAI_IMAGE_MODEL', 'dall-e-3'),
-      prompt: fullPrompt,
-      n: 1,
-      size: '1024x1024',
-      quality: 'hd',
-      style: 'vivid',
-    });
-
-    const imageUrl = response.data[0].url!;
-
-    // Download and process for print quality
-    const imageResponse = await fetch(imageUrl);
-    const imageBuffer = Buffer.from(await imageResponse.arrayBuffer());
+    const imageBuffer = await this.generateWithFlux(fullPrompt, 1024, 1024);
 
     // Upscale to 300 DPI print resolution (2400x2400 for 8x8 at 300 DPI)
     const processedBuffer = await sharp(imageBuffer)
@@ -135,18 +121,7 @@ export class IllustrationEngineService {
 
     const prompt = `Children's book cover illustration. Title: "${book.title}". Featuring ${characterDesc}. Vibrant, eye-catching, whimsical watercolor style. Central character prominently displayed. Magical, inviting atmosphere. High quality, 300 DPI. Child-safe content only.`;
 
-    const response = await this.openai.images.generate({
-      model: this.config.get('OPENAI_IMAGE_MODEL', 'dall-e-3'),
-      prompt,
-      n: 1,
-      size: '1024x1024',
-      quality: 'hd',
-      style: 'vivid',
-    });
-
-    const imageUrl = response.data[0].url!;
-    const imageResponse = await fetch(imageUrl);
-    const imageBuffer = Buffer.from(await imageResponse.arrayBuffer());
+    const imageBuffer = await this.generateWithFlux(prompt, 1024, 1024);
 
     const processedBuffer = await sharp(imageBuffer)
       .resize(2550, 2550, { fit: 'cover', kernel: 'lanczos3' })
@@ -167,5 +142,29 @@ export class IllustrationEngineService {
 
     this.logger.log(`Generated cover for book ${bookId}`);
     return storageKey;
+  }
+
+  private async generateWithFlux(
+    prompt: string,
+    width: number,
+    height: number,
+  ): Promise<Buffer> {
+    const model = this.config.get<string>(
+      'FAL_IMAGE_MODEL',
+      'fal-ai/flux-pro/v1.1',
+    );
+
+    const result = await fal.subscribe(model, {
+      input: {
+        prompt,
+        image_size: { width, height },
+        num_images: 1,
+        safety_tolerance: '2',
+      },
+    });
+
+    const imageUrl = result.data.images[0].url;
+    const response = await fetch(imageUrl);
+    return Buffer.from(await response.arrayBuffer());
   }
 }

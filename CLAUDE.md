@@ -8,7 +8,7 @@ create illustrations, assemble a print-ready PDF, and ship a physical book via L
 ## Tech Stack
 - **Frontend:** Next.js 14, Tailwind CSS, Zustand, Stripe Elements, Framer Motion
 - **Backend:** NestJS, Prisma ORM, PostgreSQL, Redis, BullMQ
-- **AI:** OpenAI GPT-4o (story), DALL-E 3 / Flux.2 Pro (illustrations), PDFKit (assembly)
+- **AI:** OpenAI GPT-4o (story), Flux.2 Pro via FAL.ai (illustrations), PDFKit (assembly)
 - **Payments:** Stripe (one-time + subscriptions)
 - **Print:** Lulu Direct API (primary print-on-demand partner)
 - **Email:** SendGrid (transactional)
