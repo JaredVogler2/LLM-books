@@ -4,6 +4,7 @@ import { StoryEngineService } from './story/story-engine.service';
 import { IllustrationEngineService } from './illustration/illustration-engine.service';
 import { CharacterEngineService } from './character/character-engine.service';
 import { PdfAssemblyService } from './pdf/pdf-assembly.service';
+import { ContentSafetyService } from './safety/content-safety.service';
 import { BookGenerationProcessor } from './book-generation.processor';
 
 @Module({
@@ -14,6 +15,7 @@ import { BookGenerationProcessor } from './book-generation.processor';
     ),
   ],
   providers: [
+    ContentSafetyService,
     StoryEngineService,
     IllustrationEngineService,
     CharacterEngineService,
@@ -21,6 +23,7 @@ import { BookGenerationProcessor } from './book-generation.processor';
     BookGenerationProcessor,
   ],
   exports: [
+    ContentSafetyService,
     StoryEngineService,
     IllustrationEngineService,
     CharacterEngineService,

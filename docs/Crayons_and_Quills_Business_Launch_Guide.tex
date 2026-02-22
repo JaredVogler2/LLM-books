@@ -685,20 +685,45 @@ Work through this table from top to bottom. Each account takes 3--10 minutes.
 \bottomrule
 \end{longtable}
 
-\section{Detailed Setup: OpenAI Platform}
+\section{Detailed Setup: Anthropic API (Primary --- Story Generation \& Safety)}
 
-OpenAI handles \textbf{text generation only} (stories, illustration prompts, character analysis). Image generation uses FAL.ai (see next section).
+Anthropic's Claude Opus 4.6 is your \textbf{primary AI model} for all creative writing (story outlines, page-by-page text). Claude Haiku 4.5 handles all five layers of your content safety pipeline. This is separate from your Claude Max subscription---you need an \textbf{API account} for your backend to call Claude programmatically.
 
-\step{5} Go to \url{https://platform.openai.com} and create an account.
+\step{5} Go to \url{https://console.anthropic.com} and create an account using your business email.
 
-\step{6} Navigate to \textbf{Settings} $\rightarrow$ \textbf{Billing}. Add a payment method (your business debit card).
+\step{5b} Navigate to \textbf{Settings} $\rightarrow$ \textbf{Billing}. Add a payment method (your business debit card).
 
-\step{7} Add \cost{\$20} in prepaid credits. This is enough to generate approximately 80--100 complete book \textit{stories} during testing (text is cheap).
+\step{5c} Add \cost{\$25} in prepaid credits. At \$0.40 per book for story generation + \$0.03 per book for safety checks, this covers approximately 55--60 complete books during testing.
 
-\step{8} Navigate to \textbf{API Keys}. Click \textbf{Create new secret key}. Name it ``Crayons \& Quills Production.'' \textbf{Copy this key immediately}---you will never see it again. Save it in Bitwarden.
+\step{5d} Navigate to \textbf{API Keys}. Click \textbf{Create Key}. Name it ``Crayons \& Quills Production.'' \textbf{Copy this key immediately}---you will never see it again. Save it in Bitwarden.
+
+\step{5e} In your backend \texttt{.env} file, set:
+\begin{verbatim}
+ANTHROPIC_API_KEY=your-anthropic-api-key-here
+ANTHROPIC_STORY_MODEL=claude-opus-4-6
+ANTHROPIC_SAFETY_MODEL=claude-haiku-4-5-20251001
+\end{verbatim}
+
+\step{5f} Set a monthly spending limit under \textbf{Settings} $\rightarrow$ \textbf{Limits} to \cost{\$100/month} initially. This covers up to $\sim$230 books/month. Increase as volume grows.
 
 \begin{warningbox}
-\textbf{Never share your API key.} Never paste it into a public website, email, or chat. Anyone with this key can run up charges on your account. Set a monthly spending limit under \textbf{Settings} $\rightarrow$ \textbf{Limits} to protect yourself. Set it to \cost{\$50/month} initially.
+\textbf{Anthropic API $\neq$ Claude Max.} Your Claude Max subscription gives you unlimited Claude Code usage for \textit{development}. But your production backend needs a separate API account at \url{https://console.anthropic.com} to call Claude programmatically. These are billed independently.
+\end{warningbox}
+
+\section{Detailed Setup: OpenAI Platform (Secondary --- Vision \& Character Analysis)}
+
+OpenAI handles \textbf{character vision analysis only} (extracting physical features from child photos using GPT-4o Vision). Story generation uses Anthropic (see above). Image generation uses FAL.ai (see next section).
+
+\step{6} Go to \url{https://platform.openai.com} and create an account.
+
+\step{6b} Navigate to \textbf{Settings} $\rightarrow$ \textbf{Billing}. Add a payment method (your business debit card).
+
+\step{6c} Add \cost{\$10} in prepaid credits. OpenAI is only used for character photo analysis now (one call per character profile at $\sim$\$0.01 each). This covers hundreds of character profiles.
+
+\step{6d} Navigate to \textbf{API Keys}. Click \textbf{Create new secret key}. Name it ``Crayons \& Quills Production.'' \textbf{Copy this key immediately}---you will never see it again. Save it in Bitwarden.
+
+\begin{warningbox}
+\textbf{Never share your API keys.} Never paste them into a public website, email, or chat. Anyone with these keys can run up charges on your account. Set monthly spending limits on both Anthropic and OpenAI to protect yourself.
 \end{warningbox}
 
 \section{Detailed Setup: FAL.ai (Flux.2 Pro Image Generation)}
@@ -715,10 +740,15 @@ FAL.ai provides access to \textbf{Flux.2 Pro}, our image generation model for il
 \begin{verbatim}
 FAL_API_KEY=your-fal-api-key-here
 FAL_IMAGE_MODEL=fal-ai/flux-pro/v1.1
+FAL_IP_ADAPTER_MODEL=fal-ai/flux/dev/ip-adapter
 \end{verbatim}
 
 \begin{infobox}
 \textbf{Why Flux.2 Pro over DALL-E 3?} Three reasons: (1) \textbf{Better quality}---Flux excels at watercolor and storybook illustration styles. (2) \textbf{Cheaper}---\$0.03/image vs \$0.08/image for DALL-E 3 HD. (3) \textbf{Fewer false rejections}---DALL-E 3 sometimes blocks perfectly innocent children's book prompts. Flux.2 Pro has a configurable safety tolerance that avoids this issue while still blocking genuinely unsafe content.
+\end{infobox}
+
+\begin{infobox}
+\textbf{Character consistency via IP-Adapter:} Your system generates a ``hero pose'' reference image of the child character during profile creation. For every subsequent page illustration, the IP-Adapter model takes this reference image as input, anchoring the character's visual features (face shape, hair, eyes, proportions) so the same child appears on every page. Combined with seed locking, this produces recognizably consistent characters across all 13--19 images in a book.
 \end{infobox}
 
 \section{Detailed Setup: Stripe}
@@ -861,9 +891,10 @@ Before you begin, understand what you already have:
 \midrule
 \texttt{backend/src/auth/} & JWT authentication, login/register, password reset, email verification, account lockout \\
 \texttt{backend/src/books/} & Book CRUD endpoints and generation trigger \\
-\texttt{backend/src/ai/story/} & StoryEngineService --- generates age-appropriate stories via GPT-4o \\
-\texttt{backend/src/ai/illustration/} & IllustrationEngineService --- generates images via Flux.2 Pro (FAL.ai) \\
-\texttt{backend/src/ai/character/} & CharacterEngineService --- GPT-4 Vision character extraction \\
+\texttt{backend/src/ai/story/} & StoryEngineService --- generates age-appropriate stories via Claude Opus 4.6 \\
+\texttt{backend/src/ai/illustration/} & IllustrationEngineService --- generates images via Flux.2 Pro with IP-Adapter character consistency \\
+\texttt{backend/src/ai/character/} & CharacterEngineService --- GPT-4o Vision character extraction + reference image generation \\
+\texttt{backend/src/ai/safety/} & ContentSafetyService --- 5-layer gate-based child safety pipeline (Claude Haiku 4.5) \\
 \texttt{backend/src/ai/pdf/} & PdfAssemblyService --- print-ready and digital PDF generation \\
 \texttt{backend/src/payments/} & Stripe integration with webhook handling \\
 \texttt{backend/src/fulfillment/} & Lulu Direct API integration \\
@@ -2032,10 +2063,10 @@ In independent benchmarks and community evaluations, Claude models consistently 
 \end{itemize}
 
 \begin{successbox}
-\textbf{Recommended configuration:} Use \textbf{Claude Sonnet 4.5} for story outline and page-by-page text generation (where creative quality is paramount), and \textbf{GPT-4.1} for illustration prompt generation and safety validation (where structured output matters more than prose quality). This hybrid approach costs approximately \textbf{\$0.21 per book}---and with batch processing, as low as \textbf{\$0.11 per book}.
+\textbf{Recommended configuration:} Use \textbf{Claude Opus 4.6} for story outline and page-by-page text generation (the absolute best creative quality), \textbf{Claude Haiku 4.5} for the 5-layer content safety pipeline, and \textbf{GPT-4o} for character vision analysis. Combined with \textbf{Flux.2 Pro + IP-Adapter} for character-consistent illustrations, this produces the highest-quality product at approximately \textbf{\$0.43 per book} for all AI costs.
 \end{successbox}
 
-\subsection{Recommended Hybrid Pipeline}
+\subsection{Recommended Premium Pipeline}
 
 \begin{table}[H]
 \centering
@@ -2043,21 +2074,63 @@ In independent benchmarks and community evaluations, Claude models consistently 
 \toprule
 \textbf{Stage} & \textbf{Model} & \textbf{Cost} & \textbf{Why This Model} \\
 \midrule
-Story outline & Claude Sonnet 4.5 & \$0.02 & Best narrative structure \\
-Page-by-page text & Claude Sonnet 4.5 & \$0.15 & Best creative prose \\
-Illustration prompts & GPT-4.1 & \$0.03 & Structured visual descriptions \\
-Safety validation & GPT-4.1 Nano & \$0.003 & Simple classification, cheapest \\
-Character description & GPT-4o (vision) & \$0.01 & Vision model for photo analysis \\
+Story outline & Claude Opus 4.6 & \$0.10 & Best narrative structure and creative depth \\
+Page-by-page text & Claude Opus 4.6 & \$0.27 & Best creative prose, read-aloud quality \\
+Illustration prompts & Claude Opus 4.6 & included & Generated alongside page text \\
+Safety pipeline (5 gates) & Claude Haiku 4.5 & \$0.03 & Fast, cheap classification at every stage \\
+Character vision analysis & GPT-4o (vision) & \$0.01 & Best structured vision output \\
+Character reference image & Flux.2 Pro & \$0.03 & Anchor image for IP-Adapter consistency \\
 \midrule
-\textbf{Total per book} & & \textbf{\$0.21} & \\
-\textbf{With batch API (50\% off)} & & \textbf{\$0.11} & \\
+\textbf{Total AI text per book} & & \textbf{\$0.43} & \\
+\textbf{With batch API (50\% off)} & & \textbf{\$0.22} & \\
 \bottomrule
 \end{tabularx}
-\caption{Recommended hybrid pipeline: Claude for story quality, GPT for structured tasks}
+\caption{Recommended premium pipeline: Claude Opus 4.6 for best-in-class story quality}
 \end{table}
 
 \begin{infobox}
 \textbf{Batch processing:} Both Anthropic and OpenAI offer a \textbf{Batch API} with 50\% off all token costs. Results are returned within 24 hours instead of immediately. Since book generation already takes 5--15 minutes (mostly waiting for illustrations), the batch API is a natural fit. Configure your backend to use batch endpoints for non-urgent generations.
+\end{infobox}
+
+\subsection{Content Safety Architecture (5-Layer Gate System)}
+
+Your codebase includes a \texttt{ContentSafetyService} that enforces child safety at \textbf{five checkpoints} throughout the generation pipeline. Every gate \textbf{blocks} unsafe content (not merely warns)---if a gate fails, the content is either rejected or automatically regenerated.
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{\textwidth}{clXl}
+\toprule
+\textbf{Gate} & \textbf{Stage} & \textbf{What It Checks} & \textbf{Action on Failure} \\
+\midrule
+1 & User inputs & Profanity, inappropriate themes, prompt injection in name/interests/themes & Block order \\
+2 & Story text & Age-appropriateness, emotional safety, violence, stereotypes, scary content & Regenerate story \\
+3 & Illustration prompts & Scary imagery, violence, inappropriate depictions before sending to Flux & Regenerate prompt \\
+4 & Generated images & Child safety of AI-generated images via Claude Vision review & Regenerate image \\
+5 & Uploaded photos & Appropriateness of parent-uploaded child photos & Block upload \\
+\bottomrule
+\end{tabularx}
+\caption{Five-layer content safety pipeline --- all gates use Claude Haiku 4.5 (\$0.003/check)}
+\end{table}
+
+\begin{warningbox}
+\textbf{Safety is non-negotiable for a children's product.} The total cost of the 5-gate safety pipeline is approximately \textbf{\$0.03 per book} (about 15--20 Haiku calls). This is the single most important \$0.03 you will spend. A single inappropriate image or story reaching a child's printed book could destroy your business reputation. The safety gates automatically regenerate content that fails checks---parents never see the failed versions.
+\end{warningbox}
+
+\subsection{Character Consistency Architecture}
+
+Maintaining the \textbf{same character appearance across all 13--19 illustrations} in a book is the hardest technical challenge. Your codebase solves this with a three-layer approach:
+
+\begin{enumerate}[leftmargin=2em]
+  \item \textbf{Detailed character profile:} GPT-4o Vision analyzes the child's photo (or Claude Opus 4.6 generates a detailed description from manual input) to create an extremely specific physical description---face shape, hair specifics, eye color, skin tone, proportions, and signature features.
+
+  \item \textbf{Character reference image:} A canonical ``hero pose'' illustration is generated via Flux.2 Pro---the character standing front-facing on a white background. This becomes the visual anchor for the entire book.
+
+  \item \textbf{IP-Adapter + seed locking:} Every subsequent page illustration is generated using the \texttt{fal-ai/flux/dev/ip-adapter} model, which takes the reference image as input alongside the scene prompt. Combined with a consistent random seed, the character's visual features (face, hair, proportions) remain anchored across all pages while the scenes, poses, and environments change naturally.
+\end{enumerate}
+
+\begin{infobox}
+\textbf{IP-Adapter scale:} The system uses an IP-Adapter scale of \textbf{0.7}, which balances character fidelity (the child looks the same) with scene creativity (backgrounds and poses vary naturally). If characters look too similar across pages, lower to 0.5. If they diverge too much, raise to 0.85. This is configurable in \texttt{IllustrationEngineService}.
 \end{infobox}
 
 \subsection{Alternative Configurations}
@@ -2069,30 +2142,22 @@ Character description & GPT-4o (vision) & \$0.01 & Vision model for photo analys
 \toprule
 \textbf{Config} & \textbf{Models Used} & \textbf{Cost/Book} & \textbf{Quality} \\
 \midrule
-\textbf{Premium} & Claude Opus 4.6 (all text) + GPT-4o (prompts) & \$0.37 & Best possible \\
-\textbf{Recommended} & Claude Sonnet 4.5 (text) + GPT-4.1 (prompts) & \$0.21 & Excellent \\
-\textbf{Budget} & Claude Haiku 4.5 (text) + GPT-4.1 Mini (prompts) & \$0.08 & Good \\
-\textbf{Minimum} & GPT-4.1 (text) + GPT-4.1 Nano (prompts) & \$0.05 & Acceptable \\
+\textbf{Premium (Recommended)} & Claude Opus 4.6 (text) + Haiku 4.5 (safety) + GPT-4o (vision) & \$0.43 & Best possible \\
+\textbf{Value} & Claude Sonnet 4.5 (text) + Haiku 4.5 (safety) + GPT-4o (vision) & \$0.25 & Excellent \\
+\textbf{Budget} & Claude Haiku 4.5 (all text + safety) & \$0.11 & Good \\
+\textbf{Minimum} & GPT-4.1 (text) + GPT-4.1 Nano (safety) & \$0.08 & Acceptable \\
 \bottomrule
 \end{tabularx}
 \caption{Four configuration options from premium to minimum cost}
 \end{table}
 
 \begin{warningbox}
-\textbf{Do not use the ``Minimum'' configuration for paying customers.} GPT-4.1 Nano produces noticeably lower-quality prose. It is acceptable for testing and development but not for a product parents are paying \$25--45 for. The difference between ``Recommended'' (\$0.21) and ``Minimum'' (\$0.05) is only \textbf{16 cents per book}---that is not worth sacrificing quality.
+\textbf{Use the Premium configuration.} The difference between Premium (\$0.43) and Minimum (\$0.08) is only \textbf{35 cents per book}. On a \$29.99 book, that is 1.2\% of revenue. Parents are paying for a \textit{premium personalized product}---the story quality is the single biggest differentiator. Claude Opus 4.6 produces noticeably better prose than any other model. Do not sacrifice the core product experience to save 35 cents.
 \end{warningbox}
 
 \subsection{Anthropic API Note: Using Claude Without Extra Cost}
 
-You already pay for \textbf{Claude Max}, which gives you unlimited Claude Code usage. However, Claude Max does \textbf{not} include API access for your backend. To use Claude Sonnet 4.5 in your production pipeline, you need a separate \textbf{Anthropic API account} at \url{https://console.anthropic.com}:
-
-\begin{actionbox}
-\step{1} Go to \url{https://console.anthropic.com} and create an account (or log in with your existing Anthropic account).\\[4pt]
-\step{2} Add a payment method (your business debit card).\\[4pt]
-\step{3} Add \cost{\$20} in prepaid credits. At \$0.21/book, this covers approximately \textbf{95 books} of story generation.\\[4pt]
-\step{4} Create an API key. Save it in Bitwarden and add it to your \texttt{backend/.env} as \texttt{ANTHROPIC\_API\_KEY}.\\[4pt]
-\step{5} Set a monthly spending limit of \cost{\$50} under Settings $\rightarrow$ Limits to protect yourself.
-\end{actionbox}
+You already pay for \textbf{Claude Max}, which gives you unlimited Claude Code usage for \textit{development}. However, Claude Max does \textbf{not} include API access for your backend. To use Claude Opus 4.6 in your production pipeline, you need a separate \textbf{Anthropic API account} (see Detailed Setup in Chapter 4).
 
 \subsection{Image Generation (Illustrations)}
 
@@ -2155,7 +2220,9 @@ Shipping (standard domestic) & \$3.00--5.00 & \$3.50--6.00 \\
 
 Here is the \textbf{total cost to produce and ship one book}, under three scenarios:
 
-\subsection{Scenario A: Premium Quality (DALL-E 3 HD)}
+\subsection{Scenario A: Premium Quality --- Recommended (Claude Opus 4.6 + Flux.2 Pro)}
+
+This is the \textbf{recommended configuration}. Claude Opus 4.6 produces the best creative prose, Flux.2 Pro with IP-Adapter produces consistent character illustrations, and the 5-layer safety pipeline ensures every book is child-safe.
 
 \begin{table}[H]
 \centering
@@ -2163,23 +2230,25 @@ Here is the \textbf{total cost to produce and ship one book}, under three scenar
 \toprule
 \textbf{Cost Component} & \textbf{24-Page} & \textbf{50-Page} \\
 \midrule
-AI text generation (GPT-4o) & \$0.10 & \$0.18 \\
-AI images (DALL-E 3 HD, 13/26 imgs) & \$1.04 & \$2.08 \\
+AI text generation (Claude Opus 4.6) & \$0.40 & \$0.72 \\
+AI safety pipeline (Claude Haiku 4.5, 5 gates) & \$0.03 & \$0.05 \\
+AI character analysis (GPT-4o vision) & \$0.01 & \$0.01 \\
+AI images (Flux.2 Pro + IP-Adapter, 14/27 imgs) & \$0.42 & \$0.81 \\
 Lulu printing & \$4.00 & \$7.00 \\
 Lulu fulfillment fee & \$1.75 & \$1.75 \\
 Shipping (standard) & \$4.00 & \$4.50 \\
 Stripe fee (on \$29.99 / \$44.99 sale) & \$1.17 & \$1.60 \\
 \midrule
-\textbf{Total COGS} & \textbf{\$12.06} & \textbf{\$17.11} \\
+\textbf{Total COGS} & \textbf{\$11.78} & \textbf{\$16.44} \\
 \textbf{Revenue at listed price} & \$29.99 & \$44.99 \\
-\textbf{Gross Profit} & \textcolor{success}{\textbf{\$17.93}} & \textcolor{success}{\textbf{\$27.88}} \\
-\textbf{Gross Margin} & \textcolor{success}{\textbf{59.8\%}} & \textcolor{success}{\textbf{62.0\%}} \\
+\textbf{Gross Profit} & \textcolor{success}{\textbf{\$18.21}} & \textcolor{success}{\textbf{\$28.55}} \\
+\textbf{Gross Margin} & \textcolor{success}{\textbf{60.7\%}} & \textcolor{success}{\textbf{63.5\%}} \\
 \bottomrule
 \end{tabular}
-\caption{Scenario A: DALL-E 3 HD --- Premium quality}
+\caption{Scenario A: Claude Opus 4.6 + Flux.2 Pro --- Best possible quality (Recommended)}
 \end{table}
 
-\subsection{Scenario B: Balanced (Flux.2 Pro --- Recommended)}
+\subsection{Scenario B: Value (Claude Sonnet 4.5 + Flux.2 Pro)}
 
 \begin{table}[H]
 \centering
@@ -2187,23 +2256,25 @@ Stripe fee (on \$29.99 / \$44.99 sale) & \$1.17 & \$1.60 \\
 \toprule
 \textbf{Cost Component} & \textbf{24-Page} & \textbf{50-Page} \\
 \midrule
-AI text generation (GPT-4o) & \$0.10 & \$0.18 \\
-AI images (Flux.2 Pro, 13/26 imgs) & \$0.39 & \$0.78 \\
+AI text generation (Claude Sonnet 4.5) & \$0.21 & \$0.38 \\
+AI safety pipeline (Claude Haiku 4.5, 5 gates) & \$0.03 & \$0.05 \\
+AI character analysis (GPT-4o vision) & \$0.01 & \$0.01 \\
+AI images (Flux.2 Pro + IP-Adapter, 14/27 imgs) & \$0.42 & \$0.81 \\
 Lulu printing & \$4.00 & \$7.00 \\
 Lulu fulfillment fee & \$1.75 & \$1.75 \\
 Shipping (standard) & \$4.00 & \$4.50 \\
 Stripe fee (on \$29.99 / \$44.99 sale) & \$1.17 & \$1.60 \\
 \midrule
-\textbf{Total COGS} & \textbf{\$11.41} & \textbf{\$15.81} \\
+\textbf{Total COGS} & \textbf{\$11.59} & \textbf{\$16.10} \\
 \textbf{Revenue at listed price} & \$29.99 & \$44.99 \\
-\textbf{Gross Profit} & \textcolor{success}{\textbf{\$18.58}} & \textcolor{success}{\textbf{\$29.18}} \\
-\textbf{Gross Margin} & \textcolor{success}{\textbf{62.0\%}} & \textcolor{success}{\textbf{64.9\%}} \\
+\textbf{Gross Profit} & \textcolor{success}{\textbf{\$18.40}} & \textcolor{success}{\textbf{\$28.89}} \\
+\textbf{Gross Margin} & \textcolor{success}{\textbf{61.4\%}} & \textcolor{success}{\textbf{64.2\%}} \\
 \bottomrule
 \end{tabular}
-\caption{Scenario B: Flux.2 Pro --- Recommended balance of quality and cost}
+\caption{Scenario B: Claude Sonnet 4.5 + Flux.2 Pro --- Excellent quality, slightly cheaper}
 \end{table}
 
-\subsection{Scenario C: Budget (Flux.1 Schnell + GPT-4o Mini)}
+\subsection{Scenario C: Budget (Claude Haiku 4.5 + Flux.1 Schnell)}
 
 \begin{table}[H]
 \centering
@@ -2211,24 +2282,25 @@ Stripe fee (on \$29.99 / \$44.99 sale) & \$1.17 & \$1.60 \\
 \toprule
 \textbf{Cost Component} & \textbf{24-Page} & \textbf{50-Page} \\
 \midrule
-AI text generation (GPT-4o Mini) & \$0.01 & \$0.01 \\
+AI text + safety (Claude Haiku 4.5) & \$0.11 & \$0.20 \\
+AI character analysis (GPT-4o vision) & \$0.01 & \$0.01 \\
 AI images (Flux.1 Schnell, 13/26 imgs) & \$0.04 & \$0.08 \\
 Lulu printing & \$4.00 & \$7.00 \\
 Lulu fulfillment fee & \$1.75 & \$1.75 \\
 Shipping (standard) & \$4.00 & \$4.50 \\
 Stripe fee (on \$29.99 / \$44.99 sale) & \$1.17 & \$1.60 \\
 \midrule
-\textbf{Total COGS} & \textbf{\$10.97} & \textbf{\$14.94} \\
+\textbf{Total COGS} & \textbf{\$11.08} & \textbf{\$15.14} \\
 \textbf{Revenue at listed price} & \$29.99 & \$44.99 \\
-\textbf{Gross Profit} & \textcolor{success}{\textbf{\$19.02}} & \textcolor{success}{\textbf{\$30.05}} \\
-\textbf{Gross Margin} & \textcolor{success}{\textbf{63.4\%}} & \textcolor{success}{\textbf{66.8\%}} \\
+\textbf{Gross Profit} & \textcolor{success}{\textbf{\$18.91}} & \textcolor{success}{\textbf{\$29.85}} \\
+\textbf{Gross Margin} & \textcolor{success}{\textbf{63.1\%}} & \textcolor{success}{\textbf{66.3\%}} \\
 \bottomrule
 \end{tabular}
-\caption{Scenario C: Budget --- Lowest possible AI costs}
+\caption{Scenario C: Budget --- Lower quality but still viable}
 \end{table}
 
 \begin{successbox}
-\textbf{Key Insight:} AI generation costs are almost negligible compared to printing and shipping. The difference between the cheapest and most expensive AI option is only \$1.00--2.00 per book. \textbf{Do not sacrifice quality to save \$1.} Use at least Flux.2 Pro or DALL-E 3 Standard for professional-looking illustrations.
+\textbf{Key Insight:} The difference between the best AI pipeline (Scenario A: \$11.78 COGS) and the cheapest (Scenario C: \$11.08 COGS) is only \textbf{70 cents per book}. AI costs are negligible compared to printing (\$4--7) and shipping (\$4--4.50). \textbf{Use Scenario A.} Parents are paying \$29.99--44.99 for a premium product---the 70-cent difference gives you the best story quality, consistent characters, and a comprehensive safety pipeline. That is not a tradeoff; it is an obvious choice.
 \end{successbox}
 
 
@@ -2249,12 +2321,14 @@ Your total budget is \$2{,}000. Here is exactly how to allocate it.
 \midrule
 SC LLC formation (online filing) & Legal & \$125.00 \\
 Domain name (1 year via Cloudflare) & Infrastructure & \$10.44 \\
-OpenAI API prepaid credits & AI Services & \$20.00 \\
+Anthropic API prepaid credits (story generation + safety) & AI Services & \$25.00 \\
+OpenAI API prepaid credits (character vision) & AI Services & \$10.00 \\
+FAL.ai prepaid credits (image generation) & AI Services & \$10.00 \\
 Test book printing (3 samples from Lulu) & Testing & \$45.00 \\
 Initial marketing (social media ads) & Marketing & \$200.00 \\
 Logo design (Canva Pro 1 month, optional) & Brand & \$13.00 \\
 \midrule
-\textbf{One-Time Total} & & \textbf{\$413.44} \\
+\textbf{One-Time Total} & & \textbf{\$438.44} \\
 \bottomrule
 \end{tabularx}
 \end{table}
@@ -2825,6 +2899,158 @@ A lightweight state management library for React. It stores the customer's selec
 \begin{infobox}
 \textbf{Do not rush Week 5.} Order real test books and wait for them to arrive. Hold the physical book in your hands. Check the print quality, colors, binding, and text readability. This is your product---it must be excellent before you sell it to anyone.
 \end{infobox}
+
+% ══════════════════════════════════════════════════════════════
+% COMPLETE STEP-BY-STEP GUIDE
+% ══════════════════════════════════════════════════════════════
+\chapter{Complete Step-by-Step: From Zero to Your First Printed Book}
+
+This chapter consolidates every action you need to take, in order, from having nothing to holding a printed children's book in your hands. Each step references the relevant chapter for full details. If you are non-technical and feeling overwhelmed, \textbf{follow this chapter line by line}---it is your single source of truth.
+
+\section{Phase 1: Legal and Business Setup (Days 1--3)}
+
+\begin{enumerate}[leftmargin=2em, itemsep=6pt]
+  \item \textbf{Form your LLC} (Chapter 1): Go to the SC Secretary of State website. File online. Pay \$125. You will receive your Articles of Organization and a confirmation number. This makes your business legally real.
+
+  \item \textbf{Get your EIN} (Chapter 1): Go to the IRS website. Apply for a free Employer Identification Number. You get it instantly online. This is like a Social Security number for your business---you will need it for banking and Stripe.
+
+  \item \textbf{Open a business bank account} (Chapter 2): Go to Mercury (online bank). Create a business checking account using your LLC name and EIN. No fees. This keeps your business money separate from personal money.
+
+  \item \textbf{Get a business debit card}: Mercury provides a free virtual debit card instantly. You will use this for all business purchases (API credits, domain, hosting, etc.).
+\end{enumerate}
+
+\section{Phase 2: Domain and Brand (Days 3--4)}
+
+\begin{enumerate}[leftmargin=2em, itemsep=6pt, start=5]
+  \item \textbf{Register your domain name} (Chapter 3): Go to Cloudflare Registrar. Search for your domain (e.g., \texttt{crayonsandquills.com}). Register it for \$10.44/year. Pay with your business debit card.
+
+  \item \textbf{Set up Bitwarden} (Chapter 3): Create a free Bitwarden account. This is your password manager. \textbf{Every} API key, login, and secret goes in here. Never store secrets in notes, emails, or text files.
+\end{enumerate}
+
+\section{Phase 3: Create All Technology Accounts (Days 4--7)}
+
+Create each account below. Save every username, password, and API key in Bitwarden immediately.
+
+\begin{enumerate}[leftmargin=2em, itemsep=6pt, start=7]
+  \item \textbf{Anthropic API account} (Chapter 4): Go to \url{https://console.anthropic.com}. Create account. Add payment method. Add \$25 prepaid credits. Create an API key and save it. This powers your story generation (Claude Opus 4.6) and safety checks (Claude Haiku 4.5).
+
+  \item \textbf{OpenAI API account} (Chapter 4): Go to \url{https://platform.openai.com}. Create account. Add payment method. Add \$10 prepaid credits. Create an API key and save it. This powers character photo analysis only.
+
+  \item \textbf{FAL.ai account} (Chapter 4): Go to \url{https://fal.ai}. Create account. Add payment method. Add \$10 prepaid credits. Create an API key and save it. This powers all illustration generation (Flux.2 Pro).
+
+  \item \textbf{Stripe account} (Chapter 4): Go to \url{https://stripe.com}. Create account. Complete business verification (LLC, EIN, bank account). Get your API keys (publishable key + secret key). This handles all customer payments.
+
+  \item \textbf{Lulu Direct account} (Chapter 9): Go to \url{https://developers.lulu.com}. Create a developer account. Get your API key and secret. This is your print-on-demand partner---they print, bind, and ship the physical books.
+
+  \item \textbf{SendGrid account} (Chapter 4): Go to \url{https://sendgrid.com}. Create a free account. Verify your domain. Create an API key. This sends order confirmation and shipping notification emails to customers.
+
+  \item \textbf{Railway.app account} (Chapter 4): Go to \url{https://railway.app}. Create account. This hosts your website and backend on the internet. The Hobby plan is \$5/month.
+\end{enumerate}
+
+\section{Phase 4: Set Up and Configure Your Application (Days 7--14)}
+
+This is where you use \textbf{Claude Code} (your AI coding assistant, included with Claude Max) to configure the existing codebase. You do \textbf{not} need to write code---Claude Code does it through conversation.
+
+\begin{enumerate}[leftmargin=2em, itemsep=6pt, start=14]
+  \item \textbf{Open Claude Code} (Chapter 5): Open a terminal and navigate to your \texttt{LLM-books} directory. Type \texttt{claude} to start a Claude Code session. Claude will detect the project and display its status.
+
+  \item \textbf{Tell Claude to install dependencies}: Say to Claude: \textit{``Install all dependencies for both the backend and frontend.''} Claude will run \texttt{npm install} in both directories. Wait for it to complete.
+
+  \item \textbf{Configure your environment variables}: Say to Claude: \textit{``Help me set up my .env files. Here are my API keys.''} Then provide each key. Claude will create the \texttt{.env} files from the \texttt{.env.example} templates. Your backend \texttt{.env} needs:
+  \begin{itemize}[leftmargin=2em]
+    \item \texttt{ANTHROPIC\_API\_KEY} --- from step 7
+    \item \texttt{ANTHROPIC\_STORY\_MODEL=claude-opus-4-6}
+    \item \texttt{ANTHROPIC\_SAFETY\_MODEL=claude-haiku-4-5-20251001}
+    \item \texttt{OPENAI\_API\_KEY} --- from step 8
+    \item \texttt{FAL\_API\_KEY} --- from step 9
+    \item \texttt{FAL\_IMAGE\_MODEL=fal-ai/flux-pro/v1.1}
+    \item \texttt{FAL\_IP\_ADAPTER\_MODEL=fal-ai/flux/dev/ip-adapter}
+    \item \texttt{STRIPE\_SECRET\_KEY} and \texttt{STRIPE\_PUBLISHABLE\_KEY} --- from step 10
+    \item \texttt{LULU\_API\_KEY} and \texttt{LULU\_API\_SECRET} --- from step 11
+    \item \texttt{SENDGRID\_API\_KEY} --- from step 12
+    \item \texttt{DATABASE\_URL} --- the PostgreSQL connection string (Railway provides this)
+    \item \texttt{REDIS\_HOST} and \texttt{REDIS\_PORT} --- for job queue (Railway provides this)
+  \end{itemize}
+
+  \item \textbf{Set up the database}: Say to Claude: \textit{``Run the Prisma database migration.''} Claude will run \texttt{cd backend \&\& npx prisma migrate dev}, which creates all the database tables your application needs.
+
+  \item \textbf{Test locally}: Say to Claude: \textit{``Start the backend and frontend dev servers so I can test locally.''} Claude will start both servers. Open your browser to \texttt{http://localhost:3000} to see your website.
+
+  \item \textbf{Generate a test book}: On your local site, go through the book creation wizard. Enter a child's name, age, and interests. The system will:
+  \begin{itemize}[leftmargin=2em]
+    \item Run the 5-layer safety check on your inputs (Gate 1)
+    \item Generate a story outline using Claude Opus 4.6
+    \item Write page-by-page text using Claude Opus 4.6
+    \item Validate the entire story for age-appropriateness (Gate 2)
+    \item Generate a character reference image via Flux.2 Pro
+    \item Generate all page illustrations using Flux.2 Pro + IP-Adapter (Gates 3 \& 4)
+    \item Assemble a print-ready PDF
+  \end{itemize}
+  This whole process takes about 5--15 minutes. Watch the backend logs for progress.
+\end{enumerate}
+
+\section{Phase 5: Deploy to the Internet (Days 14--17)}
+
+\begin{enumerate}[leftmargin=2em, itemsep=6pt, start=20]
+  \item \textbf{Deploy to Railway} (Chapter 6): Say to Claude: \textit{``Help me deploy the application to Railway.''} Claude will guide you through connecting your GitHub repository to Railway and setting up the PostgreSQL database, Redis, backend, and frontend services.
+
+  \item \textbf{Configure your domain}: In Railway, add your custom domain (e.g., \texttt{crayonsandquills.com}). In Cloudflare, add the DNS records Railway provides. Your site is now live at your domain.
+
+  \item \textbf{Set up Stripe webhooks} (Chapter 10): In the Stripe Dashboard, go to Developers $\rightarrow$ Webhooks. Add your webhook URL: \texttt{https://api.yourdomain.com/api/v1/payments/webhook}. Subscribe to \texttt{payment\_intent.succeeded} and \texttt{invoice.paid} events.
+
+  \item \textbf{Set up Lulu Direct webhook} (Chapter 9): Configure the Lulu webhook URL: \texttt{https://api.yourdomain.com/api/v1/fulfillment/webhook/lulu}. This lets you track print and shipping status automatically.
+\end{enumerate}
+
+\section{Phase 6: Test Everything End-to-End (Days 17--21)}
+
+\begin{enumerate}[leftmargin=2em, itemsep=6pt, start=24]
+  \item \textbf{Place a real test order}: Use Stripe's test mode (or a real \$1 test charge) to complete an order on your live site. Verify that:
+  \begin{itemize}[leftmargin=2em]
+    \item The book creation wizard works on mobile and desktop
+    \item Payment processes successfully through Stripe
+    \item The order appears in your admin dashboard
+    \item The book generation pipeline runs (story $\rightarrow$ illustrations $\rightarrow$ PDF)
+    \item The customer receives an order confirmation email
+    \item Illustrations show consistent characters across all pages
+  \end{itemize}
+
+  \item \textbf{Order 3 test prints from Lulu}: Submit real print orders through Lulu Direct. Choose different options:
+  \begin{itemize}[leftmargin=2em]
+    \item 24-page softcover (your standard product)
+    \item 24-page hardcover (your premium product)
+    \item 36-page softcover (to test a longer book)
+  \end{itemize}
+  Wait for them to arrive (7--10 business days). \textbf{Hold the book. Read it aloud. Check every page.}
+
+  \item \textbf{Quality check the physical books}:
+  \begin{itemize}[leftmargin=2em]
+    \item Are the illustrations vibrant and well-printed?
+    \item Does the child character look consistent across all pages?
+    \item Is the text easy to read at the printed size?
+    \item Does the story flow well when read aloud?
+    \item Is the binding solid? Do the pages lay flat?
+    \item Would you be proud to give this to a parent? If not, iterate.
+  \end{itemize}
+\end{enumerate}
+
+\section{Phase 7: Launch (Days 21--28)}
+
+\begin{enumerate}[leftmargin=2em, itemsep=6pt, start=27]
+  \item \textbf{Add legal pages}: Terms of service, privacy policy, refund policy. Claude Code can generate these for you.
+
+  \item \textbf{Set up Google Analytics}: Add tracking to your frontend so you can see where visitors come from and what they do.
+
+  \item \textbf{Soft launch}: Share the site with friends, family, and a few trusted parents. Ask them to order a book. Collect honest feedback.
+
+  \item \textbf{Fix any issues}: Use the feedback to improve. Common first-launch fixes: clearer checkout flow, better mobile layout, faster loading.
+
+  \item \textbf{Public launch}: Post on social media. Run initial Facebook/Instagram ads targeting parents of children aged 3--10. Budget: \$50--100 for the first week. Measure results and adjust.
+\end{enumerate}
+
+\begin{successbox}
+\textbf{You now have a fully operational personalized children's book business.} Every order is handled automatically: parent enters details $\rightarrow$ AI generates a custom story with consistent illustrations $\rightarrow$ safety pipeline validates every piece of content $\rightarrow$ PDF is assembled $\rightarrow$ Lulu prints and ships the book $\rightarrow$ customer gets tracking updates. Your job from here is marketing---getting parents to your website.
+\end{successbox}
+
 
 % ══════════════════════════════════════════════════════════════
 % BACK MATTER
