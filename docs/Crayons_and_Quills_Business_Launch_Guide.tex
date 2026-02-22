@@ -850,7 +850,9 @@ Enter these specs to see your per-book cost:
 \textbf{Item} & \textbf{Cost} \\
 \midrule
 Bitwarden (password manager) & \$0.00 \\
-OpenAI initial credits & \$20.00 \\
+Anthropic API initial credits (story generation + safety) & \$25.00 \\
+OpenAI API initial credits (character vision) & \$10.00 \\
+FAL.ai initial credits (image generation) & \$10.00 \\
 Stripe account & \$0.00 \\
 Lulu Direct account & \$0.00 \\
 SendGrid account (free tier) & \$0.00 \\
@@ -860,7 +862,7 @@ GitHub account & \$0.00 \\
 Claude Code (via Claude Max) & \$0.00 (already subscribed) \\
 Make.com Core (first month) & \$10.59 \\
 \midrule
-\textbf{Chapter 4 Total} & \textbf{\$35.59} \\
+\textbf{Chapter 4 Total} & \textbf{\$60.59} \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -1152,14 +1154,16 @@ Claude will run all the terminal commands for you automatically. Specifically, i
 \begin{actionbox}
 Your \texttt{backend/.env.example} already lists every variable you need. Tell Claude:\\[4pt]
 \textit{``Help me fill in my backend/.env file. Here are my keys:}\\
+\textit{Anthropic: sk-ant-...}\\
 \textit{OpenAI: sk-...}\\
+\textit{FAL.ai: ...}\\
 \textit{Stripe Secret: sk\_live\_...}\\
 \textit{Stripe Publishable: pk\_live\_...}\\
 \textit{SendGrid: SG...}\\
 \textit{Lulu API Key: ...}\\
 \textit{Lulu API Secret: ...''}\\[4pt]
-Claude will edit the \texttt{.env} file with your actual keys. The file already contains placeholder values for:\\
-\texttt{DATABASE\_URL}, \texttt{REDIS\_URL}, \texttt{JWT\_SECRET}, \texttt{OPENAI\_API\_KEY}, \texttt{STRIPE\_SECRET\_KEY}, \texttt{STRIPE\_WEBHOOK\_SECRET}, \texttt{SENDGRID\_API\_KEY}, \texttt{LULU\_API\_KEY}, \texttt{LULU\_API\_SECRET}, \texttt{S3\_BUCKET\_NAME}, and more.
+Claude will edit the \texttt{.env} file with your actual keys. The file already contains placeholder values for all required variables including:\\
+\texttt{ANTHROPIC\_API\_KEY}, \texttt{ANTHROPIC\_STORY\_MODEL}, \texttt{ANTHROPIC\_SAFETY\_MODEL}, \texttt{OPENAI\_API\_KEY}, \texttt{FAL\_API\_KEY}, \texttt{FAL\_IMAGE\_MODEL}, \texttt{FAL\_IP\_ADAPTER\_MODEL}, \texttt{STRIPE\_SECRET\_KEY}, \texttt{STRIPE\_WEBHOOK\_SECRET}, \texttt{SENDGRID\_API\_KEY}, \texttt{LULU\_API\_KEY}, \texttt{LULU\_API\_SECRET}, \texttt{DATABASE\_URL}, \texttt{S3\_BUCKET\_NAME}, and more.
 \end{actionbox}
 
 \begin{warningbox}
@@ -1276,7 +1280,7 @@ Your repository already contains all four components. Each deploys separately on
 \textbf{Component} & \textbf{What It Does} \\
 \midrule
 Frontend (Next.js) & The website customers see and interact with \\
-Backend (NestJS) & The ``brain'' that processes orders, talks to OpenAI, etc. \\
+Backend (NestJS) & The ``brain'' that processes orders, generates stories via Claude, creates illustrations via Flux, etc. \\
 PostgreSQL Database & Stores all data: users, books, orders, payments \\
 Redis & Manages the queue of book generation jobs \\
 \bottomrule
