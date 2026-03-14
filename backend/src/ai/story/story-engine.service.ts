@@ -2,6 +2,8 @@ import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import Anthropic from '@anthropic-ai/sdk';
 import { PrismaService } from '../../common/prisma.service';
+import { composeOccasionPrompt } from './prompts/occasion-registry';
+import { composeStoryTypePrompt } from './prompts/story-type-registry';
 
 interface StoryOutline {
   title: string;
@@ -89,6 +91,15 @@ ABSOLUTE SAFETY REQUIREMENTS (non-negotiable):
 
 Respond only with valid JSON.`;
 
+    // Compose occasion-specific and story-type-specific prompt sections
+    const occasionContext = (book.occasionContext as Record<string, any>) || {};
+    const occasionGuidance = composeOccasionPrompt(
+      book.occasion || 'JUST_BECAUSE',
+      child.name,
+      occasionContext,
+    );
+    const storyTypeGuidance = composeStoryTypePrompt(book.storyType);
+
     const userPrompt = `Create a structured story outline for a personalized children's book.
 
 CHILD PROFILE:
@@ -101,18 +112,23 @@ CHILD PROFILE:
 - Themes: ${child.themes.join(', ') || 'adventure'}
 
 BOOK PARAMETERS:
-- Story Type: ${book.storyType}
 - Moral Lesson: ${book.moralLesson || 'kindness and empathy'}
 - Total Pages: ${book.pageCount}
 - Reading Level: Age ${child.age} (${vocab.complexity})
 - Read-Aloud Notes: ${vocab.readAloudNotes}
 
-NARRATIVE REQUIREMENTS:
+${occasionGuidance}
+
+${storyTypeGuidance}
+
+CORE NARRATIVE REQUIREMENTS:
 - ${child.name} is the protagonist — the story is ABOUT them, not just featuring their name
 - Weave ${child.name}'s actual interests (${child.interests.join(', ') || 'adventure'}) into the plot naturally
 - Three-act structure: Setup (world + character) → Journey/Challenge (growth) → Resolution (triumph + lesson)
 - The emotional arc should feel earned — ${child.name} grows through the experience
 - The moral lesson "${book.moralLesson || 'kindness'}" should emerge from the story events, not be stated explicitly
+- The OCCASION guidance above defines the PURPOSE of this book — follow it closely
+- The STORY STYLE guidance above defines HOW to tell the story — follow its structural rules
 - Include moments of wonder, humor, and warmth
 - End with ${child.name} feeling empowered and celebrated
 
@@ -193,6 +209,15 @@ ABSOLUTE RULES:
 
 Respond only with valid JSON.`;
 
+    // Compose occasion and story type guidance for page-level generation
+    const occasionContext = (book.occasionContext as Record<string, any>) || {};
+    const occasionGuidance = composeOccasionPrompt(
+      book.occasion || 'JUST_BECAUSE',
+      child.name,
+      occasionContext,
+    );
+    const storyTypeGuidance = composeStoryTypePrompt(book.storyType);
+
     const userPrompt = `Write the complete page-by-page content for this children's book.
 
 STORY OUTLINE:
@@ -204,6 +229,10 @@ CHILD DETAILS:
 - Name: ${child.name}
 - Age: ${child.age}
 - Interests: ${child.interests.join(', ')}
+
+${occasionGuidance}
+
+${storyTypeGuidance}
 
 ILLUSTRATION STYLE: ${book.illustrationStyle === 'FULL_COLOR' ? 'Vibrant full-color children\'s book watercolor style with warm lighting, soft edges, and whimsical atmosphere' : 'Clean black and white line art suitable for coloring — clear outlines, no shading, simple shapes'}
 

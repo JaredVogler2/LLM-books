@@ -23,6 +23,21 @@ enum StoryType {
   EDUCATIONAL_STEM
 }
 
+enum OccasionType {
+  BIRTHDAY
+  NEW_SIBLING
+  FIRST_DAY_OF_SCHOOL
+  HOLIDAY
+  GRADUATION
+  MOVING
+  OVERCOMING_FEARS
+  GET_WELL_SOON
+  TOOTH_FAIRY
+  POTTY_TRAINING
+  WELCOME_ADOPTION
+  JUST_BECAUSE
+}
+
 enum IllustrationStyle {
   FULL_COLOR
   BLACK_WHITE_COLORING
@@ -215,6 +230,8 @@ model Book {
   characterProfileId  String?
   title               String?
   storyType           StoryType
+  occasion            OccasionType      @default(JUST_BECAUSE)
+  occasionContext     Json?
   illustrationStyle   IllustrationStyle @default(FULL_COLOR)
   bindingType         BindingType       @default(SOFTCOVER)
   paperType           PaperType         @default(STANDARD)

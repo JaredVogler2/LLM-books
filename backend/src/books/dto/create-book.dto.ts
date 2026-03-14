@@ -24,6 +24,21 @@ export class CreateBookDto {
   @IsString()
   storyType: string;
 
+  @ApiPropertyOptional({
+    enum: ['BIRTHDAY', 'NEW_SIBLING', 'FIRST_DAY_OF_SCHOOL', 'HOLIDAY', 'GRADUATION', 'MOVING', 'OVERCOMING_FEARS', 'GET_WELL_SOON', 'TOOTH_FAIRY', 'POTTY_TRAINING', 'WELCOME_ADOPTION', 'JUST_BECAUSE'],
+    default: 'JUST_BECAUSE',
+  })
+  @IsOptional()
+  @IsString()
+  occasion?: string;
+
+  @ApiPropertyOptional({
+    description: 'Occasion-specific context (e.g., { turningAge: 5, birthdayWish: "a puppy" } for birthday)',
+    example: { turningAge: 5, birthdayWish: 'a puppy' },
+  })
+  @IsOptional()
+  occasionContext?: Record<string, any>;
+
   @ApiPropertyOptional({ enum: ['FULL_COLOR', 'BLACK_WHITE_COLORING'], default: 'FULL_COLOR' })
   @IsOptional()
   @IsString()

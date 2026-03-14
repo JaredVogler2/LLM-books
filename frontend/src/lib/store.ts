@@ -12,6 +12,8 @@ interface ChildData {
 }
 
 interface BookOptions {
+  occasion: string;
+  occasionContext: Record<string, any>;
   storyType: string;
   illustrationStyle: string;
   bindingType: string;
@@ -56,6 +58,8 @@ const defaultChildData: ChildData = {
 };
 
 const defaultBookOptions: BookOptions = {
+  occasion: 'JUST_BECAUSE',
+  occasionContext: {},
   storyType: 'BEDTIME',
   illustrationStyle: 'FULL_COLOR',
   bindingType: 'SOFTCOVER',

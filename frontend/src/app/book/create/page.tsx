@@ -7,11 +7,13 @@ import { StepChildInfo } from '@/components/wizard/StepChildInfo';
 import { StepBookOptions } from '@/components/wizard/StepBookOptions';
 import { StepReview } from '@/components/wizard/StepReview';
 import { StepPhotoUpload } from '@/components/wizard/StepPhotoUpload';
+import { StepOccasion } from '@/components/wizard/StepOccasion';
 import { useWizardStore } from '@/lib/store';
 
 const STEPS = [
   { label: 'Child Info', description: 'Tell us about the child' },
   { label: 'Photo', description: 'Upload a reference photo' },
+  { label: 'Occasion', description: "What's the occasion?" },
   { label: 'Book Options', description: 'Customize your book' },
   { label: 'Review', description: 'Review and order' },
 ];
@@ -48,8 +50,9 @@ export default function CreateBookPage() {
           <div className="mt-8">
             {currentStep === 0 && <StepChildInfo onNext={handleNext} />}
             {currentStep === 1 && <StepPhotoUpload onNext={handleNext} onBack={handleBack} />}
-            {currentStep === 2 && <StepBookOptions onNext={handleNext} onBack={handleBack} />}
-            {currentStep === 3 && <StepReview onBack={handleBack} />}
+            {currentStep === 2 && <StepOccasion onNext={handleNext} onBack={handleBack} />}
+            {currentStep === 3 && <StepBookOptions onNext={handleNext} onBack={handleBack} />}
+            {currentStep === 4 && <StepReview onBack={handleBack} />}
           </div>
         </div>
       </main>

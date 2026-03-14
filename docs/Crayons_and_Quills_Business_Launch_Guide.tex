@@ -893,7 +893,8 @@ Before you begin, understand what you already have:
 \midrule
 \texttt{backend/src/auth/} & JWT authentication, login/register, password reset, email verification, account lockout \\
 \texttt{backend/src/books/} & Book CRUD endpoints and generation trigger \\
-\texttt{backend/src/ai/story/} & StoryEngineService --- generates age-appropriate stories via Claude Opus 4.6 \\
+\texttt{backend/src/ai/story/} & StoryEngineService --- generates age-appropriate, occasion-aware stories via Claude Opus 4.6 \\
+\texttt{backend/src/ai/story/prompts/} & Occasion + story type prompt template registries (12 occasions, 5 story styles) \\
 \texttt{backend/src/ai/illustration/} & IllustrationEngineService --- generates images via Flux.2 Pro with IP-Adapter character consistency \\
 \texttt{backend/src/ai/character/} & CharacterEngineService --- GPT-4o Vision character extraction + reference image generation \\
 \texttt{backend/src/ai/safety/} & ContentSafetyService --- 5-layer gate-based child safety pipeline (Claude Haiku 4.5) \\
@@ -902,7 +903,7 @@ Before you begin, understand what you already have:
 \texttt{backend/src/fulfillment/} & Lulu Direct API integration \\
 \texttt{backend/src/email/} & SendGrid email templates (order confirmation, shipping, etc.) \\
 \texttt{backend/prisma/schema.prisma} & Database schema with 14 models, indexes, and enums \\
-\texttt{frontend/src/app/book/create/} & Multi-step book creation wizard (4 steps) \\
+\texttt{frontend/src/app/book/create/} & Multi-step book creation wizard (5 steps, including occasion selection) \\
 \texttt{frontend/src/app/checkout/[bookId]/} & Checkout page with shipping address form and Stripe payment \\
 \texttt{frontend/src/app/order/confirmation/} & Order confirmation with ``what happens next'' timeline \\
 \texttt{frontend/src/app/dashboard/} & User dashboard with book status tracking, order history, auto-refresh \\
@@ -956,15 +957,25 @@ Clicking ``Get Started'' or ``Create Your Book'' takes them to the \textbf{regis
 \end{itemize}
 Returning customers use the \textbf{login page} (\texttt{frontend/src/app/auth/login/page.tsx}).
 
-\subsection*{Step 3: Book Creation Wizard (4 Steps)}
-The wizard (\texttt{frontend/src/app/book/create/page.tsx}) guides the customer through four steps:
+\subsection*{Step 3: Book Creation Wizard (5 Steps)}
+The wizard (\texttt{frontend/src/app/book/create/page.tsx}) guides the customer through five steps:
 
 \begin{enumerate}[leftmargin=2em]
   \item \textbf{Child Info} --- Name, age, interests, favorite colors, personality traits, favorite animals, and story themes. This information is used to personalize the story.
   \item \textbf{Photo Upload} --- Optional reference photo of the child. Used by the CharacterEngineService to make illustrations look like the child.
+  \item \textbf{Occasion} --- The customer selects \textbf{why} they are creating this book. Twelve occasions are available: Birthday, New Sibling, First Day of School, Holiday, Graduation, Moving, Overcoming Fears, Get Well Soon, Tooth Fairy, Potty Training, Welcome Home (adoption), and Just Because. \textbf{Each occasion shows different follow-up questions:}
+    \begin{itemize}[leftmargin=1.5em]
+      \item \textbf{Birthday:} ``What age are they turning?'' + optional birthday wish and party theme
+      \item \textbf{New Sibling:} Baby's name + ``Becoming a big brother/sister/sibling''
+      \item \textbf{First Day of School:} School milestone type + optional teacher and friend names
+      \item \textbf{Holiday:} Which holiday (Christmas, Hanukkah, Eid, Diwali, etc.) + optional family tradition
+      \item \textbf{Overcoming Fears:} Specific fear (the dark, monsters, thunder, water, etc.)
+      \item Other occasions show relevant context fields or none if not needed
+    \end{itemize}
+    These occasion-specific details are fed directly into the AI story prompts, producing narratives that are purpose-built for the moment. A birthday book reads completely differently from a ``get well soon'' book --- the tone, structure, and emotional arc are all tailored.
   \item \textbf{Book Options} --- Card-based selectors (not dropdowns) for:
     \begin{itemize}[leftmargin=1.5em]
-      \item Story type (Bedtime, Rhyming, Adventure, Choose Your Own, STEM)
+      \item Story type --- the narrative \textit{style} (Bedtime, Rhyming, Adventure, Choose Your Own, STEM). This is separate from the occasion: a birthday book can be told \textit{as} a rhyming story, a bedtime tale, or an adventure.
       \item Moral lesson (Kindness, Bravery, Sharing, etc.)
       \item Page count (12, 24, or 36 pages)
       \item Illustration style (Full Color or Black \& White Coloring Book)
@@ -974,7 +985,7 @@ The wizard (\texttt{frontend/src/app/book/create/page.tsx}) guides the customer 
       \item Add-ons (Audiobook +\$9.99, Digital PDF +\$4.99, Gift Wrap +\$3.99)
     \end{itemize}
     A \textbf{live price estimate} updates in real time at the top of the page as the customer selects options. Incompatible combinations (e.g., hardcover + landscape) show validation warnings and prevent checkout.
-  \item \textbf{Review} --- Shows a complete summary of child details, book options, and the estimated price. The customer clicks ``Proceed to Checkout.''
+  \item \textbf{Review} --- Shows a complete summary of child details, occasion, book options, and the estimated price. The customer clicks ``Proceed to Checkout.''
 \end{enumerate}
 
 \subsection*{Step 4: Checkout and Payment}
@@ -2121,6 +2132,92 @@ Your codebase includes a \texttt{ContentSafetyService} that enforces child safet
 \textbf{Safety is non-negotiable for a children's product.} The total cost of the 5-gate safety pipeline is approximately \textbf{\$0.03 per book} (about 15--20 Haiku calls). This is the single most important \$0.03 you will spend. A single inappropriate image or story reaching a child's printed book could destroy your business reputation. The safety gates automatically regenerate content that fails checks---parents never see the failed versions.
 \end{warningbox}
 
+\subsection{Occasion-Aware Prompt System (Two-Axis Model)}
+
+A critical question for any children's book platform: \textbf{why} is this book being created, and \textbf{how} should the story be told? These are two separate axes, and your codebase treats them independently.
+
+\subsubsection*{The Two Axes}
+
+\begin{itemize}[leftmargin=2em]
+  \item \textbf{Occasion (the WHY):} Birthday, New Sibling, First Day of School, Holiday, Graduation, Moving, Overcoming Fears, Get Well Soon, Tooth Fairy, Potty Training, Welcome Home, Just Because
+  \item \textbf{Story Type (the HOW):} Bedtime, Rhyming, Adventure, Choose Your Own, Educational/STEM
+\end{itemize}
+
+These are \textbf{orthogonal}. A birthday book can be told \textit{as} a rhyming story or a bedtime tale. A ``first day of school'' book can be an adventure or an educational story. The system composes both into a single, coherent prompt.
+
+\subsubsection*{How It Works}
+
+The prompt composition system lives in \texttt{backend/src/ai/story/prompts/} and consists of two registries:
+
+\begin{enumerate}[leftmargin=2em]
+  \item \textbf{Occasion Registry} (\texttt{occasion-registry.ts}) --- 12 occasion templates, each defining:
+    \begin{itemize}[leftmargin=1.5em]
+      \item \textbf{Wizard fields:} What extra questions to ask the parent for this occasion (e.g., ``What age are they turning?'' for birthdays, ``What's the baby's name?'' for new siblings)
+      \item \textbf{Narrative guidance:} Detailed, occasion-specific story instructions dynamically composed with the parent's answers (e.g., a birthday book for a child turning 5 reads differently than one for a child turning 10)
+      \item \textbf{Tone guidance:} The emotional register for this occasion (e.g., ``joyful, celebratory'' for birthdays; ``warm, reassuring, empowering'' for new siblings)
+      \item \textbf{Safety notes:} Extra content safety rules (e.g., adoption books must never reference being ``given up''; overcoming-fears books must never make the fear worse)
+      \item \textbf{Suggested moral lessons:} Filtered to what makes sense for this occasion
+    \end{itemize}
+  \item \textbf{Story Type Registry} (\texttt{story-type-registry.ts}) --- 5 story style templates, each defining:
+    \begin{itemize}[leftmargin=1.5em]
+      \item \textbf{Structural guidance:} How the narrative arc should work (bedtime stories wind down in energy; rhyming books follow AABB/ABAB schemes; adventures have mini-cliffhangers)
+      \item \textbf{Page composition notes:} How illustrations should match the narrative style
+    \end{itemize}
+\end{enumerate}
+
+At generation time, the \texttt{StoryEngineService} calls \texttt{composeOccasionPrompt()} and \texttt{composeStoryTypePrompt()}, then inserts both into the AI prompt alongside the child profile, age-calibrated vocabulary limits, and safety requirements. The result is a prompt with four layers:
+
+\begin{enumerate}[leftmargin=2em]
+  \item \textbf{Child personalization:} Name, age, interests, personality, favorite animals
+  \item \textbf{Occasion context:} Why this book exists and what makes it special (with the parent's specific details)
+  \item \textbf{Story style:} How the story should be structured and paced
+  \item \textbf{Age calibration:} Vocabulary limits, sentence length, and reading level
+\end{enumerate}
+
+\subsubsection*{Why Not Markdown Prompt Files?}
+
+You might wonder: should the prompt templates be stored as Markdown files? \textbf{No.} Here is why:
+
+\begin{itemize}[leftmargin=2em]
+  \item Prompts need \textbf{dynamic interpolation} of 15+ variables (child name, age, turning age, sibling name, holiday, fear type, etc.)
+  \item Prompts need \textbf{conditional sections} --- birthday-specific paragraphs only appear for birthday books
+  \item Prompts need \textbf{age-calibrated vocabulary} limits that change per age group
+  \item TypeScript template functions handle all of this naturally with type safety and testability
+  \item Markdown files would require bolting on a templating engine (Handlebars, Mustache) for zero benefit
+\end{itemize}
+
+The prompt templates live in TypeScript because they \textit{are} code --- they branch, interpolate, and compose dynamically. This is the correct engineering decision.
+
+\subsubsection*{The 12 Occasions}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{\textwidth}{lXX}
+\toprule
+\textbf{Occasion} & \textbf{Extra Wizard Fields} & \textbf{What Changes in the Story} \\
+\midrule
+Birthday & Turning age, birthday wish, party theme & Story builds toward celebration; child is turning a specific age \\
+New Sibling & Baby's name, big bro/sis/sib & Child discovers being a big sibling is a superpower; love multiplies \\
+First Day of School & Milestone type, teacher name, friend name & Morning excitement, journey to school, making friends, can't wait to go back \\
+Holiday & Which holiday, family tradition & Culturally respectful holiday magic; sensory holiday details; family warmth \\
+Graduation & Graduating from, favorite memory & Journey of growth; ``look how far you've come''; excitement about what's next \\
+Moving & New place, favorite old thing & Bittersweet $\rightarrow$ adventurous; home is where family is \\
+Overcoming Fears & Specific fear (dark, monsters, etc.) & Fear is valid; gradual understanding; child develops own coping strategy \\
+Get Well Soon & (none) & Magical escape adventure; cozy imagery; healing and comfort \\
+Tooth Fairy & Which tooth milestone & Whimsical Tooth Fairy world tour; celebrating growing up \\
+Potty Training & (none) & Matter-of-fact milestone; accidents are OK; big kid celebration \\
+Welcome Home & Family message & Belonging, being chosen, love; metaphors of finding one's place \\
+Just Because & (none) & Pure personalization --- interests and personality become the adventure \\
+\bottomrule
+\end{tabularx}
+\caption{12 book occasions with occasion-specific wizard fields and narrative guidance}
+\end{table}
+
+\begin{successbox}
+\textbf{This is a key differentiator.} Most personalized book competitors (Wonderbly, Hooray Heroes, I See Me!) only personalize the child's \textit{name and appearance}. Your platform personalizes the \textit{entire narrative} --- the occasion, the emotional arc, the tone, the specific details the parent provides. A birthday book for a child turning 5 who wishes for a puppy reads \textit{completely differently} from a get-well-soon book for the same child. No competitor does this.
+\end{successbox}
+
 \subsection{Character Consistency Architecture}
 
 Maintaining the \textbf{same character appearance across all 13--19 illustrations} in a book is the hardest technical challenge. Your codebase solves this with a three-layer approach:
@@ -2980,9 +3077,10 @@ This is where you use \textbf{Claude Code} (your AI coding assistant, included w
 
   \item \textbf{Test locally}: Say to Claude: \textit{``Start the backend and frontend dev servers so I can test locally.''} Claude will start both servers. Open your browser to \texttt{http://localhost:3000} to see your website.
 
-  \item \textbf{Generate a test book}: On your local site, go through the book creation wizard. Enter a child's name, age, and interests. The system will:
+  \item \textbf{Generate a test book}: On your local site, go through the book creation wizard. Enter a child's name, age, and interests. Select an occasion (e.g., Birthday) and fill in the occasion-specific fields (e.g., turning age 5, birthday wish ``a puppy''). Choose a story type (e.g., Rhyming). The system will:
   \begin{itemize}[leftmargin=2em]
     \item Run the 5-layer safety check on your inputs (Gate 1)
+    \item Compose an occasion-aware prompt (occasion guidance + story style + child profile + age calibration)
     \item Generate a story outline using Claude Opus 4.6
     \item Write page-by-page text using Claude Opus 4.6
     \item Validate the entire story for age-appropriateness (Gate 2)
